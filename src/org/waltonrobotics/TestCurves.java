@@ -32,7 +32,7 @@ public class TestCurves {
 					rightPoints[i].getAcceleration());
 		}
 		System.out.println("Spline:");
-		Spline spline = new Spline(2, 2, steps, width, points);
+		Spline spline = new Spline(2, 2, steps, width, 0, points);
 		centerPoints = spline.getPathPoints();
 		leftPoints = spline.getLeftPath();
 		rightPoints = spline.getRightPath();

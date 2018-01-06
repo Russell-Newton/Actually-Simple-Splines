@@ -1,12 +1,12 @@
 package org.waltonrobotics.motion;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import org.waltonrobotics.controller.Path;
 import org.waltonrobotics.controller.Point;
-import org.waltonrobotics.controller.VelocityVector;
 import org.waltonrobotics.controller.Path.LimitMode;
 
 /**
@@ -26,20 +26,32 @@ public class Spline extends Path {
 	private Point[] leftPoints;
 	private Point[] rightPoints;
 	private int numberOfSteps;
+	private double endAngle;
 
 	/**
-	 * Create a new spline
+	 * Construct a spline. Note the center of the robot is the origin when the
+	 * motion is first made, with the x axis being the direction it is facing.
 	 * 
+	 * @param vCruise
+	 *            - max velocity
+	 * @param aMax
+	 *            - max acceleration
 	 * @param numberOfSteps
-	 *            - the amount of points generated for the path, the resolution of
-	 *            the spline
+	 *            - the number of points used between each knot, like the resolution
+	 * @param robotWidth
+	 *            - the width of the robot, should be in the same unit as the robot
+	 *            distance per tick
+	 * @param endAngle
+	 *            - the angle at the end of the motion. Use degrees on the unit
+	 *            circle, the x axis being the direction the robot is facing
 	 * @param knots
-	 *            - the fixed points the spline will travel through
+	 *            - the points you want the robot to drive through
 	 */
-	public Spline(double vCruise, double aMax, int numberOfSteps, double robotWidth, Point... knots) {
+	public Spline(double vCruise, double aMax, int numberOfSteps, double robotWidth, double endAngle, Point... knots) {
 		super(vCruise, aMax);
 		this.numberOfSteps = numberOfSteps;
 		this.robotWidth = robotWidth;
+		this.endAngle = endAngle;
 		pathControlPoints = computeControlPoints(knots);
 		joinBezierCurves(pathControlPoints);
 	}
@@ -135,12 +147,35 @@ public class Spline extends Path {
 
 		for (int i = 0; i < pathControlPoints.size(); i++) {
 			Point[] controlPoints = pathControlPoints.get(i).stream().toArray(Point[]::new);
+			// Change the second to last control point to get the desired end angle
+			if (i == pathControlPoints.size() - 1) {
+				double distance = controlPoints[controlPoints.length - 2]
+						.distance(controlPoints[controlPoints.length - 1]);
+				double y_displacement = distance * Math.sin(Math.toRadians(endAngle));
+				double x_displacement = distance * Math.cos(Math.toRadians(endAngle));
+				controlPoints[controlPoints.length - 2] = new Point(
+						controlPoints[controlPoints.length - 1].getX() + x_displacement,
+						controlPoints[controlPoints.length - 1].getY() + y_displacement);
+			}
 			BezierCurve curve = new BezierCurve(vCruise, aMax, i != 0 ? vCruise : 0,
 					i != pathControlPoints.size() - 1 ? vCruise : 0, numberOfSteps, robotWidth, controlPoints);
 
-			Point[] pathPoints = curve.getPathPoints();
-			Point[] leftPoints = curve.getLeftPath();
-			Point[] rightPoints = curve.getRightPath();
+			Point[] pathPoints;
+			Point[] leftPoints;
+			Point[] rightPoints;
+			if (i != pathControlPoints.size() - 1) {
+
+				pathPoints = curve.getPathPoints();
+				pathPoints = Arrays.copyOfRange(pathPoints, 0, pathPoints.length - 2);
+				leftPoints = curve.getLeftPath();
+				leftPoints = Arrays.copyOfRange(leftPoints, 0, leftPoints.length - 2);
+				rightPoints = curve.getRightPath();
+				rightPoints = Arrays.copyOfRange(rightPoints, 0, rightPoints.length - 2);
+			} else {
+				pathPoints = curve.getPathPoints();
+				leftPoints = curve.getLeftPath();
+				rightPoints = curve.getRightPath();
+			}
 			Collections.addAll(pathPointsAdd, pathPoints);
 			Collections.addAll(leftPointsAdd, leftPoints);
 			Collections.addAll(rightPointsAdd, rightPoints);

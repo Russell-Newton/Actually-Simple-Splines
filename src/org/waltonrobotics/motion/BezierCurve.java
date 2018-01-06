@@ -11,7 +11,7 @@ import org.waltonrobotics.controller.State;
  * 
  * @see {@link https://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-der.html}
  * @author Marius Juston, Walton Robotics
- * @author Russell Newton, Walton Robotics 
+ * @author Russell Newton, Walton Robotics
  */
 public class BezierCurve extends Path {
 
@@ -213,10 +213,10 @@ public class BezierCurve extends Path {
 			State rightState = new State(speeds[1][1], speeds[0][1], speeds[0][2]);
 			// create the new offset point
 			if (isRightSide) {
-				offsetPoints[i] = pathPoints[i].offsetPerpendicular(pathPoints[i].getDerivative(), robotLength,
+				offsetPoints[i] = pathPoints[i].offsetPerpendicular(pathPoints[i].getDerivative(), robotLength / 2,
 						leftState, speeds[1][2], speeds[1][3]);
 			} else {
-				offsetPoints[i] = pathPoints[i].offsetPerpendicular(pathPoints[i].getDerivative(), -robotLength,
+				offsetPoints[i] = pathPoints[i].offsetPerpendicular(pathPoints[i].getDerivative(), -robotLength / 2,
 						rightState, speeds[1][2], speeds[1][3]);
 			}
 		}
