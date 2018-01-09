@@ -147,7 +147,17 @@ public class Spline extends Path {
 
 		for (int i = 0; i < pathControlPoints.size(); i++) {
 			Point[] controlPoints = pathControlPoints.get(i).stream().toArray(Point[]::new);
-			// Change the second to last control point to get the desired end angle
+			// Change the second control point to get the start angle to always be 0. This
+			// way, the robot will always start by going forwards. We can do this, because
+			// the start derivative = the slope between the first two control points.
+			if(i == 0) {
+				double distance = controlPoints[1].distance(controlPoints[0]);
+				//We want the derivative to be 0, so only change the X value
+				controlPoints[1] = new Point(controlPoints[0].getX() + distance, controlPoints[0].getY());
+			}
+			// Change the second to last control point to get the desired end angle. We can
+			// do this, because the end derivative = the slope between the last two control
+			// points
 			if (i == pathControlPoints.size() - 1) {
 				double distance = controlPoints[controlPoints.length - 2]
 						.distance(controlPoints[controlPoints.length - 1]);
