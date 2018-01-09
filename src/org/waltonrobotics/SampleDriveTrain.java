@@ -4,9 +4,6 @@ import org.waltonrobotics.controller.MotionController;
 import org.waltonrobotics.controller.Path;
 import org.waltonrobotics.controller.RobotPair;
 
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Encoder;
-
 /**
  * This is a sample drive train. If you want to use our motions for autonomous,
  * everything here will need to included in your drivetrain subsystem. This

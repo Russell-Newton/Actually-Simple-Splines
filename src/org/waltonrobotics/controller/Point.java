@@ -133,8 +133,26 @@ public class Point {
 		return new Point(this.x + offsetX, this.y + offsetY, angleOfDT, state, lCenter, time);
 	}
 
+	/**
+	 * Finds the distance between two points
+	 * @param previousPoint - the point you want to find the distance from
+	 * @return the distance
+	 */
 	public double distance(Point previousPoint) {
 		return Math.sqrt(Math.pow(this.x - previousPoint.getX(), 2) + Math.pow(this.y - previousPoint.getY(), 2));
+	}
+	
+	/**
+	 * Rotates a point around a central point. Imagine making an arc on a circle
+	 * @param centerPoint - the center of the circle
+	 * @param arcAngle - the angle to rotate the point to (degrees)
+	 * @return the rotated point
+	 */
+	public Point rotate(Point centerPoint, double arcAngle) {
+		double distance = this.distance(centerPoint);
+		double y_displacement = distance * Math.sin(Math.toRadians(arcAngle));
+		double x_displacement = distance * Math.cos(Math.toRadians(arcAngle));
+		return new Point(centerPoint.getX() + x_displacement, centerPoint.getY() + y_displacement);
 	}
 
 }

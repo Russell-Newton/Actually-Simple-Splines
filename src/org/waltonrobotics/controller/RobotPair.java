@@ -14,7 +14,6 @@ public class RobotPair {
 	public RobotPair(double left, double right) {
 		this.left = left;
 		this.right = right;
-		System.out.println(left + "\t" + right);
 	}
 
 	public double getLeft() {

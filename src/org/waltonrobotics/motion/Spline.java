@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.waltonrobotics.controller.Path;
 import org.waltonrobotics.controller.Point;
-import org.waltonrobotics.controller.Path.LimitMode;
 
 /**
  * Creates splines that travel through set points, or "knots", and all
@@ -25,12 +24,13 @@ public class Spline extends Path {
 	private Point[] pathPoints;
 	private Point[] leftPoints;
 	private Point[] rightPoints;
-	private int numberOfSteps;
-	private double endAngle;
+	private final int numberOfSteps;
+	private final double startAngle;
+	private final double endAngle;
 
 	/**
-	 * Construct a spline. Note the center of the robot is the origin when the
-	 * motion is first made, with the x axis being the direction it is facing.
+	 * Construct a spline. Note that the x axis is the direction the robot is facing
+	 * if the start angle is 0
 	 * 
 	 * @param vCruise
 	 *            - max velocity
@@ -41,16 +41,19 @@ public class Spline extends Path {
 	 * @param robotWidth
 	 *            - the width of the robot, should be in the same unit as the robot
 	 *            distance per tick
+	 * @param startAngle
+	 *            - the angle at the start of the motion (degrees)
 	 * @param endAngle
-	 *            - the angle at the end of the motion. Use degrees on the unit
-	 *            circle, the x axis being the direction the robot is facing
+	 *            - the angle at the end of the motion (degrees)
 	 * @param knots
 	 *            - the points you want the robot to drive through
 	 */
-	public Spline(double vCruise, double aMax, int numberOfSteps, double robotWidth, double endAngle, Point... knots) {
+	public Spline(double vCruise, double aMax, int numberOfSteps, double robotWidth, double startAngle, double endAngle,
+			Point... knots) {
 		super(vCruise, aMax);
 		this.numberOfSteps = numberOfSteps;
 		this.robotWidth = robotWidth;
+		this.startAngle = startAngle;
 		this.endAngle = endAngle;
 		pathControlPoints = computeControlPoints(knots);
 		joinBezierCurves(pathControlPoints);
@@ -150,22 +153,15 @@ public class Spline extends Path {
 			// Change the second control point to get the start angle to always be 0. This
 			// way, the robot will always start by going forwards. We can do this, because
 			// the start derivative = the slope between the first two control points.
-			if(i == 0) {
-				double distance = controlPoints[1].distance(controlPoints[0]);
-				//We want the derivative to be 0, so only change the X value
-				controlPoints[1] = new Point(controlPoints[0].getX() + distance, controlPoints[0].getY());
+			if (i == 0) {
+				controlPoints[1] = controlPoints[1].rotate(controlPoints[0], startAngle);
 			}
 			// Change the second to last control point to get the desired end angle. We can
 			// do this, because the end derivative = the slope between the last two control
 			// points
 			if (i == pathControlPoints.size() - 1) {
-				double distance = controlPoints[controlPoints.length - 2]
-						.distance(controlPoints[controlPoints.length - 1]);
-				double y_displacement = distance * Math.sin(Math.toRadians(endAngle));
-				double x_displacement = distance * Math.cos(Math.toRadians(endAngle));
-				controlPoints[controlPoints.length - 2] = new Point(
-						controlPoints[controlPoints.length - 1].getX() + x_displacement,
-						controlPoints[controlPoints.length - 1].getY() + y_displacement);
+				controlPoints[controlPoints.length - 2] = controlPoints[controlPoints.length - 2]
+						.rotate(controlPoints[controlPoints.length - 1], endAngle);
 			}
 			BezierCurve curve = new BezierCurve(vCruise, aMax, i != 0 ? vCruise : 0,
 					i != pathControlPoints.size() - 1 ? vCruise : 0, numberOfSteps, robotWidth, controlPoints);
