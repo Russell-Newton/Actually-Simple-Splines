@@ -36,8 +36,6 @@ public class Spline extends Path {
 	 *            - max velocity
 	 * @param aMax
 	 *            - max acceleration
-	 * @param numberOfSteps
-	 *            - the number of points used between each knot, like the resolution
 	 * @param robotWidth
 	 *            - the width of the robot, should be in the same unit as the robot
 	 *            distance per tick
@@ -48,10 +46,10 @@ public class Spline extends Path {
 	 * @param knots
 	 *            - the points you want the robot to drive through
 	 */
-	public Spline(double vCruise, double aMax, int numberOfSteps, double robotWidth, double startAngle, double endAngle,
+	public Spline(double vCruise, double aMax, double robotWidth, double startAngle, double endAngle,
 			Point... knots) {
 		super(vCruise, aMax);
-		this.numberOfSteps = numberOfSteps;
+		this.numberOfSteps = 50;
 		this.robotWidth = robotWidth;
 		this.startAngle = startAngle;
 		this.endAngle = endAngle;

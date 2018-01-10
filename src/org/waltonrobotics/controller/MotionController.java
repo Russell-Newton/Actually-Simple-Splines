@@ -5,7 +5,7 @@ import java.util.TimerTask;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import org.waltonrobotics.Robot;
+import org.waltonrobotics.AbstractDrivetrain;
 
 /**
  * Sends power to the wheels
@@ -34,18 +34,24 @@ public class MotionController {
 	private Path currentPath = null;
 	private State[] staticState;
 	private double startTime;
+	private final AbstractDrivetrain drivetrain;
+	private final double KVelocity;
+	private final double KScaling;
+	private final double KAcceleration;
+	private final double KPower;
 
 	/**
-	 * Creates the class that calculates the voltages to set the wheels to
-	 * 
-	 * @param nSteps
-	 *            - the amount of steps for paths
-	 * @param period
-	 *            - the time (milliseconds) between each calculation
+	 * @param drivetrain - the drivetrain to use the AbstractDrivetrain methods from
 	 */
-	public MotionController(int period) {
+	public MotionController(AbstractDrivetrain drivetrain) {
 		controller = new Timer();
-		this.period = period;
+		this.period = 5;
+		this.drivetrain = drivetrain;
+		this.KVelocity = 0.5;
+		this.KScaling = 0;
+		this.KAcceleration = 0.1;
+		this.KPower = 20;
+
 	}
 
 	/**
@@ -77,12 +83,7 @@ public class MotionController {
 
 			double time = edu.wpi.first.wpilibj.Timer.getFPGATimestamp() - startTime;
 
-			double kVoltage = Robot.getRobotConfiguration().getKVoltage();
-			double kScaling = Robot.getRobotConfiguration().getKScaling();
-			double kCurrent = Robot.getRobotConfiguration().getKCurrent();
-			double kPower = Robot.getRobotConfiguration().getKPower();
-
-			RobotPair wheelPositions = Robot.getRobotConfiguration().getDriveTrain().getWheelPositions();
+			RobotPair wheelPositions = drivetrain.getWheelPositions();
 
 			State[] currentState;
 			if (currentPath != null) {
@@ -97,31 +98,28 @@ public class MotionController {
 				}
 			} catch (ArrayIndexOutOfBoundsException e) {
 				currentPath = paths.pollFirst();
-				Robot.getRobotConfiguration().getDriveTrain().reset();
+				drivetrain.reset();
 				currentStep = 0;
-				//FIXME startTime = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();\
-				staticState = new State[] {
-						new State(Robot.getRobotConfiguration().getDriveTrain().getWheelPositions().getLeft(), 0, 0),
-						new State(Robot.getRobotConfiguration().getDriveTrain().getWheelPositions().getRight(), 0, 0) };
+				startTime = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
+				staticState = new State[] { new State(drivetrain.getWheelPositions().getLeft(), 0, 0),
+						new State(drivetrain.getWheelPositions().getRight(), 0, 0) };
 				return;
 			}
 
 			synchronized (this) {
 				// feed forward
-				leftPower += (kVoltage * currentState[0].getVelocity() + kScaling)
-						+ kCurrent * currentState[0].getAcceleration();
-				rightPower += (kVoltage * currentState[1].getVelocity() + kScaling)
-						+ kCurrent * currentState[1].getAcceleration();
+				leftPower += (KVelocity * currentState[0].getVelocity() + KScaling) + KAcceleration * currentState[0].getAcceleration();
+				rightPower += (KVelocity * currentState[1].getVelocity() + KScaling) + KAcceleration * currentState[1].getAcceleration();
 				// feed back
-				leftPower += kPower * (currentState[0].getLength() - wheelPositions.getLeft());
-				rightPower += kPower * (currentState[1].getLength() - wheelPositions.getRight());
+				leftPower += KPower * (currentState[0].getLength() - wheelPositions.getLeft());
+				rightPower += KPower * (currentState[1].getLength() - wheelPositions.getRight());
 
 			}
 
 			leftPower = Math.max(-1, Math.min(1, leftPower));
 			rightPower = Math.max(-1, Math.min(1, rightPower));
 
-			Robot.getRobotConfiguration().getDriveTrain().setSpeeds(leftPower, rightPower);
+			drivetrain.setSpeeds(leftPower, rightPower);
 		}
 	}
 
@@ -176,10 +174,10 @@ public class MotionController {
 	public void enableScheduler() {
 		if (!running) {
 			currentStep = 0;
-			//FIXME startTime = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
-			staticState = new State[] {
-					new State(Robot.getRobotConfiguration().getDriveTrain().getWheelPositions().getLeft(), 0, 0),
-					new State(Robot.getRobotConfiguration().getDriveTrain().getWheelPositions().getRight(), 0, 0) };
+			startTime = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
+			drivetrain.reset();
+			staticState = new State[] { new State(drivetrain.getWheelPositions().getLeft(), 0, 0),
+					new State(drivetrain.getWheelPositions().getRight(), 0, 0) };
 			Path newPath = paths.poll();
 			if (newPath != null) {
 				controller.scheduleAtFixedRate(new MotionTask(), 0L, (long) period);
@@ -193,7 +191,7 @@ public class MotionController {
 	 * @return Whether or not the queue has ended
 	 */
 	public boolean isFinished() {
-		return false; // FIXME do this
+		return currentPath == null;
 	}
 
 	/**
@@ -211,6 +209,6 @@ public class MotionController {
 		running = false;
 		currentPath = null;
 		controller.cancel();
-		Robot.getRobotConfiguration().getDriveTrain().setSpeeds(0, 0);
+		drivetrain.setSpeeds(0, 0);
 	}
 }

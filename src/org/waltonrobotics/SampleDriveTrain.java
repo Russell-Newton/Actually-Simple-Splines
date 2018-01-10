@@ -1,7 +1,5 @@
 package org.waltonrobotics;
 
-import org.waltonrobotics.controller.MotionController;
-import org.waltonrobotics.controller.Path;
 import org.waltonrobotics.controller.RobotPair;
 
 /**
@@ -13,25 +11,21 @@ import org.waltonrobotics.controller.RobotPair;
  * @author Russell Newton, Walton Robotics
  *
  */
-public class SampleDriveTrain implements DriveTrainInterface {
+public class SampleDrivetrain extends AbstractDrivetrain {
 
 	// private Encoder rightEncoder = RobotMap.rightEncoder;
 	// private Encoder leftEncoder = RobotMap.leftEncoder;
 	// private CANTalon rightMotor = RobotMap.rightMotor;
 	// private CANTalon leftMotor = RobotMap.leftMotor;
 
-	private MotionController controller;
-
-	public SampleDriveTrain() {
-		controller = new MotionController(Robot.getRobotConfiguration().getMotionsCalculationPeriod());
-		// leftEncoder.setDistancePerPulse(Robot.getRobotConfiguration().getDistancePerPulse());
-		// rightEncoder.setDistancePerPulse(-Robot.getRobotConfiguration().getDistancePerPulse());
+	public SampleDrivetrain() {
+		super(null);
 	}
 
 	@Override
 	public RobotPair getWheelPositions() {
 		// return new RobotPair(leftEncoder.getDistance(), rightEncoder.getDistance());
-		return new RobotPair(0, 0);
+		return null;
 	}
 
 	@Override
@@ -41,34 +35,20 @@ public class SampleDriveTrain implements DriveTrainInterface {
 	}
 
 	@Override
-	public boolean getControllerStatus() {
-		return controller.isRunning();
-	}
-
-	@Override
-	public void startControllerMotion() {
-		controller.enableScheduler();
-
-	}
-
-	@Override
-	public void cancelControllerMotion() {
-		controller.stopScheduler();
-	}
-
-	@Override
-	public void addControllerMotions(Path... paths) {
-		controller.addPaths(paths);
-	}
-
-	@Override
-	public boolean isControllerFinished() {
-		return controller.isFinished();
-	}
-
-	@Override
 	public void setSpeeds(double leftSpeed, double rightSpeed) {
 		// leftMotor.setSpeed(leftSpeed);
 		// rightMotor.setSpeed(rightSpeed);
+	}
+
+	@Override
+	public void setEncoderDistancePerPulse() {
+		// leftEncoder.setDistancePerPulse(0.025);
+		// rightEncoder.setDistancePerPulse(0.025);
+
+	}
+
+	@Override
+	protected void initDefaultCommand() {
+
 	}
 }

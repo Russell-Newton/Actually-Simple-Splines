@@ -1,7 +1,5 @@
 package org.waltonrobotics.motion;
 
-import org.waltonrobotics.DriveTrainInterface;
-import org.waltonrobotics.Robot;
 import org.waltonrobotics.controller.Path;
 import org.waltonrobotics.controller.Point;
 import org.waltonrobotics.controller.State;
@@ -14,8 +12,6 @@ import org.waltonrobotics.controller.State;
  * @author Russell Newton, Walton Robotics
  */
 public class BezierCurve extends Path {
-
-	private DriveTrainInterface driveTrain = Robot.getRobotConfiguration().getDriveTrain();
 
 	private final double startVelocity;
 	private final double endVelocity;
@@ -56,8 +52,8 @@ public class BezierCurve extends Path {
 		this.controlPoints = controlPoints;
 		startVelocity = v0;
 		endVelocity = v1;
-		// The starting average encoder distance
-		startLCenter = (driveTrain.getWheelPositions().getLeft() + driveTrain.getWheelPositions().getRight()) / 2;
+		// The starting average encoder distance should always be 0
+		startLCenter = 0;
 
 		updateCoefficients();
 		pathPoints = getCurvePoints(numberOfSteps, controlPoints);

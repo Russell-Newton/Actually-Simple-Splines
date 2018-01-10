@@ -20,7 +20,6 @@ public class TestCurves {
 	
 
 	public static void main(String[] args) {
-		new Robot();
 		System.out.println("Bezier Curve:");
 		BezierCurve curve = new BezierCurve(2, 2, 0, 0, steps, width, points);
 		Point[] centerPoints = curve.getPathPoints();
@@ -32,7 +31,7 @@ public class TestCurves {
 					rightPoints[i].getAcceleration());
 		}
 		System.out.println("Spline:");
-		Spline spline = new Spline(2, 2, steps, width, 60, 45, points);
+		Spline spline = new Spline(2, 2, width, 60, 45, points);
 		centerPoints = spline.getPathPoints();
 		leftPoints = spline.getLeftPath();
 		rightPoints = spline.getRightPath();
