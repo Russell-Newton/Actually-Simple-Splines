@@ -15,15 +15,14 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 public abstract class AbstractDrivetrain extends Subsystem {
 
-	static MotionController controller;
+	MotionController controller = new MotionController(this);
 
 	/**
 	 * Put your Robot.drivetrain into super()
 	 * 
 	 * @param drivetrain
 	 */
-	public AbstractDrivetrain(AbstractDrivetrain drivetrain) {
-		controller = new MotionController(drivetrain);
+	public AbstractDrivetrain() {
 	}
 
 	/**
@@ -57,6 +56,13 @@ public abstract class AbstractDrivetrain extends Subsystem {
 	 */
 	public void cancelControllerMotion() {
 		controller.stopScheduler();
+	}
+	
+	/**
+	 * Clears the current queue
+	 */
+	public void clearControllerMotions() {
+		controller.clearMotions();
 	}
 
 	/**

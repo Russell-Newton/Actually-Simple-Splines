@@ -19,7 +19,6 @@ public class SampleDrivetrain extends AbstractDrivetrain {
 	// private CANTalon leftMotor = RobotMap.leftMotor;
 
 	public SampleDrivetrain() {
-		super(null);
 	}
 
 	@Override
