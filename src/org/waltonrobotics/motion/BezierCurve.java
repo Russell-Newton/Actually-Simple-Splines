@@ -205,7 +205,7 @@ public class BezierCurve extends Path {
 			}
 			// store the LCenter in the center point used
 			pathPoints[i] = new Point(pathPoints[i].getX(), pathPoints[i].getY(), pathPoints[i].getDerivative(),
-					new State(0, 0, 0), speeds[1][2], 0);
+					new State(0, 0, 0), speeds[1][2], speeds[1][3]);
 			State leftState = new State((i == 0 ? 0 : offsetPoints[i - 1].getLength()) + speeds[1][0], speeds[0][0],
 					speeds[0][2]);
 			State rightState = new State((i == 0 ? 0 : offsetPoints[i - 1].getLength()) + speeds[1][1], speeds[0][1],

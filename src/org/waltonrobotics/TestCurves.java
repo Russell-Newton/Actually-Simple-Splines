@@ -27,10 +27,10 @@ public class TestCurves {
 //			printValues(leftPoints[i].getX(), leftPoints[i].getY(), rightPoints[i].getX(), rightPoints[i].getY(),
 //					centerPoints[i].getDerivative(), leftPoints[i].getVelocity(), rightPoints[i].getVelocity(),
 //					rightPoints[i].getAcceleration());
-			System.out.printf("%01.03f %01.03f %01.03f %01.03f %01.03f %01.03f %01.03f %01.03f \n",
+			System.out.printf("%01.03f %01.03f %01.03f %01.03f %01.03f %01.03f %01.03f \n",
 					leftPoints[i].getLength(), leftPoints[i].getAcceleration(), leftPoints[i].getVelocity(),
 					rightPoints[i].getLength(), rightPoints[i].getAcceleration(), rightPoints[i].getVelocity(),
-					leftPoints[i].getTime(), rightPoints[i].getTime());
+					leftPoints[i].getTime());
 		}
 		System.out.println("Spline:");
 		Spline spline = new Spline(.5, .5, width, 0, 0, points);
@@ -43,10 +43,10 @@ public class TestCurves {
 			// centerPoints[i].getDerivative(), leftPoints[i].getVelocity(),
 			// rightPoints[i].getVelocity(),
 			// leftPoints[i].getAcceleration());
-			System.out.printf("%01.03f %01.03f %01.03f %01.03f %01.03f %01.03f %01.03f %01.03f \n",
+			System.out.printf("%01.03f %01.03f %01.03f %01.03f %01.03f %01.03f %01.03f \n",
 					leftPoints[i].getLength(), leftPoints[i].getAcceleration(), leftPoints[i].getVelocity(),
 					rightPoints[i].getLength(), rightPoints[i].getAcceleration(), rightPoints[i].getVelocity(),
-					leftPoints[i].getTime(), rightPoints[i].getTime());
+					leftPoints[i].getTime());
 		}
 	}
 
