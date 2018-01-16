@@ -50,6 +50,7 @@ public class TestCurves {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private static void printValues(double xL, double yL, double xR, double yR, double dydx, double vL, double vR,
 			double a) {
 		System.out.printf(
