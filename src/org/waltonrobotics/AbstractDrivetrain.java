@@ -18,14 +18,6 @@ public abstract class AbstractDrivetrain extends Subsystem {
 	MotionController controller = new MotionController(this);
 
 	/**
-	 * Put your Robot.drivetrain into super()
-	 * 
-	 * @param drivetrain
-	 */
-	public AbstractDrivetrain() {
-	}
-
-	/**
 	 * return a new robot pair with left.getDistance(), right.getDistance()
 	 * 
 	 * @return a RobotPair with the encoder distances;
@@ -57,7 +49,7 @@ public abstract class AbstractDrivetrain extends Subsystem {
 	public void cancelControllerMotion() {
 		controller.stopScheduler();
 	}
-	
+
 	/**
 	 * Clears the current queue
 	 */

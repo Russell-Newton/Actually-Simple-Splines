@@ -9,8 +9,14 @@ import org.waltonrobotics.controller.Path;
 import org.waltonrobotics.controller.Point;
 
 /**
- * Creates splines that travel through set points, or "knots", and all
- * information needed to make the robot travel along the path.
+ * This path is a spline that will go through the set knots by stitching
+ * together several Bezier curves. By default, it will try to make the shortest
+ * path possible, but the start and end angles (degrees) indicate how the robot
+ * is facing or how you want it to face. This is not very effective with only 2
+ * knots. If you want a straight line, make a Bezier Curve.
+ * 
+ * @see {@link https://www.particleincell.com/2012/bezier-splines/}
+ * @see {@link https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm}
  * 
  * @author Russell Newton, Walton Robotics
  *
@@ -24,7 +30,6 @@ public class Spline extends Path {
 	private Point[] pathPoints;
 	private Point[] leftPoints;
 	private Point[] rightPoints;
-	private final int numberOfSteps;
 	private final double startAngle;
 	private final double endAngle;
 
@@ -37,8 +42,8 @@ public class Spline extends Path {
 	 * @param aMax
 	 *            - max acceleration
 	 * @param robotWidth
-	 *            - the width of the robot, should be in the same unit as the robot
-	 *            distance per tick
+	 *            - the width of the robot, should be in the same unit as the
+	 *            encoder distance per tick
 	 * @param startAngle
 	 *            - the angle at the start of the motion (degrees)
 	 * @param endAngle
@@ -46,10 +51,8 @@ public class Spline extends Path {
 	 * @param knots
 	 *            - the points you want the robot to drive through
 	 */
-	public Spline(double vCruise, double aMax, double robotWidth, double startAngle, double endAngle,
-			Point... knots) {
+	public Spline(double vCruise, double aMax, double robotWidth, double startAngle, double endAngle, Point... knots) {
 		super(vCruise, aMax);
-		this.numberOfSteps = 50;
 		this.robotWidth = robotWidth;
 		this.startAngle = startAngle;
 		this.endAngle = endAngle;
@@ -59,10 +62,7 @@ public class Spline extends Path {
 
 	/**
 	 * Creates the control points required to make cubic bezier curves that
-	 * transition between knots.
-	 * 
-	 * @see https://www.particleincell.com/2012/bezier-splines/
-	 * @see https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm
+	 * transition between knots. Will make them for the shortest path possible.
 	 * 
 	 * @param knots
 	 * @return A list of lists that hold the control points for the segments in the
@@ -162,7 +162,7 @@ public class Spline extends Path {
 						.rotate(controlPoints[controlPoints.length - 1], endAngle);
 			}
 			BezierCurve curve = new BezierCurve(vCruise, aMax, i != 0 ? vCruise : 0,
-					i != pathControlPoints.size() - 1 ? vCruise : 0, numberOfSteps, robotWidth, controlPoints);
+					i != pathControlPoints.size() - 1 ? vCruise : 0, robotWidth, controlPoints);
 
 			Point[] pathPoints;
 			Point[] leftPoints;
@@ -202,11 +202,6 @@ public class Spline extends Path {
 	@Override
 	public Point[] getRightPath() {
 		return rightPoints;
-	}
-
-	@Override
-	public LimitMode getLimitMode() {
-		return LimitMode.LimitLinearAcceleration;
 	}
 
 }

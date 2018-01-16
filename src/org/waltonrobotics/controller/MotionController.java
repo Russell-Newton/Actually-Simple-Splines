@@ -41,15 +41,16 @@ public class MotionController {
 	private final double KPower;
 
 	/**
-	 * @param drivetrain - the drivetrain to use the AbstractDrivetrain methods from
+	 * @param drivetrain
+	 *            - the drivetrain to use the AbstractDrivetrain methods from
 	 */
 	public MotionController(AbstractDrivetrain drivetrain) {
 		running = false;
-		
+
 		controller = new Timer();
 		this.period = 5;
 		controller.schedule(new MotionTask(), 0L, (long) period);
-		
+
 		this.drivetrain = drivetrain;
 		this.KVelocity = 0.5;
 		this.KScaling = 0;
@@ -86,6 +87,7 @@ public class MotionController {
 		if (enabled) {
 
 			double time = edu.wpi.first.wpilibj.Timer.getFPGATimestamp() - startTime;
+			System.out.println("Current time: " + time);
 
 			RobotPair wheelPositions = drivetrain.getWheelPositions();
 
@@ -112,8 +114,10 @@ public class MotionController {
 
 			synchronized (this) {
 				// feed forward
-				leftPower += (KVelocity * currentState[0].getVelocity() + KScaling) + KAcceleration * currentState[0].getAcceleration();
-				rightPower += (KVelocity * currentState[1].getVelocity() + KScaling) + KAcceleration * currentState[1].getAcceleration();
+				leftPower += (KVelocity * currentState[0].getVelocity() + KScaling)
+						+ KAcceleration * currentState[0].getAcceleration();
+				rightPower += (KVelocity * currentState[1].getVelocity() + KScaling)
+						+ KAcceleration * currentState[1].getAcceleration();
 				// feed back
 				leftPower += KPower * (currentState[0].getLength() - wheelPositions.getLeft());
 				rightPower += KPower * (currentState[1].getLength() - wheelPositions.getRight());
@@ -151,16 +155,16 @@ public class MotionController {
 			return null;
 		}
 
-		// New values are the average of the previous and next point values
-		// (Average = sum(value * ratio))
+		// New lengths are the average of the previous and next point values
+		// (Average = sum(value * ratio)). Velocities and accelerations are that of the
+		// next point
 		double lLeft = previousLeft.getLength() * ratioPosToNext + nextLeft.getLength() * rationPrevToPos;
-		double vLeft = previousLeft.getVelocity() * ratioPosToNext + nextLeft.getVelocity() * rationPrevToPos;
-		double aLeft = previousLeft.getAcceleration() * ratioPosToNext + nextLeft.getAcceleration() * rationPrevToPos;
+		double vLeft = nextLeft.getVelocity();
+		double aLeft = nextLeft.getAcceleration();
 
 		double lRight = previousRight.getLength() * ratioPosToNext + nextRight.getLength() * rationPrevToPos;
-		double vRight = previousRight.getVelocity() * ratioPosToNext + nextRight.getVelocity() * rationPrevToPos;
-		double aRight = previousRight.getAcceleration() * ratioPosToNext
-				+ nextRight.getAcceleration() * rationPrevToPos;
+		double vRight = nextRight.getVelocity();
+		double aRight = nextRight.getAcceleration();
 
 		return new State[] { new State(lLeft, vLeft, aLeft), new State(lRight, vRight, aRight) };
 	}
@@ -185,7 +189,7 @@ public class MotionController {
 			Path newPath = paths.poll();
 			if (newPath != null) {
 				currentPath = newPath;
-				System.out.println(currentPath);
+				System.out.println("Start Time: " + startTime);
 				running = true;
 			}
 		}

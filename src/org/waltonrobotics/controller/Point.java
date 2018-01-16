@@ -1,8 +1,10 @@
 package org.waltonrobotics.controller;
 
 /**
- * Used to define a point in space with an x, y, derivative, velocity,
- * acceleration, and average encoder distance
+ * This class can be created with various attributes. If you want to design your
+ * own extended path motions, you'll probably want to use the bulky constructor.
+ * If you just want to make one of ours, then you should just use the
+ * constructor with an x and y
  * 
  * @author Russell Newton, Walton Robotics
  *
@@ -20,11 +22,18 @@ public class Point {
 	 * Used to create a point
 	 * 
 	 * @param x
+	 *            - the x at the point
 	 * @param y
+	 *            - the y at the point
 	 * @param derivative
+	 *            - the derivative at the point, used for offsetting points
 	 * @param state
+	 *            - a State with the encoder length, velocity, and acceleration at
+	 *            the point
 	 * @param lCenter
 	 *            - average desired encoder distance
+	 * @param time
+	 *            - the expected time to reach the point
 	 */
 	public Point(double x, double y, double derivative, State state, double lCenter, double time) {
 		this.x = x;
@@ -39,8 +48,11 @@ public class Point {
 	 * Can be used to create a point with just x, y, and derivative
 	 * 
 	 * @param x
+	 *            - the x at the point
 	 * @param y
+	 *            - the y at the point
 	 * @param derivative
+	 *            - the derivative at the point, used for offsetting points
 	 */
 	public Point(double x, double y, double derivative) {
 		this(x, y, derivative, new State(0, 0, 0), 0, 0);
@@ -50,7 +62,9 @@ public class Point {
 	 * Can be used to create a point with just x and y
 	 * 
 	 * @param x
+	 *            - the x at the point
 	 * @param y
+	 *            - the y at the point
 	 */
 	public Point(double x, double y) {
 		this(x, y, 0, new State(0, 0, 0), 0, 0);
@@ -120,8 +134,12 @@ public class Point {
 	 * @param distance
 	 *            - the distance to offset the point by
 	 * @param state
+	 *            - a State with the encoder length, velocity, and acceleration at
+	 *            the point
 	 * @param lCenter
+	 *            - average desired encoder distance
 	 * @param time
+	 *            - the expected time to reach the point
 	 * @return the offset point
 	 */
 	public Point offsetPerpendicular(double dtAtPoint, double distance, State state, double lCenter, double time) {
@@ -135,17 +153,22 @@ public class Point {
 
 	/**
 	 * Finds the distance between two points
-	 * @param previousPoint - the point you want to find the distance from
-	 * @return the distance
+	 * 
+	 * @param otherPoint
+	 *            - the point you want to find the distance from
+	 * @return the distance from this point to the other point
 	 */
-	public double distance(Point previousPoint) {
-		return Math.sqrt(Math.pow(this.x - previousPoint.getX(), 2) + Math.pow(this.y - previousPoint.getY(), 2));
+	public double distance(Point otherPoint) {
+		return Math.sqrt(Math.pow(this.x - otherPoint.getX(), 2) + Math.pow(this.y - otherPoint.getY(), 2));
 	}
-	
+
 	/**
 	 * Rotates a point around a central point. Imagine making an arc on a circle
-	 * @param centerPoint - the center of the circle
-	 * @param arcAngle - the angle to rotate the point to (degrees)
+	 * 
+	 * @param centerPoint
+	 *            - the center of the circle
+	 * @param arcAngle
+	 *            - the angle to rotate the point to (degrees)
 	 * @return the rotated point
 	 */
 	public Point rotate(Point centerPoint, double arcAngle) {

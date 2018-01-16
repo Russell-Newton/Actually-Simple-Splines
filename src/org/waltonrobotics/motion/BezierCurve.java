@@ -5,8 +5,12 @@ import org.waltonrobotics.controller.Point;
 import org.waltonrobotics.controller.State;
 
 /**
- * Resources:
+ * This Path is a simple curve. The shape of the curve is controlled by the
+ * control points. There are tangents from the first and second control points
+ * and the second to last and last control points. Use this to make a straight
+ * line (use two control points)
  * 
+ * @see {@link https://en.wikipedia.org/wiki/B%C3%A9zier_curve}
  * @see {@link https://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-der.html}
  * @author Marius Juston, Walton Robotics
  * @author Russell Newton, Walton Robotics
@@ -17,6 +21,7 @@ public class BezierCurve extends Path {
 	private final double endVelocity;
 	private final double startLCenter;
 	private double curveLength = 0;
+	private final int numberOfSteps;
 
 	private final Point[] pathPoints;
 	private final Point[] leftPoints;
@@ -37,19 +42,16 @@ public class BezierCurve extends Path {
 	 *            - the start velocity
 	 * @param v1
 	 *            - the end velocity
-	 * @param numberOfSteps
-	 *            - the amount of points to define the curve, the resolution of the
-	 *            curve
 	 * @param robotWidth
 	 *            - the width of the robot
 	 * @param controlPoints
 	 *            - the control points that define the robot
 	 */
-	public BezierCurve(double vCruise, double aMax, double v0, double v1, int numberOfSteps, double robotWidth,
-			Point... controlPoints) {
+	public BezierCurve(double vCruise, double aMax, double v0, double v1, double robotWidth, Point... controlPoints) {
 		super(vCruise, aMax);
 		this.robotLength = robotWidth;
 		this.controlPoints = controlPoints;
+		this.numberOfSteps = 50;
 		startVelocity = v0;
 		endVelocity = v1;
 		// The starting average encoder distance should always be 0
@@ -224,7 +226,7 @@ public class BezierCurve extends Path {
 
 	/**
 	 * Calculates the velocities and acceleration required to get from one point to
-	 * the next
+	 * the next. I gotta be honest I have no idea how this math works - Russell
 	 * 
 	 * @param previousPoint
 	 * @param point
@@ -286,10 +288,5 @@ public class BezierCurve extends Path {
 	@Override
 	public Point[] getRightPath() {
 		return rightPoints;
-	}
-
-	@Override
-	public LimitMode getLimitMode() {
-		return LimitMode.LimitLinearAcceleration;
 	}
 }

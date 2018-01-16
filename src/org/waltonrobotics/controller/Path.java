@@ -8,13 +8,6 @@ package org.waltonrobotics.controller;
  */
 public abstract class Path {
 
-	/**
-	 * Used in the math to determine how to move the robot
-	 */
-	public enum LimitMode {
-		LimitLinearAcceleration, LimitRotationalAcceleration
-	}
-
 	protected double vCruise;
 	protected double aMax;
 
@@ -35,28 +28,18 @@ public abstract class Path {
 	}
 
 	/**
-	 * Finds the points that define the path the robot follows
-	 * 
-	 * @return an array of points that holds the points along the path
+	 * This method should return an array of points defining the center of the path
 	 */
 	public abstract Point[] getPathPoints();
 
 	/**
-	 * Finds the points that define the path the left side of the robot follows
-	 * 
-	 * @return an array of points that holds the points along the path
+	 * This method should return an array of points defining the left side of a path
 	 */
 	public abstract Point[] getLeftPath();
 
 	/**
-	 * Finds the points that define the path the right side of the robot follows
-	 * 
-	 * @return an array of points that holds the points along the path
+	 * This method should return an array of points defining the right side of a
+	 * path
 	 */
 	public abstract Point[] getRightPath();
-
-	/**
-	 * @return the LimitMode of the path
-	 */
-	public abstract LimitMode getLimitMode();
 }
