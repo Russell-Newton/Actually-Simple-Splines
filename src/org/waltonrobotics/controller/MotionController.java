@@ -44,8 +44,12 @@ public class MotionController {
 	 * @param drivetrain - the drivetrain to use the AbstractDrivetrain methods from
 	 */
 	public MotionController(AbstractDrivetrain drivetrain) {
+		running = false;
+		
 		controller = new Timer();
 		this.period = 5;
+		controller.schedule(new MotionTask(), 0L, (long) period);
+		
 		this.drivetrain = drivetrain;
 		this.KVelocity = 0.5;
 		this.KScaling = 0;
@@ -180,7 +184,8 @@ public class MotionController {
 					new State(drivetrain.getWheelPositions().getRight(), 0, 0) };
 			Path newPath = paths.poll();
 			if (newPath != null) {
-				controller.scheduleAtFixedRate(new MotionTask(), 0L, (long) period);
+				currentPath = newPath;
+				System.out.println(currentPath);
 				running = true;
 			}
 		}

@@ -104,6 +104,7 @@ public class BezierCurve extends Path {
 			if (i != 0)
 				curveLength += point2DList[(int) i].distance(point2DList[(int) i - 1]);
 		}
+		System.out.println(curveLength);
 
 		return point2DList;
 	}
@@ -205,15 +206,17 @@ public class BezierCurve extends Path {
 			// store the LCenter in the center point used
 			pathPoints[i] = new Point(pathPoints[i].getX(), pathPoints[i].getY(), pathPoints[i].getDerivative(),
 					new State(0, 0, 0), speeds[1][2], 0);
-			State leftState = new State(speeds[1][0], speeds[0][0], speeds[0][2]);
-			State rightState = new State(speeds[1][1], speeds[0][1], speeds[0][2]);
+			State leftState = new State((i == 0 ? 0 : offsetPoints[i - 1].getLength()) + speeds[1][0], speeds[0][0],
+					speeds[0][2]);
+			State rightState = new State((i == 0 ? 0 : offsetPoints[i - 1].getLength()) + speeds[1][1], speeds[0][1],
+					speeds[0][2]);
 			// create the new offset point
 			if (isRightSide) {
 				offsetPoints[i] = pathPoints[i].offsetPerpendicular(pathPoints[i].getDerivative(), robotLength / 2,
-						leftState, speeds[1][2], speeds[1][3]);
+						rightState, speeds[1][2], speeds[1][3]);
 			} else {
 				offsetPoints[i] = pathPoints[i].offsetPerpendicular(pathPoints[i].getDerivative(), -robotLength / 2,
-						rightState, speeds[1][2], speeds[1][3]);
+						leftState, speeds[1][2], speeds[1][3]);
 			}
 		}
 		return offsetPoints;
@@ -266,7 +269,7 @@ public class BezierCurve extends Path {
 		double velocityL = dlLeft / dTime;
 		double velocityR = dlRight / dTime;
 
-		return new double[][] { { velocityL, velocityR, acceleration }, { dlLeft, dlRight,
+		return new double[][] { { velocityL, velocityR, acceleration }, { previousPoint.getLength() + dlLeft, dlRight,
 				(2 * previousPoint.getLCenter() + (dlLeft + dlRight)) / 2, previousPoint.getTime() + dTime } };
 	}
 
