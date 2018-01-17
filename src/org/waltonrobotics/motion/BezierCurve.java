@@ -22,6 +22,7 @@ public class BezierCurve extends Path {
 	private final double startLCenter;
 	private double curveLength = 0;
 	private final int numberOfSteps;
+	private final boolean isBackwards;
 
 	private final Point[] pathPoints;
 	private final Point[] leftPoints;
@@ -47,11 +48,13 @@ public class BezierCurve extends Path {
 	 * @param controlPoints
 	 *            - the control points that define the robot
 	 */
-	public BezierCurve(double vCruise, double aMax, double v0, double v1, double robotWidth, Point... controlPoints) {
+	public BezierCurve(double vCruise, double aMax, double v0, double v1, double robotWidth, boolean isBackwards,
+			Point... controlPoints) {
 		super(vCruise, aMax);
 		this.robotLength = robotWidth;
 		this.controlPoints = controlPoints;
 		this.numberOfSteps = 50;
+		this.isBackwards = isBackwards;
 		startVelocity = v0;
 		endVelocity = v1;
 		// The starting average encoder distance should always be 0
@@ -106,7 +109,6 @@ public class BezierCurve extends Path {
 			if (i != 0)
 				curveLength += point2DList[(int) i].distance(point2DList[(int) i - 1]);
 		}
-		System.out.println(curveLength);
 
 		return point2DList;
 	}
@@ -208,10 +210,10 @@ public class BezierCurve extends Path {
 			// store the LCenter in the center point used
 			pathPoints[i] = new Point(pathPoints[i].getX(), pathPoints[i].getY(), pathPoints[i].getDerivative(),
 					new State(0, 0, 0), speeds[1][2], speeds[1][3]);
-			State leftState = new State((i == 0 ? 0 : offsetPoints[i - 1].getLength()) + speeds[1][0], speeds[0][0],
-					speeds[0][2]);
-			State rightState = new State((i == 0 ? 0 : offsetPoints[i - 1].getLength()) + speeds[1][1], speeds[0][1],
-					speeds[0][2]);
+			State leftState = new State((i == 0 ? 0 : offsetPoints[i - 1].getLength()) + speeds[1][0],
+					isBackwards ? -speeds[0][0] : speeds[0][0], speeds[0][2]);
+			State rightState = new State((i == 0 ? 0 : offsetPoints[i - 1].getLength()) + speeds[1][1],
+					isBackwards ? -speeds[0][1] : speeds[0][1], speeds[0][2]);
 			// create the new offset point
 			if (isRightSide) {
 				offsetPoints[i] = pathPoints[i].offsetPerpendicular(pathPoints[i].getDerivative(), robotLength / 2,

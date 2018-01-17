@@ -13,12 +13,13 @@ import org.waltonrobotics.motion.Spline;
 public class DebugCurves {
 
 	// Change these to see their effect
-	public static double width = 0.25;
+	private static double width = 0.25;
 	private static Point[] points = new Point[] { new Point(0, 0), new Point(1, 0) };
+	private static boolean isBackwards = true;
 
 	public static void main(String[] args) {
 		System.out.println("Bezier Curve:");
-		BezierCurve curve = new BezierCurve(.5, .5, 0, 0, width, points);
+		BezierCurve curve = new BezierCurve(.5, .5, 0, 0, width, isBackwards, points);
 		Point[] centerPoints = curve.getPathPoints();
 		Point[] leftPoints = curve.getLeftPath();
 		Point[] rightPoints = curve.getRightPath();
@@ -33,7 +34,7 @@ public class DebugCurves {
 					rightPoints[i].getAcceleration(), rightPoints[i].getVelocity(), leftPoints[i].getTime());
 		}
 		System.out.println("Spline:");
-		Spline spline = new Spline(.5, .5, width, 0, 0, points);
+		Spline spline = new Spline(.5, .5, width, 0, 0, isBackwards, points);
 		centerPoints = spline.getPathPoints();
 		leftPoints = spline.getLeftPath();
 		rightPoints = spline.getRightPath();

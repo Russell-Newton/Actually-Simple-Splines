@@ -32,6 +32,7 @@ public class Spline extends Path {
 	private Point[] rightPoints;
 	private final double startAngle;
 	private final double endAngle;
+	private final boolean isBackwards;
 
 	/**
 	 * Construct a spline. Note that the x axis is the direction the robot is facing
@@ -48,14 +49,18 @@ public class Spline extends Path {
 	 *            - the angle at the start of the motion (degrees)
 	 * @param endAngle
 	 *            - the angle at the end of the motion (degrees)
+	 * @param isBackwards
+	 *            - if the robot will be moving backwards, make this true
 	 * @param knots
 	 *            - the points you want the robot to drive through
 	 */
-	public Spline(double vCruise, double aMax, double robotWidth, double startAngle, double endAngle, Point... knots) {
+	public Spline(double vCruise, double aMax, double robotWidth, double startAngle, double endAngle,
+			boolean isBackwards, Point... knots) {
 		super(vCruise, aMax);
 		this.robotWidth = robotWidth;
 		this.startAngle = startAngle;
 		this.endAngle = endAngle;
+		this.isBackwards = isBackwards;
 		pathControlPoints = computeControlPoints(knots);
 		joinBezierCurves(pathControlPoints);
 	}
@@ -162,7 +167,7 @@ public class Spline extends Path {
 						.rotate(controlPoints[controlPoints.length - 1], endAngle);
 			}
 			BezierCurve curve = new BezierCurve(vCruise, aMax, i != 0 ? vCruise : 0,
-					i != pathControlPoints.size() - 1 ? vCruise : 0, robotWidth, controlPoints);
+					i != pathControlPoints.size() - 1 ? vCruise : 0, robotWidth, isBackwards, controlPoints);
 
 			Point[] pathPoints;
 			Point[] leftPoints;
