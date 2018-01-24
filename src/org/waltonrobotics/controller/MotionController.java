@@ -29,16 +29,15 @@ public class MotionController {
 	private BlockingDeque<Path> paths = new LinkedBlockingDeque<Path>();
 	private Timer controller;
 	private boolean running;
-	private int currentStep = 0;
 	private int period;
 	private Path currentPath = null;
 	private State[] staticState;
 	private double startTime;
 	private final AbstractDrivetrain drivetrain;
-	private final double KVelocity;
-	private final double KScaling;
-	private final double KAcceleration;
-	private final double KPower;
+	private final double kV;
+	private final double kK;
+	private final double kA;
+	private final double kP;
 
 	/**
 	 * @param drivetrain
@@ -52,10 +51,10 @@ public class MotionController {
 		controller.schedule(new MotionTask(), 0L, (long) period);
 
 		this.drivetrain = drivetrain;
-		this.KVelocity = 0.5;
-		this.KScaling = 0;
-		this.KAcceleration = 0.1;
-		this.KPower = 20;
+		this.kV = drivetrain.getKV();
+		this.kK = drivetrain.getKK();
+		this.kA = drivetrain.getKA();	
+		this.kP = drivetrain.getKP();
 
 	}
 
@@ -87,40 +86,35 @@ public class MotionController {
 		if (enabled) {
 
 			double time = edu.wpi.first.wpilibj.Timer.getFPGATimestamp() - startTime;
-			System.out.println("Current time: " + time);
 
 			RobotPair wheelPositions = drivetrain.getWheelPositions();
 
 			State[] currentState;
 			if (currentPath != null) {
-				currentState = interpolatePosition(time);
+				currentState = currentPath.interpolatePosition(time);
 			} else {
 				currentState = staticState;
 			}
-			try {
-				if (currentState == null) {
-					currentStep++;
-					currentState = interpolatePosition(time);
-				}
-			} catch (ArrayIndexOutOfBoundsException e) {
+			
+			if(currentPath.isFinished) {
 				currentPath = paths.pollFirst();
-				drivetrain.reset();
-				currentStep = 0;
+				currentPath.setStartingWheelPositions(drivetrain.getWheelPositions());
 				startTime = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
 				staticState = new State[] { new State(drivetrain.getWheelPositions().getLeft(), 0, 0),
 						new State(drivetrain.getWheelPositions().getRight(), 0, 0) };
+				currentState = staticState;
 				return;
 			}
 
 			synchronized (this) {
 				// feed forward
-				leftPower += (KVelocity * currentState[0].getVelocity() + KScaling)
-						+ KAcceleration * currentState[0].getAcceleration();
-				rightPower += (KVelocity * currentState[1].getVelocity() + KScaling)
-						+ KAcceleration * currentState[1].getAcceleration();
+				leftPower += (kV * currentState[0].getVelocity() + kK)
+						+ kA * currentState[0].getAcceleration();
+				rightPower += (kV * currentState[1].getVelocity() + kK)
+						+ kA * currentState[1].getAcceleration();
 				// feed back
-				leftPower += KPower * (currentState[0].getLength() - wheelPositions.getLeft());
-				rightPower += KPower * (currentState[1].getLength() - wheelPositions.getRight());
+				leftPower += kP * (currentState[0].getLength() - wheelPositions.getLeft());
+				rightPower += kP * (currentState[1].getLength() - wheelPositions.getRight());
 
 			}
 
@@ -129,44 +123,6 @@ public class MotionController {
 
 			drivetrain.setSpeeds(leftPower, rightPower);
 		}
-	}
-
-	/**
-	 * Calculates parameters for wheel powers based off of location between steps
-	 * 
-	 * @param time
-	 *            - current time since start
-	 * @param step
-	 * @return a set of left and right lengths, velocities, and accelerations.
-	 */
-	private State[] interpolatePosition(double time) {
-		Point previousLeft = currentPath.getLeftPath()[currentStep];
-		Point previousRight = currentPath.getRightPath()[currentStep];
-		Point nextLeft = currentPath.getLeftPath()[currentStep + 1];
-		Point nextRight = currentPath.getRightPath()[currentStep + 1];
-
-		// Difference in time
-		double dTime = nextLeft.getTime() - previousLeft.getTime();
-		// Ratio from position to next point
-		double ratioPosToNext = (nextLeft.getTime() - time) / dTime;
-		// Ratio from previous point to position
-		double rationPrevToPos = (time - previousLeft.getTime()) / dTime;
-		if (ratioPosToNext == 0) {
-			return null;
-		}
-
-		// New lengths are the average of the previous and next point values
-		// (Average = sum(value * ratio)). Velocities and accelerations are that of the
-		// next point
-		double lLeft = previousLeft.getLength() * ratioPosToNext + nextLeft.getLength() * rationPrevToPos;
-		double vLeft = nextLeft.getVelocity();
-		double aLeft = nextLeft.getAcceleration();
-
-		double lRight = previousRight.getLength() * ratioPosToNext + nextRight.getLength() * rationPrevToPos;
-		double vRight = nextRight.getVelocity();
-		double aRight = nextRight.getAcceleration();
-
-		return new State[] { new State(lLeft, vLeft, aLeft), new State(lRight, vRight, aRight) };
 	}
 
 	/**
@@ -181,17 +137,15 @@ public class MotionController {
 	 */
 	public void enableScheduler() {
 		if (!running) {
-			currentStep = 0;
 			startTime = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
-			drivetrain.reset();
 			staticState = new State[] { new State(drivetrain.getWheelPositions().getLeft(), 0, 0),
 					new State(drivetrain.getWheelPositions().getRight(), 0, 0) };
 			Path newPath = paths.poll();
 			if (newPath != null) {
 				currentPath = newPath;
-				System.out.println("Start Time: " + startTime);
 				running = true;
 			}
+			currentPath.setStartingWheelPositions(drivetrain.getWheelPositions());
 		}
 	}
 

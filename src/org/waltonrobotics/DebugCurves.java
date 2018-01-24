@@ -19,7 +19,7 @@ public class DebugCurves {
 
 	public static void main(String[] args) {
 		System.out.println("Bezier Curve:");
-		BezierCurve curve = new BezierCurve(.5, .5, 0, 0, width, isBackwards, points);
+		BezierCurve curve = new BezierCurve(1, 1, 0, 0, width, isBackwards, points);
 		Point[] centerPoints = curve.getPathPoints();
 		Point[] leftPoints = curve.getLeftPath();
 		Point[] rightPoints = curve.getRightPath();
@@ -34,7 +34,7 @@ public class DebugCurves {
 					rightPoints[i].getAcceleration(), rightPoints[i].getVelocity(), leftPoints[i].getTime());
 		}
 		System.out.println("Spline:");
-		Spline spline = new Spline(.5, .5, width, 0, 0, isBackwards, points);
+		Spline spline = new Spline(1, 1, width, 0, 0, isBackwards, points);
 		centerPoints = spline.getPathPoints();
 		leftPoints = spline.getLeftPath();
 		rightPoints = spline.getRightPath();

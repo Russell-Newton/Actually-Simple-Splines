@@ -10,6 +10,8 @@ public abstract class Path {
 
 	protected double vCruise;
 	protected double aMax;
+	private RobotPair startingWheelPositions = new RobotPair(0, 0);
+	public boolean isFinished = false;
 
 	/**
 	 * @param vCruise
@@ -42,4 +44,64 @@ public abstract class Path {
 	 * path
 	 */
 	public abstract Point[] getRightPath();
+
+	/**
+	 * This will find the encoder lengths to use for the calculations in
+	 * MotionController
+	 * 
+	 * @param currentTime
+	 *            - the time since the path has started running
+	 * @return - a State array that holds the left and right states
+	 */
+	public State[] interpolatePosition(double currentTime) {
+		int index = 0;
+
+		// iterate through the path until you find the point who's time is less than the
+		// current time
+		while (currentTime <= getLeftPath()[index].getTime()) {
+			index++;
+		}
+		System.out.println("Current index: " + index + "\t Current time: " + currentTime);
+		Point leftPrevious = getLeftPath()[index];
+		Point rightPrevious = getRightPath()[index];
+		// if you're at or past the last point, return the last point set's state
+		if (index >= getLeftPath().length - 1) {
+			isFinished = true;
+			return new State[] {
+					new State(leftPrevious.getLength() + startingWheelPositions.getLeft(), leftPrevious.getVelocity(),
+							leftPrevious.getAcceleration()),
+					new State(rightPrevious.getLength() + startingWheelPositions.getRight(),
+							rightPrevious.getVelocity(), rightPrevious.getAcceleration()) };
+		}
+		;
+
+		Point leftNext = getLeftPath()[index + 1];
+		Point rightNext = getRightPath()[index + 1];
+
+		double dTime = leftNext.getTime() - leftPrevious.getTime();
+
+		double rctn = (leftNext.getTime() - currentTime) / dTime; // Ratio of the current time to the next point time
+		double rltc = (currentTime - leftPrevious.getTime()) / dTime; // Ratio of the previous time to the current point
+																		// time
+
+		// New lengths are the weighted averages of the point lengths
+		double lengthLeft = (leftPrevious.getLength() + startingWheelPositions.getLeft()) * rctn
+				+ (leftNext.getLength() + startingWheelPositions.getLeft()) * rltc;
+		double lengthRight = (rightPrevious.getLength() + startingWheelPositions.getRight()) * rctn
+				+ (rightNext.getLength() + startingWheelPositions.getRight()) * rltc;
+
+		return new State[] { new State(lengthLeft, leftNext.getVelocity(), leftNext.getAcceleration()),
+				new State(lengthRight, rightNext.getVelocity(), rightNext.getAcceleration()) };
+	}
+
+	/**
+	 * This is used to set define the wheel positions when the path is started. This
+	 * lets the paths themselves use relative lengths while not having to reset the
+	 * encoders
+	 * 
+	 * @param positions - the RobotPair with the wheel positions
+	 */
+	public void setStartingWheelPositions(RobotPair positions) {
+		startingWheelPositions = positions;
+	}
 }

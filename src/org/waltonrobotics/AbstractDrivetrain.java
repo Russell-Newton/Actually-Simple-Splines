@@ -84,5 +84,25 @@ public abstract class AbstractDrivetrain extends Subsystem {
 	 * Set the encoder distances per pulse here
 	 */
 	public abstract void setEncoderDistancePerPulse();
+	
+	/**
+	 * @return the {} constant. It can be found by {}
+	 */
+	public abstract double getKV();
+	
+	/**
+	 * @return the {} constant. It can be found by {}
+	 */
+	public abstract double getKA();
+	
+	/**
+	 * @return the {} constant. It can be found by {}
+	 */
+	public abstract double getKP();
+	
+	/**
+	 * @return the {} constant. It can be found by {}
+	 */
+	public abstract double getKK();
 
 }
