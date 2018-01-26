@@ -142,8 +142,8 @@ public class Point {
 	 *            - the expected time to reach the point
 	 * @return the offset point
 	 */
-	public Point offsetPerpendicular(double dtAtPoint, double distance, State state, double lCenter, double time) {
-		double angleOfDT = Math.atan(dtAtPoint);
+	public Point offsetPerpendicular(double distance, State state, double lCenter, double time) {
+		double angleOfDT = Math.atan(this.derivative);
 		double offsetX = distance * Math.cos(angleOfDT + Math.PI / 2); // Finds point at distance along perpendicular
 																		// line
 		double offsetY = distance * Math.sin(angleOfDT + Math.PI / 2);

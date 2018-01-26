@@ -98,7 +98,11 @@ public class MotionController {
 			
 			if(currentPath.isFinished) {
 				currentPath = paths.pollFirst();
-				currentPath.setStartingWheelPositions(drivetrain.getWheelPositions());
+				if(currentPath != null) {
+					currentPath.setStartingWheelPositions(drivetrain.getWheelPositions());
+				}	else	{
+					System.out.println("Done with motions! :)");
+				}
 				startTime = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
 				staticState = new State[] { new State(drivetrain.getWheelPositions().getLeft(), 0, 0),
 						new State(drivetrain.getWheelPositions().getRight(), 0, 0) };

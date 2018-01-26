@@ -2,6 +2,7 @@ package org.waltonrobotics.motion;
 
 import org.waltonrobotics.controller.Path;
 import org.waltonrobotics.controller.Point;
+import org.waltonrobotics.controller.RobotPair;
 import org.waltonrobotics.controller.State;
 
 /**
@@ -23,6 +24,8 @@ public class BezierCurve extends Path {
 	private double curveLength = 0;
 	private final int numberOfSteps;
 	private final boolean isBackwards;
+	private final RobotPair lastPair;
+	private final double startTime;
 
 	private final Point[] pathPoints;
 	private final Point[] leftPoints;
@@ -33,7 +36,8 @@ public class BezierCurve extends Path {
 	private double[] coefficients;
 
 	/**
-	 * Creates a new bezier curve
+	 * This constructor is used with the splines, but feel free to use it when
+	 * creating your own motions
 	 * 
 	 * @param vCruise
 	 *            - the cruise velocity of the robot
@@ -45,16 +49,20 @@ public class BezierCurve extends Path {
 	 *            - the end velocity
 	 * @param robotWidth
 	 *            - the width of the robot
+	 * @param startTime
+	 *            - the starting time of the motion
 	 * @param controlPoints
 	 *            - the control points that define the robot
 	 */
 	public BezierCurve(double vCruise, double aMax, double v0, double v1, double robotWidth, boolean isBackwards,
-			Point... controlPoints) {
+			RobotPair lastPair, double startTime, Point... controlPoints) {
 		super(vCruise, aMax);
 		this.robotLength = robotWidth;
 		this.controlPoints = controlPoints;
 		this.numberOfSteps = 50;
 		this.isBackwards = isBackwards;
+		this.lastPair = lastPair;
+		this.startTime = startTime;
 		startVelocity = v0;
 		endVelocity = v1;
 		// The starting average encoder distance should always be 0
@@ -63,8 +71,28 @@ public class BezierCurve extends Path {
 		updateCoefficients();
 		pathPoints = getCurvePoints(numberOfSteps, controlPoints);
 
-		rightPoints = offsetPoints(pathPoints, true);
-		leftPoints = offsetPoints(pathPoints, false);
+		rightPoints = offsetPoints(pathPoints)[2];
+		leftPoints = offsetPoints(pathPoints)[0];
+	}
+
+	public BezierCurve(double vCruise, double aMax, double v0, double v1, double robotWidth, boolean isBackwards,
+			Point... controlPoints) {
+		super(vCruise, aMax);
+		this.robotLength = robotWidth;
+		this.controlPoints = controlPoints;
+		this.numberOfSteps = 50;
+		this.isBackwards = isBackwards;
+		this.lastPair = new RobotPair(0, 0);
+		startTime = 0;
+		startVelocity = v0;
+		endVelocity = v1;
+		startLCenter = (lastPair.getLeft() + lastPair.getRight()) / 2;
+
+		updateCoefficients();
+		pathPoints = getCurvePoints(numberOfSteps, controlPoints);
+
+		rightPoints = offsetPoints(pathPoints)[2];
+		leftPoints = offsetPoints(pathPoints)[0];
 	}
 
 	/**
@@ -196,38 +224,30 @@ public class BezierCurve extends Path {
 	 * @param isRightSide
 	 * @return an array of Points that defines an offset curve
 	 */
-	private Point[] offsetPoints(Point[] pathPoints, boolean isRightSide) {
+	private Point[][] offsetPoints(Point[] pathPoints) {
 		int n = pathPoints.length;
-		Point[] offsetPoints = new Point[n];
+		Point[] offsetPointsCenter = new Point[n];
+		Point[] offsetPointsLeft = new Point[n];
+		Point[] offsetPointsRight = new Point[n];
 		for (int i = 0; i < n; i++) {
-			// calculate speeds and distances for offset points
-			double[][] speeds;
+
+			Point[] calculatedPoints = new Point[3];
 			if (i == 0) {
-				speeds = new double[][] { { startVelocity, startVelocity, aMax }, { 0, 0, startLCenter, 0 } };
+				Point center = new Point(pathPoints[i].getX(), pathPoints[i].getY(), pathPoints[i].getDerivative(),
+						null, startLCenter, startTime);
+				Point left = new Point(0, 0, 0, new State(lastPair.getLeft(), startVelocity, aMax), 0, 0);
+				Point right = new Point(0, 0, 0, new State(lastPair.getRight(), startVelocity, aMax), 0, 0);
+				calculatedPoints = new Point[] {left, center, right};
 			} else {
-				speeds = calculateSpeeds(pathPoints[i - 1], pathPoints[i], i);
+				calculatedPoints = calculatePoints(offsetPointsLeft[i - 1], offsetPointsCenter[i - 1],
+						offsetPointsRight[i - 1], pathPoints[i], i);
 			}
-			// store the LCenter in the center point used
-			pathPoints[i] = new Point(pathPoints[i].getX(), pathPoints[i].getY(), pathPoints[i].getDerivative(),
-					new State(0, 0, 0), speeds[1][2], speeds[1][3]);
-			State leftState = new State(
-					isBackwards ? (i == 0 ? 0 : offsetPoints[i - 1].getLength()) - speeds[1][0]
-							: (i == 0 ? 0 : offsetPoints[i - 1].getLength()) + speeds[1][0],
-					isBackwards ? -speeds[0][0] : speeds[0][0], speeds[0][2]);
-			State rightState = new State(
-					isBackwards ? (i == 0 ? 0 : offsetPoints[i - 1].getLength()) - speeds[1][1]
-							: (i == 0 ? 0 : offsetPoints[i - 1].getLength()) + speeds[1][1],
-					isBackwards ? -speeds[0][1] : speeds[0][1], speeds[0][2]);
-			// create the new offset point
-			if (isRightSide) {
-				offsetPoints[i] = pathPoints[i].offsetPerpendicular(pathPoints[i].getDerivative(), robotLength / 2,
-						rightState, speeds[1][2], speeds[1][3]);
-			} else {
-				offsetPoints[i] = pathPoints[i].offsetPerpendicular(pathPoints[i].getDerivative(), -robotLength / 2,
-						leftState, speeds[1][2], speeds[1][3]);
-			}
+			
+			offsetPointsLeft[i] = calculatedPoints[0];
+			offsetPointsCenter[i] = calculatedPoints[1];
+			offsetPointsRight[i] = calculatedPoints[2];
 		}
-		return offsetPoints;
+		return new Point[][] { offsetPointsLeft, offsetPointsCenter, offsetPointsRight };
 	}
 
 	/**
@@ -235,22 +255,23 @@ public class BezierCurve extends Path {
 	 * the next. I gotta be honest I have no idea how this math works - Russell
 	 * 
 	 * @param previousPoint
-	 * @param point
+	 * @param currentCenter
 	 * @param i
 	 *            - the step number
 	 * @return the wheel velocities acceleration, lCenter, and the time to get to
 	 *         the next point
 	 */
-	private double[][] calculateSpeeds(Point previousPoint, Point point, int i) {
+	private Point[] calculatePoints(Point previousLeft, Point previousCenter, Point previousRight, Point currentCenter,
+			int i) {
 
 		// When cruising, acceleration is 0
 		double acceleration = 0;
 
 		// The change in angle of the robot
-		double dAngle = Math.atan(point.getDerivative() - previousPoint.getDerivative());
+		double dAngle = Math.atan(currentCenter.getDerivative() - previousCenter.getDerivative());
 
 		// The change in distance of the robot sides
-		double dLength = previousPoint.distance(point);
+		double dLength = previousCenter.distance(currentCenter);
 		double dlLeft = dLength - dAngle * robotLength / 2;
 		double dlRight = dLength + dAngle * robotLength / 2;
 
@@ -261,7 +282,7 @@ public class BezierCurve extends Path {
 		double velocity = Math.abs(dLength) / dTime;
 
 		// The average encoder distance to the next point
-		double lCenter = previousPoint.getLCenter() + 0.5 * dLength - startLCenter;
+		double lCenter = previousCenter.getLCenter() + 0.5 * dLength - startLCenter;
 
 		double vAccelerating = Math.sqrt(Math.pow(startVelocity, 2) + aMax * Math.abs(lCenter));
 		double vDecelerating = Math.sqrt(Math.pow(endVelocity, 2) + aMax * Math.abs(curveLength - lCenter));
@@ -277,8 +298,25 @@ public class BezierCurve extends Path {
 		double velocityL = dlLeft / dTime;
 		double velocityR = dlRight / dTime;
 
-		return new double[][] { { velocityL, velocityR, acceleration }, { previousPoint.getLength() + dlLeft, dlRight,
-				(2 * previousPoint.getLCenter() + (dlLeft + dlRight)) / 2, previousPoint.getTime() + dTime } };
+		if(isBackwards) {
+			velocityL *= -1;
+			velocityR *= -1;
+			dlLeft *= -1;
+			dlRight *= -1;
+		}
+		
+		double newLCenter = previousCenter.getLCenter() + (dlLeft + dlRight) / 2;
+		
+		Point center = new Point(currentCenter.getX(), currentCenter.getY(), currentCenter.getDerivative(),
+				new State(0, 0, 0), newLCenter, previousCenter.getTime() + dTime);
+		Point left = center.offsetPerpendicular(-robotLength / 2,
+				new State(previousLeft.getLength() + dlLeft, velocityL, acceleration), newLCenter,
+				previousCenter.getTime() + dTime);
+		Point right = center.offsetPerpendicular(robotLength / 2,
+				new State(previousRight.getLength() + dlRight, velocityR, acceleration), newLCenter,
+				previousCenter.getTime() + dTime);
+
+		return new Point[] { left, center, right };
 	}
 
 	@Override

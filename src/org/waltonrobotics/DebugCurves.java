@@ -14,8 +14,8 @@ public class DebugCurves {
 
 	// Change these to see their effect
 	private static double width = 0.25;
-	private static Point[] points = new Point[] { new Point(0, 0), new Point(1, 0) };
-	private static boolean isBackwards = true;
+	private static Point[] points = new Point[] { new Point(0, 0), new Point(.5, 0), new Point(2, .5)};
+	private static boolean isBackwards = false;
 
 	public static void main(String[] args) {
 		System.out.println("Bezier Curve:");
@@ -29,7 +29,7 @@ public class DebugCurves {
 			// centerPoints[i].getDerivative(), leftPoints[i].getVelocity(),
 			// rightPoints[i].getVelocity(),
 			// rightPoints[i].getAcceleration());
-			System.out.printf("%01.03f %01.03f %01.03f %01.03f %01.03f %01.03f %01.03f \n", leftPoints[i].getLength(),
+			System.out.printf("lL:%01.03f lA:%01.03f lV:%01.03f rL:%01.03f rA:%01.03f rV:%01.03f t:%01.03f \n", leftPoints[i].getLength(),
 					leftPoints[i].getAcceleration(), leftPoints[i].getVelocity(), rightPoints[i].getLength(),
 					rightPoints[i].getAcceleration(), rightPoints[i].getVelocity(), leftPoints[i].getTime());
 		}
@@ -44,7 +44,7 @@ public class DebugCurves {
 			// centerPoints[i].getDerivative(), leftPoints[i].getVelocity(),
 			// rightPoints[i].getVelocity(),
 			// leftPoints[i].getAcceleration());
-			System.out.printf("%01.03f %01.03f %01.03f %01.03f %01.03f %01.03f %01.03f \n", leftPoints[i].getLength(),
+			System.out.printf("lL:%01.03f lA:%01.03f lV:%01.03f rL:%01.03f rA:%01.03f rV:%01.03f t:%01.03f \n", leftPoints[i].getLength(),
 					leftPoints[i].getAcceleration(), leftPoints[i].getVelocity(), rightPoints[i].getLength(),
 					rightPoints[i].getAcceleration(), rightPoints[i].getVelocity(), leftPoints[i].getTime());
 		}

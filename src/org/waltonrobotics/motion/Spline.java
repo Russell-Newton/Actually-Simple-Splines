@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.waltonrobotics.controller.Path;
 import org.waltonrobotics.controller.Point;
+import org.waltonrobotics.controller.RobotPair;
 
 /**
  * This path is a spline that will go through the set knots by stitching
@@ -150,6 +151,8 @@ public class Spline extends Path {
 		List<Point> pathPointsAdd = new ArrayList<>();
 		List<Point> leftPointsAdd = new ArrayList<>();
 		List<Point> rightPointsAdd = new ArrayList<>();
+		RobotPair lastPair = new RobotPair(0, 0);
+		double lastTime = 0;
 
 		for (int i = 0; i < pathControlPoints.size(); i++) {
 			Point[] controlPoints = pathControlPoints.get(i).stream().toArray(Point[]::new);
@@ -167,7 +170,8 @@ public class Spline extends Path {
 						.rotate(controlPoints[controlPoints.length - 1], endAngle);
 			}
 			BezierCurve curve = new BezierCurve(vCruise, aMax, i != 0 ? vCruise : 0,
-					i != pathControlPoints.size() - 1 ? vCruise : 0, robotWidth, isBackwards, controlPoints);
+					i != pathControlPoints.size() - 1 ? vCruise : 0, robotWidth, isBackwards, lastPair, lastTime,
+					controlPoints);
 
 			Point[] pathPoints;
 			Point[] leftPoints;
@@ -188,6 +192,9 @@ public class Spline extends Path {
 			Collections.addAll(pathPointsAdd, pathPoints);
 			Collections.addAll(leftPointsAdd, leftPoints);
 			Collections.addAll(rightPointsAdd, rightPoints);
+			lastPair = new RobotPair(leftPointsAdd.get(leftPointsAdd.size() - 1).getLength(),
+					rightPointsAdd.get(rightPointsAdd.size() - 1).getLength());
+			lastTime = leftPointsAdd.get(leftPointsAdd.size() - 1).getTime();
 		}
 		this.pathPoints = pathPointsAdd.stream().toArray(Point[]::new);
 		this.leftPoints = leftPointsAdd.stream().toArray(Point[]::new);

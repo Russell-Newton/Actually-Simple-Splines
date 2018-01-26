@@ -56,9 +56,8 @@ public abstract class Path {
 	public State[] interpolatePosition(double currentTime) {
 		int index = 0;
 
-		// iterate through the path until you find the point who's time is less than the
-		// current time
-		while (currentTime <= getLeftPath()[index].getTime()) {
+		// iterate through the path until you find the points you are between
+		while (currentTime >= getLeftPath()[index].getTime()) {
 			index++;
 		}
 		System.out.println("Current index: " + index + "\t Current time: " + currentTime);
@@ -99,7 +98,8 @@ public abstract class Path {
 	 * lets the paths themselves use relative lengths while not having to reset the
 	 * encoders
 	 * 
-	 * @param positions - the RobotPair with the wheel positions
+	 * @param positions
+	 *            - the RobotPair with the wheel positions
 	 */
 	public void setStartingWheelPositions(RobotPair positions) {
 		startingWheelPositions = positions;
