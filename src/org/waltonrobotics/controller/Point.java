@@ -13,7 +13,7 @@ public class Point {
 
 	private final double x;
 	private final double y;
-	private final double derivative;
+	private final double angle;
 	private final State state;
 	private final double lCenter;
 	private final double time;
@@ -25,7 +25,7 @@ public class Point {
 	 *            - the x at the point
 	 * @param y
 	 *            - the y at the point
-	 * @param derivative
+	 * @param angle
 	 *            - the derivative at the point, used for offsetting points
 	 * @param state
 	 *            - a State with the encoder length, velocity, and acceleration at
@@ -35,10 +35,10 @@ public class Point {
 	 * @param time
 	 *            - the expected time to reach the point
 	 */
-	public Point(double x, double y, double derivative, State state, double lCenter, double time) {
+	public Point(double x, double y, double angle, State state, double lCenter, double time) {
 		this.x = x;
 		this.y = y;
-		this.derivative = derivative;
+		this.angle = angle;
 		this.state = state;
 		this.lCenter = lCenter;
 		this.time = time;
@@ -51,11 +51,11 @@ public class Point {
 	 *            - the x at the point
 	 * @param y
 	 *            - the y at the point
-	 * @param derivative
+	 * @param angle
 	 *            - the derivative at the point, used for offsetting points
 	 */
-	public Point(double x, double y, double derivative) {
-		this(x, y, derivative, new State(0, 0, 0), 0, 0);
+	public Point(double x, double y, double angle) {
+		this(x, y, angle, new State(0, 0, 0), 0, 0);
 	}
 
 	/**
@@ -87,8 +87,8 @@ public class Point {
 	/**
 	 * @return the derivative of the point
 	 */
-	public double getDerivative() {
-		return derivative;
+	public double getAngle() {
+		return angle;
 	}
 
 	/**
@@ -129,8 +129,6 @@ public class Point {
 	/**
 	 * Offsets a point along a perpendicular line from a tangent line
 	 * 
-	 * @param dtAtPoint
-	 *            - the derivative of the point
 	 * @param distance
 	 *            - the distance to offset the point by
 	 * @param state
@@ -143,12 +141,11 @@ public class Point {
 	 * @return the offset point
 	 */
 	public Point offsetPerpendicular(double distance, State state, double lCenter, double time) {
-		double angleOfDT = Math.atan(this.derivative);
-		double offsetX = distance * Math.cos(angleOfDT + Math.PI / 2); // Finds point at distance along perpendicular
+		double offsetX = distance * Math.cos(this.angle + Math.PI / 2); // Finds point at distance along perpendicular
 																		// line
-		double offsetY = distance * Math.sin(angleOfDT + Math.PI / 2);
+		double offsetY = distance * Math.sin(this.angle + Math.PI / 2);
 
-		return new Point(this.x + offsetX, this.y + offsetY, angleOfDT, state, lCenter, time);
+		return new Point(this.x + offsetX, this.y + offsetY, this.angle, state, lCenter, time);
 	}
 
 	/**

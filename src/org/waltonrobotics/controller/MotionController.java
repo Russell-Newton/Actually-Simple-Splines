@@ -126,6 +126,7 @@ public class MotionController {
 			rightPower = Math.max(-1, Math.min(1, rightPower));
 
 			drivetrain.setSpeeds(leftPower, rightPower);
+			System.out.println("Current left: " + wheelPositions.getLeft() + " Current Right: " + wheelPositions.getRight());
 		}
 	}
 

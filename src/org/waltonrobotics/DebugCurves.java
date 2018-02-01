@@ -13,8 +13,8 @@ import org.waltonrobotics.motion.Spline;
 public class DebugCurves {
 
 	// Change these to see their effect
-	private static double width = 0.25;
-	private static Point[] points = new Point[] { new Point(0, 0), new Point(.5, 0), new Point(2, .5)};
+	private static double width = .70485;
+	private static Point[] points = new Point[] { new Point(0, 0), new Point(1, 1) };
 	private static boolean isBackwards = false;
 
 	public static void main(String[] args) {
@@ -29,32 +29,25 @@ public class DebugCurves {
 			// centerPoints[i].getDerivative(), leftPoints[i].getVelocity(),
 			// rightPoints[i].getVelocity(),
 			// rightPoints[i].getAcceleration());
-			System.out.printf("lL:%01.03f lA:%01.03f lV:%01.03f rL:%01.03f rA:%01.03f rV:%01.03f t:%01.03f \n", leftPoints[i].getLength(),
-					leftPoints[i].getAcceleration(), leftPoints[i].getVelocity(), rightPoints[i].getLength(),
-					rightPoints[i].getAcceleration(), rightPoints[i].getVelocity(), leftPoints[i].getTime());
+			System.out.printf(
+					"lL:%01.03f lA:%01.03f lV:%01.03f rL:%01.03f rA:%01.03f rV:%01.03f t:%01.03f  dt:%01.03f \n",
+					leftPoints[i].getLength(), leftPoints[i].getAcceleration(), leftPoints[i].getVelocity(),
+					rightPoints[i].getLength(), rightPoints[i].getAcceleration(), rightPoints[i].getVelocity(),
+					leftPoints[i].getTime(), centerPoints[i].getAngle());
 		}
 		System.out.println("Spline:");
-		Spline spline = new Spline(1, 1, width, 0, 0, isBackwards, points);
+		Spline spline = new Spline(1, 1, width, 0, -90, isBackwards, points);
 		centerPoints = spline.getPathPoints();
 		leftPoints = spline.getLeftPath();
 		rightPoints = spline.getRightPath();
 		for (int i = 0; i < centerPoints.length; i++) {
-			// printValues(leftPoints[i].getX(), leftPoints[i].getY(),
-			// rightPoints[i].getX(), rightPoints[i].getY(),
-			// centerPoints[i].getDerivative(), leftPoints[i].getVelocity(),
-			// rightPoints[i].getVelocity(),
-			// leftPoints[i].getAcceleration());
-			System.out.printf("lL:%01.03f lA:%01.03f lV:%01.03f rL:%01.03f rA:%01.03f rV:%01.03f t:%01.03f \n", leftPoints[i].getLength(),
-					leftPoints[i].getAcceleration(), leftPoints[i].getVelocity(), rightPoints[i].getLength(),
-					rightPoints[i].getAcceleration(), rightPoints[i].getVelocity(), leftPoints[i].getTime());
+			System.out.println(centerPoints[i].getX() + " " + centerPoints[i].getY() + " "
+					+ Math.toDegrees(centerPoints[i].getAngle()));
+			System.out.printf(
+					"lL:%01.03f lA:%01.03f lV:%01.03f rL:%01.03f rA:%01.03f rV:%01.03f t:%01.03f \n\n",
+					leftPoints[i].getLength(), leftPoints[i].getAcceleration(), leftPoints[i].getVelocity(),
+					rightPoints[i].getLength(), rightPoints[i].getAcceleration(), rightPoints[i].getVelocity(),
+					leftPoints[i].getTime());
 		}
-	}
-
-	@SuppressWarnings("unused")
-	private static void printValues(double xL, double yL, double xR, double yR, double dydx, double vL, double vR,
-			double a) {
-		System.out.printf(
-				"xL: %01.03f \t yL: %01.03f \t xR: %01.03f \t yR: %01.03f \t dy/dx: %01.03f \t vL: %01.03f \t vR: %01.03f \t a: %01.03f \n",
-				xL, yL, xR, yR, dydx, vL, vR, a);
 	}
 }

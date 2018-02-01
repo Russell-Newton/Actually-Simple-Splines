@@ -166,20 +166,20 @@ public class BezierCurve extends Path {
 
 		int n = getDegree();
 
-		for (double i = 0; i <= n; i++) {
-			double coefficient = coefficients[(int) i];
+		for (int i = 0; i <= n; i++) {
+			double coefficient = coefficients[i];
 
-			double oneMinusT = Math.pow(1 - percentage, n - i);
+			double oneMinusT = Math.pow(1 - percentage, (double)(n - i));
 
-			double powerOfT = Math.pow(percentage, i);
+			double powerOfT = Math.pow(percentage, (double)i);
 
-			Point pointI = controlPoints[(int) i];
+			Point pointI = controlPoints[i];
 
 			xCoordinateAtPercentage += (coefficient * oneMinusT * powerOfT * pointI.getX());
 			yCoordinateAtPercentage += (coefficient * oneMinusT * powerOfT * pointI.getY());
 		}
 
-		return new Point(xCoordinateAtPercentage, yCoordinateAtPercentage, getDT(percentage));
+		return new Point(xCoordinateAtPercentage, yCoordinateAtPercentage, getAngle(percentage));
 	}
 
 	/**
@@ -198,7 +198,7 @@ public class BezierCurve extends Path {
 	 * @param controlPoints
 	 * @return derivative at point
 	 */
-	private double getDT(double t) {
+	private double getAngle(double t) {
 		int n = getDegree();
 		double dx = 0;
 		double dy = 0;
@@ -207,14 +207,13 @@ public class BezierCurve extends Path {
 			dx += coefficient * (n + 1) * (controlPoints[i + 1].getX() - controlPoints[i].getX());
 			dy += coefficient * (n + 1) * (controlPoints[i + 1].getY() - controlPoints[i].getY());
 		}
-		double dt;
-		if (t != 1) {
-			dt = dy / dx;
-		} else {
-			dt = (controlPoints[controlPoints.length - 1].getY() - controlPoints[controlPoints.length - 2].getY())
-					/ (controlPoints[controlPoints.length - 1].getX() - controlPoints[controlPoints.length - 2].getX());
+		if(t == 1) {
+			dx = controlPoints[controlPoints.length - 1].getX() - controlPoints[controlPoints.length - 2].getX();
+			dy = controlPoints[controlPoints.length - 1].getY() - controlPoints[controlPoints.length - 2].getY();
 		}
-		return dt;
+		System.out.println(dx + " " + dy);
+		double angle = Math.atan2(dy, dx);
+		return angle;
 	}
 
 	/**
@@ -233,16 +232,16 @@ public class BezierCurve extends Path {
 
 			Point[] calculatedPoints = new Point[3];
 			if (i == 0) {
-				Point center = new Point(pathPoints[i].getX(), pathPoints[i].getY(), pathPoints[i].getDerivative(),
+				Point center = new Point(pathPoints[i].getX(), pathPoints[i].getY(), pathPoints[i].getAngle(),
 						null, startLCenter, startTime);
 				Point left = new Point(0, 0, 0, new State(lastPair.getLeft(), startVelocity, aMax), 0, 0);
 				Point right = new Point(0, 0, 0, new State(lastPair.getRight(), startVelocity, aMax), 0, 0);
-				calculatedPoints = new Point[] {left, center, right};
+				calculatedPoints = new Point[] { left, center, right };
 			} else {
 				calculatedPoints = calculatePoints(offsetPointsLeft[i - 1], offsetPointsCenter[i - 1],
 						offsetPointsRight[i - 1], pathPoints[i], i);
 			}
-			
+
 			offsetPointsLeft[i] = calculatedPoints[0];
 			offsetPointsCenter[i] = calculatedPoints[1];
 			offsetPointsRight[i] = calculatedPoints[2];
@@ -268,10 +267,10 @@ public class BezierCurve extends Path {
 		double acceleration = 0;
 
 		// The change in angle of the robot
-		double dAngle = Math.atan(currentCenter.getDerivative() - previousCenter.getDerivative());
+		double dAngle = currentCenter.getAngle() - previousCenter.getAngle();
 
 		// The change in distance of the robot sides
-		double dLength = previousCenter.distance(currentCenter);
+		double dLength = previousCenter.distance(currentCenter) * (isBackwards? -1 : 1);
 		double dlLeft = dLength - dAngle * robotLength / 2;
 		double dlRight = dLength + dAngle * robotLength / 2;
 
@@ -286,7 +285,7 @@ public class BezierCurve extends Path {
 
 		double vAccelerating = Math.sqrt(Math.pow(startVelocity, 2) + aMax * Math.abs(lCenter));
 		double vDecelerating = Math.sqrt(Math.pow(endVelocity, 2) + aMax * Math.abs(curveLength - lCenter));
-
+		System.out.println("acc: " + vAccelerating + " dec: " + vDecelerating + " vel: " + velocity);
 		if (vAccelerating < velocity && vAccelerating < vDecelerating) {
 			acceleration = aMax;
 			dTime = Math.abs(dLength) / vAccelerating;
@@ -298,16 +297,16 @@ public class BezierCurve extends Path {
 		double velocityL = dlLeft / dTime;
 		double velocityR = dlRight / dTime;
 
-		if(isBackwards) {
+		if (isBackwards) {
 			velocityL *= -1;
 			velocityR *= -1;
 			dlLeft *= -1;
 			dlRight *= -1;
 		}
-		
+
 		double newLCenter = previousCenter.getLCenter() + (dlLeft + dlRight) / 2;
-		
-		Point center = new Point(currentCenter.getX(), currentCenter.getY(), currentCenter.getDerivative(),
+
+		Point center = new Point(currentCenter.getX(), currentCenter.getY(), currentCenter.getAngle(),
 				new State(0, 0, 0), newLCenter, previousCenter.getTime() + dTime);
 		Point left = center.offsetPerpendicular(-robotLength / 2,
 				new State(previousLeft.getLength() + dlLeft, velocityL, acceleration), newLCenter,

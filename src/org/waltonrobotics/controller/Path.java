@@ -60,11 +60,11 @@ public abstract class Path {
 		while (currentTime >= getLeftPath()[index].getTime()) {
 			index++;
 		}
-		System.out.println("Current index: " + index + "\t Current time: " + currentTime);
+		index--;
 		Point leftPrevious = getLeftPath()[index];
 		Point rightPrevious = getRightPath()[index];
 		// if you're at or past the last point, return the last point set's state
-		if (index >= getLeftPath().length - 1) {
+		if (index >= getLeftPath().length - 2) {
 			isFinished = true;
 			return new State[] {
 					new State(leftPrevious.getLength() + startingWheelPositions.getLeft(), leftPrevious.getVelocity(),
@@ -72,7 +72,6 @@ public abstract class Path {
 					new State(rightPrevious.getLength() + startingWheelPositions.getRight(),
 							rightPrevious.getVelocity(), rightPrevious.getAcceleration()) };
 		}
-		;
 
 		Point leftNext = getLeftPath()[index + 1];
 		Point rightNext = getRightPath()[index + 1];
@@ -88,6 +87,10 @@ public abstract class Path {
 				+ (leftNext.getLength() + startingWheelPositions.getLeft()) * rltc;
 		double lengthRight = (rightPrevious.getLength() + startingWheelPositions.getRight()) * rctn
 				+ (rightNext.getLength() + startingWheelPositions.getRight()) * rltc;
+
+		System.out.println(
+				"Current index: " + index + "\t Current time: " + currentTime + "\t Next time: " + leftNext.getTime());
+		System.out.println("Next Left: " + leftNext.getLength() + " Next Right: " + rightNext.getLength());
 
 		return new State[] { new State(lengthLeft, leftNext.getVelocity(), leftNext.getAcceleration()),
 				new State(lengthRight, rightNext.getVelocity(), rightNext.getAcceleration()) };
