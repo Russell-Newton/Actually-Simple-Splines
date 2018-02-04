@@ -6,8 +6,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.waltonrobotics.controller.Path;
-import org.waltonrobotics.controller.Point;
+import org.waltonrobotics.controller.PathData;
+import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.controller.RobotPair;
+import org.waltonrobotics.controller.State;
 
 /**
  * This path is a spline that will go through the set knots by stitching
@@ -25,12 +27,11 @@ import org.waltonrobotics.controller.RobotPair;
 
 public class Spline extends Path {
 
-	public double robotWidth;
-
-	private List<List<Point>> pathControlPoints;
-	private Point[] pathPoints;
-	private Point[] leftPoints;
-	private Point[] rightPoints;
+	private List<List<Pose>> pathControlPoints;
+	private Pose[] centerPoses;
+	private State[] leftStates;
+	private State[] rightStates;
+	private double[] times;
 	private final double startAngle;
 	private final double endAngle;
 	private final boolean isBackwards;
@@ -56,14 +57,13 @@ public class Spline extends Path {
 	 *            - the points you want the robot to drive through
 	 */
 	public Spline(double vCruise, double aMax, double robotWidth, double startAngle, double endAngle,
-			boolean isBackwards, Point... knots) {
-		super(vCruise, aMax);
-		this.robotWidth = robotWidth;
+			boolean isBackwards, Pose... knots) {
+		super(vCruise, aMax, robotWidth);
 		this.startAngle = startAngle;
 		this.endAngle = endAngle;
 		this.isBackwards = isBackwards;
 		pathControlPoints = computeControlPoints(knots);
-		joinBezierCurves(pathControlPoints);
+		joinBezierCurves();
 	}
 
 	/**
@@ -74,10 +74,10 @@ public class Spline extends Path {
 	 * @return A list of lists that hold the control points for the segments in the
 	 *         spline
 	 */
-	private List<List<Point>> computeControlPoints(Point[] knots) {
+	private List<List<Pose>> computeControlPoints(Pose[] knots) {
 		int degree = knots.length - 1;
-		Point[] points1 = new Point[degree];
-		Point[] points2 = new Point[degree];
+		Pose[] points1 = new Pose[degree];
+		Pose[] points2 = new Pose[degree];
 
 		/* constants for Thomas Algorithm */
 		double[] a = new double[degree];
@@ -116,23 +116,23 @@ public class Spline extends Path {
 			r_x[i] = r_x[i] - m * r_x[i - 1];
 			r_y[i] = r_y[i] - m * r_y[i - 1];
 		}
-		points1[degree - 1] = new Point(r_x[degree - 1] / b[degree - 1], r_y[degree - 1] / b[degree - 1]);
+		points1[degree - 1] = new Pose(r_x[degree - 1] / b[degree - 1], r_y[degree - 1] / b[degree - 1]);
 		for (int i = degree - 2; i >= 0; --i) {
-			points1[i] = new Point((r_x[i] - c[i] * points1[i + 1].getX()) / b[i],
+			points1[i] = new Pose((r_x[i] - c[i] * points1[i + 1].getX()) / b[i],
 					(r_y[i] - c[i] * points1[i + 1].getY()) / b[i]);
 		}
 
 		/* we have p1, now compute p2 */
 		for (int i = 0; i < degree - 1; i++) {
-			points2[i] = new Point(2 * knots[i + 1].getX() - points1[i + 1].getX(),
+			points2[i] = new Pose(2 * knots[i + 1].getX() - points1[i + 1].getX(),
 					2 * knots[i + 1].getY() - points1[i + 1].getY());
 		}
 
-		points2[degree - 1] = new Point(0.5 * (knots[degree].getX() + points1[degree - 1].getX()),
+		points2[degree - 1] = new Pose(0.5 * (knots[degree].getX() + points1[degree - 1].getX()),
 				0.5 * (knots[degree].getY() + points1[degree - 1].getY()));
-		List<List<Point>> controlPoints = new ArrayList<>();
+		List<List<Pose>> controlPoints = new ArrayList<>();
 		for (int i = 0; i < degree; i++) {
-			List<Point> segmentControlPoints = new ArrayList<>();
+			List<Pose> segmentControlPoints = new ArrayList<>();
 			Collections.addAll(segmentControlPoints, knots[i], points1[i], points2[i], knots[i + 1]);
 			Collections.addAll(controlPoints, segmentControlPoints);
 		}
@@ -147,73 +147,64 @@ public class Spline extends Path {
 	 *            - a List of Lists of control points for each curve that make up
 	 *            the spline
 	 */
-	private void joinBezierCurves(List<List<Point>> pathControlPoints) {
-		List<Point> pathPointsAdd = new ArrayList<>();
-		List<Point> leftPointsAdd = new ArrayList<>();
-		List<Point> rightPointsAdd = new ArrayList<>();
+	private void joinBezierCurves() {
+		List<Pose> centerPosesAdd = new ArrayList<>();
+		List<State> leftStatesAdd = new ArrayList<>();
+		List<State> rightStatesAdd = new ArrayList<>();
+		double[] timesAdd = new double[50];
 		RobotPair lastPair = new RobotPair(0, 0);
 		double lastTime = 0;
 
 		for (int i = 0; i < pathControlPoints.size(); i++) {
-			Point[] controlPoints = pathControlPoints.get(i).stream().toArray(Point[]::new);
+			Pose[] controlPoints = pathControlPoints.get(i).stream().toArray(Pose[]::new);
 			// Change the second control point to get the start angle to always be 0. This
 			// way, the robot will always start by going forwards. We can do this, because
 			// the start derivative = the slope between the first two control points.
 			if (i == 0) {
-				controlPoints[1] = controlPoints[1].rotate(controlPoints[0], startAngle);
+				controlPoints[1] = controlPoints[1].rotate(controlPoints[0], startAngle, isBackwards);
 			}
 			// Change the second to last control point to get the desired end angle. We can
 			// do this, because the end derivative = the slope between the last two control
 			// points
 			if (i == pathControlPoints.size() - 1) {
 				controlPoints[controlPoints.length - 2] = controlPoints[controlPoints.length - 2]
-						.rotate(controlPoints[controlPoints.length - 1], endAngle);
+						.rotate(controlPoints[controlPoints.length - 1], endAngle, !isBackwards);
 			}
 			BezierCurve curve = new BezierCurve(vCruise, aMax, i != 0 ? vCruise : 0,
 					i != pathControlPoints.size() - 1 ? vCruise : 0, robotWidth, isBackwards, lastPair, lastTime,
 					controlPoints);
 
-			Point[] pathPoints;
-			Point[] leftPoints;
-			Point[] rightPoints;
+			Pose[] centerPoses = curve.getPathData().getCenterPoses();
+			State[] leftStates = curve.getPathData().getLeftStates();
+			State[] rightStates = curve.getPathData().getRightStates();
+			double[] times = curve.getPathData().getTimes();
 			if (i != pathControlPoints.size() - 1) {
-
-				pathPoints = curve.getPathPoints();
-				pathPoints = Arrays.copyOfRange(pathPoints, 0, pathPoints.length - 2);
-				leftPoints = curve.getLeftPath();
-				leftPoints = Arrays.copyOfRange(leftPoints, 0, leftPoints.length - 2);
-				rightPoints = curve.getRightPath();
-				rightPoints = Arrays.copyOfRange(rightPoints, 0, rightPoints.length - 2);
-			} else {
-				pathPoints = curve.getPathPoints();
-				leftPoints = curve.getLeftPath();
-				rightPoints = curve.getRightPath();
+				centerPoses = Arrays.copyOfRange(centerPoses, 0, centerPoses.length - 2);
+				leftStates = Arrays.copyOfRange(leftStates, 0, leftStates.length - 2);
+				rightStates = Arrays.copyOfRange(rightStates, 0, rightStates.length - 2);
+				times = Arrays.copyOfRange(times, 0, times.length - 2);
 			}
-			Collections.addAll(pathPointsAdd, pathPoints);
-			Collections.addAll(leftPointsAdd, leftPoints);
-			Collections.addAll(rightPointsAdd, rightPoints);
-			lastPair = new RobotPair(leftPointsAdd.get(leftPointsAdd.size() - 1).getLength(),
-					rightPointsAdd.get(rightPointsAdd.size() - 1).getLength());
-			lastTime = leftPointsAdd.get(leftPointsAdd.size() - 1).getTime();
+			Collections.addAll(centerPosesAdd, centerPoses);
+			Collections.addAll(leftStatesAdd, leftStates);
+			Collections.addAll(rightStatesAdd, rightStates);
+			lastPair = new RobotPair(leftStatesAdd.get(leftStatesAdd.size() - 1).getLength(),
+					rightStatesAdd.get(rightStatesAdd.size() - 1).getLength());
+			lastTime = timesAdd[timesAdd.length - 1];
 		}
-		this.pathPoints = pathPointsAdd.stream().toArray(Point[]::new);
-		this.leftPoints = leftPointsAdd.stream().toArray(Point[]::new);
-		this.rightPoints = rightPointsAdd.stream().toArray(Point[]::new);
+		this.centerPoses = centerPosesAdd.stream().toArray(Pose[]::new);
+		this.leftStates = leftStatesAdd.stream().toArray(State[]::new);
+		this.rightStates = rightStatesAdd.stream().toArray(State[]::new);
+		this.times = timesAdd;
 	}
 
 	@Override
-	public Point[] getPathPoints() {
-		return pathPoints;
+	public Pose getStartingPosition() {
+		return new Pose(centerPoses[0].getX(), centerPoses[0].getY(), startAngle);
 	}
 
 	@Override
-	public Point[] getLeftPath() {
-		return leftPoints;
-	}
-
-	@Override
-	public Point[] getRightPath() {
-		return rightPoints;
+	public PathData getPathData() {
+		return new PathData(leftStates, rightStates, centerPoses, times);
 	}
 
 }
