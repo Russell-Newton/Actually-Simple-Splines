@@ -10,6 +10,7 @@ public class RobotPair {
 
 	private final double left;
 	private final double right;
+	private final double time;
 
 	/**
 	 * @param left
@@ -17,9 +18,10 @@ public class RobotPair {
 	 * @param right
 	 *            - the right encoder distance
 	 */
-	public RobotPair(double left, double right) {
+	public RobotPair(double left, double right, double time) {
 		this.left = left;
 		this.right = right;
+		this.time = time;
 	}
 
 	/**
@@ -34,6 +36,13 @@ public class RobotPair {
 	 */
 	public double getRight() {
 		return right;
+	}
+	
+	/**
+	 * @return - time when the encoders were measured
+	 */
+	public double getTime() {
+		return time;
 	}
 
 }

@@ -1,14 +1,13 @@
 package org.waltonrobotics.motion;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.waltonrobotics.controller.Path;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
-import org.waltonrobotics.controller.RobotPair;
 import org.waltonrobotics.controller.State;
 
 /**
@@ -28,13 +27,12 @@ import org.waltonrobotics.controller.State;
 public class Spline extends Path {
 
 	private List<List<Pose>> pathControlPoints;
-	private Pose[] centerPoses;
-	private State[] leftStates;
-	private State[] rightStates;
-	private double[] times;
+	private List<PathData> pathData;
 	private final double startAngle;
 	private final double endAngle;
 	private final boolean isBackwards;
+	private final double startVelocity;
+	private final double endVelocity;
 
 	/**
 	 * Construct a spline. Note that the x axis is the direction the robot is facing
@@ -56,14 +54,19 @@ public class Spline extends Path {
 	 * @param knots
 	 *            - the points you want the robot to drive through
 	 */
-	public Spline(double vCruise, double aMax, double robotWidth, double startAngle, double endAngle,
-			boolean isBackwards, Pose... knots) {
+	public Spline(double vCruise, double aMax, double startVelocity, double endVelocity, double robotWidth,
+			double startAngle, double endAngle, boolean isBackwards, List<Pose> knots) {
 		super(vCruise, aMax, robotWidth);
 		this.startAngle = startAngle;
 		this.endAngle = endAngle;
 		this.isBackwards = isBackwards;
+		this.endVelocity = endVelocity;
+		this.startVelocity = startVelocity;
 		pathControlPoints = computeControlPoints(knots);
-		joinBezierCurves();
+		PathData startPathData = new PathData(new State(0, startVelocity, 0), new State(0, startVelocity, 0),
+				pathControlPoints.get(0).get(0), 0);
+		pathData = new ArrayList<PathData>();
+		stitchPathData(startPathData);
 	}
 
 	/**
@@ -74,8 +77,8 @@ public class Spline extends Path {
 	 * @return A list of lists that hold the control points for the segments in the
 	 *         spline
 	 */
-	private List<List<Pose>> computeControlPoints(Pose[] knots) {
-		int degree = knots.length - 1;
+	private List<List<Pose>> computeControlPoints(List<Pose> knots) {
+		int degree = knots.size() - 1;
 		Pose[] points1 = new Pose[degree];
 		Pose[] points2 = new Pose[degree];
 
@@ -90,24 +93,24 @@ public class Spline extends Path {
 		a[0] = 0;
 		b[0] = 2;
 		c[0] = 1;
-		r_x[0] = knots[0].getX() + 2 * knots[1].getX();
-		r_y[0] = knots[0].getY() + 2 * knots[1].getY();
+		r_x[0] = knots.get(0).getX() + 2 * knots.get(1).getX();
+		r_y[0] = knots.get(0).getY() + 2 * knots.get(1).getY();
 
 		/* internal segments */
 		for (int i = 1; i < degree - 1; i++) {
 			a[i] = 1;
 			b[i] = 4;
 			c[i] = 1;
-			r_x[i] = 4 * knots[i].getX() + 2 * knots[i + 1].getX();
-			r_y[i] = 4 * knots[i].getY() + 2 * knots[i + 1].getY();
+			r_x[i] = 4 * knots.get(i).getX() + 2 * knots.get(i + 1).getX();
+			r_y[i] = 4 * knots.get(i).getY() + 2 * knots.get(i + 1).getY();
 		}
 
 		/* right segment */
 		a[degree - 1] = 2;
 		b[degree - 1] = 7;
 		c[degree - 1] = 0;
-		r_x[degree - 1] = 8 * knots[degree - 1].getX() + knots[degree].getX();
-		r_y[degree - 1] = 8 * knots[degree - 1].getY() + knots[degree].getY();
+		r_x[degree - 1] = 8 * knots.get(degree - 1).getX() + knots.get(degree).getX();
+		r_y[degree - 1] = 8 * knots.get(degree - 1).getY() + knots.get(degree).getY();
 
 		/* solves Ax=b with the Thomas algorithm */
 		for (int i = 1; i < degree; i++) {
@@ -124,87 +127,57 @@ public class Spline extends Path {
 
 		/* we have p1, now compute p2 */
 		for (int i = 0; i < degree - 1; i++) {
-			points2[i] = new Pose(2 * knots[i + 1].getX() - points1[i + 1].getX(),
-					2 * knots[i + 1].getY() - points1[i + 1].getY());
+			points2[i] = new Pose(2 * knots.get(i + 1).getX() - points1[i + 1].getX(),
+					2 * knots.get(i + 1).getY() - points1[i + 1].getY());
 		}
 
-		points2[degree - 1] = new Pose(0.5 * (knots[degree].getX() + points1[degree - 1].getX()),
-				0.5 * (knots[degree].getY() + points1[degree - 1].getY()));
+		points2[degree - 1] = new Pose(0.5 * (knots.get(degree).getX() + points1[degree - 1].getX()),
+				0.5 * (knots.get(degree).getY() + points1[degree - 1].getY()));
 		List<List<Pose>> controlPoints = new ArrayList<>();
 		for (int i = 0; i < degree; i++) {
 			List<Pose> segmentControlPoints = new ArrayList<>();
-			Collections.addAll(segmentControlPoints, knots[i], points1[i], points2[i], knots[i + 1]);
+			points1[0] = points1[0].rotate(knots.get(0), startAngle, isBackwards);
+			points2[degree - 1] = points2[degree - 1].rotate(knots.get(knots.size() - 1), endAngle, !isBackwards);
+			Collections.addAll(segmentControlPoints, knots.get(i), points1[i], points2[i], knots.get(i + 1));
 			Collections.addAll(controlPoints, segmentControlPoints);
 		}
-
 		return controlPoints;
 	}
 
 	/**
-	 * Joins the bezier curves defining the spline into intdividual arrays of Points
+	 * Stitches the bezier curve path datas to make the single spline
 	 * 
-	 * @param pathControlPoints
-	 *            - a List of Lists of control points for each curve that make up
-	 *            the spline
+	 * @param startPathData
+	 *            - requires the initial pathData
 	 */
-	private void joinBezierCurves() {
-		List<Pose> centerPosesAdd = new ArrayList<>();
-		List<State> leftStatesAdd = new ArrayList<>();
-		List<State> rightStatesAdd = new ArrayList<>();
-		double[] timesAdd = new double[50];
-		RobotPair lastPair = new RobotPair(0, 0);
-		double lastTime = 0;
-
-		for (int i = 0; i < pathControlPoints.size(); i++) {
-			Pose[] controlPoints = pathControlPoints.get(i).stream().toArray(Pose[]::new);
-			// Change the second control point to get the start angle to always be 0. This
-			// way, the robot will always start by going forwards. We can do this, because
-			// the start derivative = the slope between the first two control points.
-			if (i == 0) {
-				controlPoints[1] = controlPoints[1].rotate(controlPoints[0], startAngle, isBackwards);
+	private void stitchPathData(PathData startPathData) {
+		double nextV0;
+		double nextV1;
+		PathData nextStartPathData = startPathData;
+		pathData.add(startPathData);
+		ListIterator<List<Pose>> iterator = pathControlPoints.listIterator();
+		while (iterator.hasNext()) {
+			BezierCurve curve;
+			if (iterator.nextIndex() == 0) {
+				nextV0 = startVelocity;
+			} else {
+				nextV0 = vCruise;
 			}
-			// Change the second to last control point to get the desired end angle. We can
-			// do this, because the end derivative = the slope between the last two control
-			// points
-			if (i == pathControlPoints.size() - 1) {
-				controlPoints[controlPoints.length - 2] = controlPoints[controlPoints.length - 2]
-						.rotate(controlPoints[controlPoints.length - 1], endAngle, !isBackwards);
+			if (iterator.nextIndex() == pathControlPoints.size() - 1) {
+				nextV1 = endVelocity;
+			} else {
+				nextV1 = vCruise;
 			}
-			BezierCurve curve = new BezierCurve(vCruise, aMax, i != 0 ? vCruise : 0,
-					i != pathControlPoints.size() - 1 ? vCruise : 0, robotWidth, isBackwards, lastPair, lastTime,
-					controlPoints);
-
-			Pose[] centerPoses = curve.getPathData().getCenterPoses();
-			State[] leftStates = curve.getPathData().getLeftStates();
-			State[] rightStates = curve.getPathData().getRightStates();
-			double[] times = curve.getPathData().getTimes();
-			if (i != pathControlPoints.size() - 1) {
-				centerPoses = Arrays.copyOfRange(centerPoses, 0, centerPoses.length - 2);
-				leftStates = Arrays.copyOfRange(leftStates, 0, leftStates.length - 2);
-				rightStates = Arrays.copyOfRange(rightStates, 0, rightStates.length - 2);
-				times = Arrays.copyOfRange(times, 0, times.length - 2);
-			}
-			Collections.addAll(centerPosesAdd, centerPoses);
-			Collections.addAll(leftStatesAdd, leftStates);
-			Collections.addAll(rightStatesAdd, rightStates);
-			lastPair = new RobotPair(leftStatesAdd.get(leftStatesAdd.size() - 1).getLength(),
-					rightStatesAdd.get(rightStatesAdd.size() - 1).getLength());
-			lastTime = timesAdd[timesAdd.length - 1];
+			curve = new BezierCurve(vCruise, aMax, nextV0, nextV1, robotWidth, isBackwards, nextStartPathData,
+					iterator.next());
+			pathData.addAll(curve.getPathData());
+			nextStartPathData = pathData.get(pathData.size() - 1);
 		}
-		this.centerPoses = centerPosesAdd.stream().toArray(Pose[]::new);
-		this.leftStates = leftStatesAdd.stream().toArray(State[]::new);
-		this.rightStates = rightStatesAdd.stream().toArray(State[]::new);
-		this.times = timesAdd;
 	}
 
 	@Override
-	public Pose getStartingPosition() {
-		return new Pose(centerPoses[0].getX(), centerPoses[0].getY(), startAngle);
-	}
-
-	@Override
-	public PathData getPathData() {
-		return new PathData(leftStates, rightStates, centerPoses, times);
+	public List<PathData> getPathData() {
+		return pathData;
 	}
 
 }

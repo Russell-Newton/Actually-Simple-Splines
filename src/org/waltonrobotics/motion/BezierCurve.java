@@ -1,9 +1,11 @@
 package org.waltonrobotics.motion;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.waltonrobotics.controller.Path;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
-import org.waltonrobotics.controller.RobotPair;
 import org.waltonrobotics.controller.State;
 
 /**
@@ -25,15 +27,10 @@ public class BezierCurve extends Path {
 	private double curveLength = 0;
 	private final int numberOfSteps;
 	private final boolean isBackwards;
-	private final RobotPair lastPair;
-	private final double startTime;
 
-	private final Pose[] centerPoses;
-	private final State[] leftStates;
-	private final State[] rightStates;
-	private final double[] times;
+	private final List<PathData> pathData;
 
-	private final Pose[] controlPoints;
+	private final List<Pose> controlPoints;
 	private double[] coefficients;
 
 	/**
@@ -56,46 +53,28 @@ public class BezierCurve extends Path {
 	 *            - the control points that define the robot
 	 */
 	public BezierCurve(double vCruise, double aMax, double v0, double v1, double robotWidth, boolean isBackwards,
-			RobotPair lastPair, double startTime, Pose... controlPoints) {
+			PathData startPathData, List<Pose> controlPoints) {
 		super(vCruise, aMax, robotWidth);
 		this.controlPoints = controlPoints;
 		this.numberOfSteps = 50;
 		this.isBackwards = isBackwards;
-		this.lastPair = lastPair;
-		this.startTime = startTime;
 		startVelocity = v0;
 		endVelocity = v1;
 		// The starting average encoder distance should always be 0
-		startLCenter = 0;
-
+		startLCenter = startPathData.getLCenter();
 		updateCoefficients();
-		centerPoses = getCurvePoints(numberOfSteps, controlPoints);
-
-		rightStates = new State[numberOfSteps];
-		leftStates = new State[numberOfSteps];
-		times = new double[numberOfSteps];
-		setData();
+		pathData = new ArrayList<>(numberOfSteps);
+		getCurveLength();
+		setData(startPathData);
 	}
 
 	public BezierCurve(double vCruise, double aMax, double v0, double v1, double robotWidth, boolean isBackwards,
-			Pose... controlPoints) {
-		super(vCruise, aMax, robotWidth);
-		this.controlPoints = controlPoints;
-		this.numberOfSteps = 50;
-		this.isBackwards = isBackwards;
-		this.lastPair = new RobotPair(0, 0);
-		startTime = 0;
-		startVelocity = v0;
-		endVelocity = v1;
-		startLCenter = (lastPair.getLeft() + lastPair.getRight()) / 2;
-
-		updateCoefficients();
-		centerPoses = getCurvePoints(numberOfSteps, controlPoints);
-
-		rightStates = new State[numberOfSteps];
-		leftStates = new State[numberOfSteps];
-		times = new double[numberOfSteps];
-		setData();
+			List<Pose> controlPoints) {
+		this(vCruise, aMax, v0, v1, robotWidth, isBackwards,
+				new PathData(new Pose(controlPoints.get(0).getX(), controlPoints.get(0).getY(),
+						Math.atan2(controlPoints.get(1).getY() - controlPoints.get(0).getY(),
+								controlPoints.get(1).getX() - controlPoints.get(0).getX()))),
+				controlPoints);
 	}
 
 	/**
@@ -127,21 +106,11 @@ public class BezierCurve extends Path {
 		return r;
 	}
 
-	/**
-	 * @param numberOfSteps
-	 * @param controlPoints
-	 * @return an array of Points that define the curve
-	 */
-	private Pose[] getCurvePoints(int numberOfSteps, Pose[] controlPoints) {
-		Pose[] point2DList = new Pose[numberOfSteps + 1];
-
-		for (double i = 0; i <= numberOfSteps; i++) {
-			point2DList[(int) i] = getPoint(i / ((double) numberOfSteps), controlPoints);
-			if (i != 0)
-				curveLength += point2DList[(int) i].distance(point2DList[(int) i - 1]);
+	private void getCurveLength() {
+		curveLength = 0;
+		for (double i = 1; i < numberOfSteps; i++) {
+			curveLength += getPoint(i / numberOfSteps).distance(getPoint((i - 1) / numberOfSteps));
 		}
-
-		return point2DList;
 	}
 
 	/**
@@ -163,7 +132,7 @@ public class BezierCurve extends Path {
 	 * @param controlPoints
 	 * @return the Point that is at percentage t along the curve
 	 */
-	private Pose getPoint(double percentage, Pose[] controlPoints) {
+	private Pose getPoint(double percentage) {
 		double xCoordinateAtPercentage = 0;
 		double yCoordinateAtPercentage = 0;
 
@@ -176,7 +145,7 @@ public class BezierCurve extends Path {
 
 			double powerOfT = Math.pow(percentage, (double) i);
 
-			Pose pointI = controlPoints[i];
+			Pose pointI = controlPoints.get(i);
 
 			xCoordinateAtPercentage += (coefficient * oneMinusT * powerOfT * pointI.getX());
 			yCoordinateAtPercentage += (coefficient * oneMinusT * powerOfT * pointI.getY());
@@ -189,7 +158,7 @@ public class BezierCurve extends Path {
 	 * @return the degree of the curve
 	 */
 	private int getDegree() {
-		return controlPoints.length - 1;
+		return controlPoints.size() - 1;
 	}
 
 	/**
@@ -207,37 +176,35 @@ public class BezierCurve extends Path {
 		double dy = 0;
 		for (int i = 0; i < n; i++) {
 			double coefficient = findNumberOfCombination(n, i) * Math.pow(t, i) * Math.pow(1 - t, n - i);
-			dx += coefficient * (n + 1) * (controlPoints[i + 1].getX() - controlPoints[i].getX());
-			dy += coefficient * (n + 1) * (controlPoints[i + 1].getY() - controlPoints[i].getY());
+			dx += coefficient * (n + 1) * (controlPoints.get(i + 1).getX() - controlPoints.get(i).getX());
+			dy += coefficient * (n + 1) * (controlPoints.get(i + 1).getY() - controlPoints.get(i).getY());
 		}
 		if (t == 1) {
-			dx = controlPoints[controlPoints.length - 1].getX() - controlPoints[controlPoints.length - 2].getX();
-			dy = controlPoints[controlPoints.length - 1].getY() - controlPoints[controlPoints.length - 2].getY();
+			dx = controlPoints.get(controlPoints.size() - 1).getX()
+					- controlPoints.get(controlPoints.size() - 2).getX();
+			dy = controlPoints.get(controlPoints.size() - 1).getY()
+					- controlPoints.get(controlPoints.size() - 2).getY();
 		}
 		double angle = Math.atan2(dy, dx);
 		return angle;
 	}
 
-	public void setData() {
-		leftStates[0] = new State(lastPair.getLeft(), startVelocity, aMax);
-		rightStates[0] = new State(lastPair.getRight(), startVelocity, aMax);
-		times[0] = startTime;
-		int n = centerPoses.length - 1;
-		for (int i = 1; i < n; i++) {
-			Object[] calculatedData = calculateData(i);
-			leftStates[i] = (State) calculatedData[0];
-			rightStates[i] = (State) calculatedData[1];
-			times[i] = (double) calculatedData[2];
+	public void setData(PathData startData) {
+		PathData previousData = startData;
+		PathData currentData;
+		for (int i = 1; i <= numberOfSteps; i++) {
+			currentData = calculateData(previousData, getPoint((double) i / numberOfSteps));
+			pathData.add(currentData);
+			previousData = currentData;
 		}
 	}
 
-	private Object[] calculateData(int index) {
-		Pose previousCenter = centerPoses[index - 1];
-		Pose currentCenter = centerPoses[index];
-		State previousLeft = leftStates[index - 1];
-		State previousRight = rightStates[index - 1];
-		double previousTime = times[index - 1];
-		double previousLCenter = (previousLeft.getLength() + previousRight.getLength()) / 2;
+	private PathData calculateData(PathData previousPathData, Pose currentCenter) {
+		Pose previousCenter = previousPathData.getCenterPose();
+		State previousLeft = previousPathData.getLeftState();
+		State previousRight = previousPathData.getRightState();
+		double previousTime = previousPathData.getTime();
+		double previousLCenter = previousPathData.getLCenter();
 		// When cruising, acceleration is 0
 		double acceleration = 0;
 
@@ -260,7 +227,8 @@ public class BezierCurve extends Path {
 
 		double vAccelerating = Math.sqrt(Math.pow(startVelocity, 2) + aMax * Math.abs(lCenter));
 		double vDecelerating = Math.sqrt(Math.pow(endVelocity, 2) + aMax * Math.abs(curveLength - lCenter));
-		System.out.println("acc: " + vAccelerating + " dec: " + vDecelerating + " vel: " + velocity);
+		// System.out.println("acc: " + vAccelerating + " dec: " + vDecelerating + "
+		// vel: " + velocity);
 		if (vAccelerating < velocity && vAccelerating < vDecelerating) {
 			acceleration = aMax;
 			dTime = Math.abs(dLength) / vAccelerating;
@@ -271,7 +239,7 @@ public class BezierCurve extends Path {
 		}
 		double velocityL = dlLeft / dTime;
 		double velocityR = dlRight / dTime;
-
+		
 		if (isBackwards) {
 			velocityL *= -1;
 			velocityR *= -1;
@@ -279,18 +247,13 @@ public class BezierCurve extends Path {
 			dlRight *= -1;
 		}
 
-		return new Object[] { new State(previousLeft.getLength() + dlLeft, velocityL, acceleration),
-				new State(previousRight.getLength() + dlRight, velocityR, acceleration), previousTime + dTime };
+		State left = new State(previousLeft.getLength() + dlLeft, velocityL, acceleration);
+		State right = new State(previousRight.getLength() + dlRight, velocityR, acceleration);
+		return new PathData(left, right, currentCenter, previousTime + dTime);
 	}
 
 	@Override
-	public Pose getStartingPosition() {
-		return new Pose(centerPoses[0].getX(), centerPoses[0].getY(), Math.atan2(
-				controlPoints[1].getY() - controlPoints[0].getY(), controlPoints[1].getX() - controlPoints[0].getX()));
-	}
-
-	@Override
-	public PathData getPathData() {
-		return new PathData(leftStates, rightStates, centerPoses, times);
+	public List<PathData> getPathData() {
+		return pathData;
 	}
 }
