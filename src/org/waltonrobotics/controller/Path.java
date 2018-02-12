@@ -3,14 +3,12 @@ package org.waltonrobotics.controller;
 import java.util.List;
 
 /**
- * Defines the methods used by a motion path
+ * Extend this if you want to make your own Motion.
  * 
  * @author Russell Newton, Walton Robotics
  *
  */
 public abstract class Path {
-
-	// TODO - Make the getPathData method and all required
 
 	protected double vCruise;
 	protected double aMax;
@@ -22,6 +20,7 @@ public abstract class Path {
 	 *            - cruise velocity
 	 * @param aMax
 	 *            - max acceleration
+	 * @param robotWidth
 	 */
 	protected Path(double vCruise, double aMax, double robotWidth) {
 		if (vCruise == 0)

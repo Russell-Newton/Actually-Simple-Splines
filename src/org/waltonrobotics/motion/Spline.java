@@ -42,6 +42,10 @@ public class Spline extends Path {
 	 *            - max velocity
 	 * @param aMax
 	 *            - max acceleration
+	 * @param startVelocity
+	 *            - the starting velocity of the Path
+	 * @param endVelocity
+	 *            - the ending velocity of the Path
 	 * @param robotWidth
 	 *            - the width of the robot, should be in the same unit as the
 	 *            encoder distance per tick

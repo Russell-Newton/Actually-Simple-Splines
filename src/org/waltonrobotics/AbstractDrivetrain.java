@@ -15,7 +15,17 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 public abstract class AbstractDrivetrain extends Subsystem {
 
-	MotionController controller = new MotionController(this);
+	public MotionController controller;
+
+	/**
+	 * Create the static drivetrain after creating the motion logger so you can use
+	 * the MotionContoller
+	 * 
+	 * @param motionLogger
+	 */
+	public AbstractDrivetrain(MotionLogger motionLogger) {
+		controller = new MotionController(this, motionLogger);
+	}
 
 	/**
 	 * return a new robot pair with left.getDistance(), right.getDistance()
@@ -84,25 +94,55 @@ public abstract class AbstractDrivetrain extends Subsystem {
 	 * Set the encoder distances per pulse here
 	 */
 	public abstract void setEncoderDistancePerPulse();
-	
+
 	/**
-	 * @return the {} constant. It can be found by {}
+	 * The velocity constant. This is the feed forward multiplier. Using the
+	 * MotionLogger, KV is correct if lag error levels out.
+	 * 
+	 * @return KV
 	 */
 	public abstract double getKV();
-	
+
 	/**
-	 * @return the {} constant. It can be found by {}
+	 * The acceleration constant. This adds to the feed forward by giving a slight
+	 * boost while accelerating or decelerating. Make this a very small number
+	 * greater than 0 if anything.
+	 * 
+	 * @return KA
 	 */
 	public abstract double getKA();
-	
+
 	/**
-	 * @return the {} constant. It can be found by {}
-	 */
-	public abstract double getKP();
-	
-	/**
-	 * @return the {} constant. It can be found by {}
+	 * This constant gives a slight boost to the motors. Make this a very small
+	 * number greater than 0 if anything.
+	 * 
+	 * @return KK
 	 */
 	public abstract double getKK();
+
+	/**
+	 * This is the proportional constant for steering control. Using the
+	 * MotionLogger, KS_P is correct when the cross track error provides a steady
+	 * oscillation.
+	 * 
+	 * @return KS_P
+	 */
+	public abstract double getKS_P();
+
+	/**
+	 * This is the integral constant for steering control. Using the MotionLogger,
+	 * KS_I is correct when XTE is (close to) 0. Find this after finding KS_P.
+	 * 
+	 * @return KS_I
+	 */
+	public abstract double getKS_I();
+
+	/**
+	 * This is the lag constant. Using the MotionLogger, KL is correct when the lag
+	 * error is (close to) 0.
+	 * 
+	 * @return KL
+	 */
+	public abstract double getKL();
 
 }

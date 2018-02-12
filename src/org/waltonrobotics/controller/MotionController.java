@@ -1,5 +1,6 @@
 package org.waltonrobotics.controller;
 
+import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -7,25 +8,34 @@ import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import org.waltonrobotics.AbstractDrivetrain;
+import org.waltonrobotics.MotionLogger;
 
 /**
- * Sends power to the wheels
+ * Controls Path motions
  * 
  * @author Russell Newton, Walton Robotics
  *
  */
 public class MotionController {
 
+	/**
+	 * Runs the calculations with a TimerTask
+	 * 
+	 * @author Russell Newton, WaltonRobotics
+	 *
+	 */
 	private class MotionTask extends TimerTask {
 
 		@Override
 		public void run() {
 			if (currentPath != null) {
 				RobotPair wheelPositions = drivetrain.getWheelPositions();
-				calculateSpeeds(wheelPositions);
 				updateActualPosition(wheelPositions);
 				findCurrentError();
-				System.out.printf("lag: %f xTrack: %f \n", errorVector[0], errorVector[1]);
+				powers = calculateSpeeds(wheelPositions);
+				drivetrain.setSpeeds(powers.getLeft(), powers.getRight());
+				motionLogger.addMotionData(
+						new MotionData(actualPosition, targetPathData.getCenterPose(), errorVector, powers));
 			}
 		}
 
@@ -41,7 +51,10 @@ public class MotionController {
 	private final double kV;
 	private final double kK;
 	private final double kA;
-	private final double kP;
+	private final double kS_P;
+	private final double kS_I;
+	private double xteIntegral;
+	private final double kL;
 	private Pose actualPosition;
 	private PathData targetPathData;
 	private RobotPair previousLengths;
@@ -49,14 +62,21 @@ public class MotionController {
 	private ListIterator<PathData> pdIterator;
 	private PathData pdPrevious;
 	private PathData pdNext;
-	private double[] errorVector;
+	private ErrorVector errorVector;
+	private LinkedList<MotionData> motionDataList;
+	private MotionLogger motionLogger;
+	private RobotPair powers;
 
 	/**
 	 * @param drivetrain
 	 *            - the drivetrain to use the AbstractDrivetrain methods from
+	 * @param motionLogger
+	 *            - the MotionLogger from the AbstractDrivetrain
 	 */
-	public MotionController(AbstractDrivetrain drivetrain) {
+	public MotionController(AbstractDrivetrain drivetrain, MotionLogger motionLogger) {
 		running = false;
+
+		this.motionLogger = motionLogger;
 
 		controller = new Timer();
 		this.period = 5;
@@ -66,9 +86,11 @@ public class MotionController {
 		this.kV = drivetrain.getKV();
 		this.kK = drivetrain.getKK();
 		this.kA = drivetrain.getKA();
-		this.kP = drivetrain.getKP();
-		errorVector = new double[2];
-
+		this.kS_P = drivetrain.getKS_P();
+		this.kS_I = drivetrain.getKS_I();
+		xteIntegral = 0;
+		this.kL = drivetrain.getKL();
+		motionDataList = new LinkedList<>();
 	}
 
 	/**
@@ -85,12 +107,16 @@ public class MotionController {
 
 	/**
 	 * Calculates the powers to send to the wheels
+	 * 
+	 * @return a RobotPair with the powers and the time
 	 */
-	private void calculateSpeeds(RobotPair wheelPositions) {
+	private RobotPair calculateSpeeds(RobotPair wheelPositions) {
 
 		double leftPower = 0;
 		double rightPower = 0;
 		boolean enabled;
+		double steerPowerXTE;
+		double centerPowerLag;
 
 		synchronized (this) {
 			enabled = this.running;
@@ -110,36 +136,46 @@ public class MotionController {
 					startingWheelPositions = wheelPositions;
 				} else {
 					System.out.println("Done with motions! :)");
+					return new RobotPair(0, 0, wheelPositions.getTime());
 				}
 				staticPathData = new PathData(new State(wheelPositions.getLeft(), 0, 0),
 						new State(wheelPositions.getRight(), 0, 0), new Pose(0, 0, 0), 0);
 				targetPathData = staticPathData;
 				pdIterator = currentPath.getPathData().listIterator();
-				pdPrevious = pdIterator.next();
+				pdPrevious = targetPathData = pdIterator.next();
 				pdNext = pdIterator.next();
-				return;
+				xteIntegral = 0;
+				return new RobotPair(0, 0, wheelPositions.getTime());
 			}
 
 			synchronized (this) {
 				// feed forward
-				leftPower += (kV * targetPathData.getLeftState().getVelocity() + kK)
+				leftPower += (kV * targetPathData.getLeftState().getVelocity()
+						+ kK * Math.signum(targetPathData.getLeftState().getVelocity()))
 						+ kA * targetPathData.getLeftState().getAcceleration();
-				rightPower += (kV * targetPathData.getRightState().getVelocity() + kK)
+				rightPower += (kV * targetPathData.getRightState().getVelocity()
+						+ kK * Math.signum(targetPathData.getRightState().getVelocity()))
 						+ kA * targetPathData.getRightState().getAcceleration();
 				// feed back
-				leftPower += kP * (targetPathData.getLeftState().getLength() - wheelPositions.getLeft()
-						- startingWheelPositions.getLeft());
-				rightPower += kP * (targetPathData.getRightState().getLength() - wheelPositions.getRight()
-						- startingWheelPositions.getRight());
+				steerPowerXTE = kS_P * errorVector.getXTrack();
+				xteIntegral += errorVector.getXTrack();
+				steerPowerXTE += kS_I * xteIntegral;
+				centerPowerLag = kL * errorVector.getLag();
 			}
-
-			leftPower = Math.max(-1, Math.min(1, leftPower));
-			rightPower = Math.max(-1, Math.min(1, rightPower));
-
-			drivetrain.setSpeeds(leftPower, rightPower);
+			double centerPower = (leftPower + rightPower) / 2 + centerPowerLag;
+			double steerPower = Math.max(-1, Math.min(1, (rightPower - leftPower) / 2 + steerPowerXTE));
+			centerPower = Math.max(-1 + Math.abs(steerPower), Math.min(1 - Math.abs(steerPower), centerPower));
+			return new RobotPair(centerPower - steerPower, centerPower + steerPower, wheelPositions.getTime());
 		}
+		return new RobotPair(0, 0, wheelPositions.getTime());
 	}
 
+	/**
+	 * Finds the target x, y, angle, velocityLeft, and velocityRight
+	 * 
+	 * @param wheelPositions
+	 * @return a new MotionData with the interpolated data
+	 */
 	private PathData interpolate(RobotPair wheelPositions) {
 		double currentTime = wheelPositions.getTime() - startingWheelPositions.getTime();
 		while (currentTime > pdNext.getTime()) {
@@ -198,10 +234,10 @@ public class MotionController {
 			}
 			actualPosition = currentPath.getPathData().get(0).getCenterPose();
 			previousLengths = startingWheelPositions = drivetrain.getWheelPositions();
-
 			pdIterator = currentPath.getPathData().listIterator();
-			pdPrevious = pdIterator.next();
+			pdPrevious = targetPathData = pdIterator.next();
 			pdNext = pdIterator.next();
+			xteIntegral = 0;
 		}
 	}
 
@@ -234,12 +270,7 @@ public class MotionController {
 	/**
 	 * Updates where the robot thinks it is, based off of the encoder lengths
 	 * 
-	 * @param width
-	 *            - the robot width
-	 * @param previous
-	 *            - a RobotPair with the previous encoder lengths
 	 * @param wheelPositions
-	 *            - a RobotPair with the current encoder lengths
 	 */
 	private void updateActualPosition(RobotPair wheelPositions) {
 		double arcLeft = wheelPositions.getLeft() - previousLengths.getLeft();
@@ -262,16 +293,19 @@ public class MotionController {
 		previousLengths = wheelPositions;
 	}
 
+	/**
+	 * Finds the current lag and cross track ErrorVector
+	 */
 	private void findCurrentError() {
 		Pose targetPose = targetPathData.getCenterPose();
 		Pose actualPose = actualPosition;
-		double dX = actualPose.getX() - targetPose.getX();
-		double dY = actualPose.getY() - targetPose.getY();
-		double angle = actualPose.getAngle();
+		double dX = targetPose.getX() - actualPose.getX();
+		double dY = targetPose.getY() - actualPose.getY();
+		double angle = targetPose.getAngle();
 		// error in direction facing
 		double lagError = dX * Math.cos(angle) + dY * Math.sin(angle);
 		// error perpendicular to direction facing
 		double crossTrackError = -dX * Math.sin(angle) + dY * Math.cos(angle);
-		errorVector = new double[] {lagError, crossTrackError};
+		errorVector = new ErrorVector(lagError, crossTrackError);
 	}
 }

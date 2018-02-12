@@ -1,10 +1,7 @@
 package org.waltonrobotics.controller;
 
 /**
- * This class can be created with various attributes. If you want to design your
- * own extended path motions, you'll probably want to use the bulky constructor.
- * If you just want to make one of ours, then you should just use the
- * constructor with an x and y
+ * This holds the x, y, and angle of the robot.
  * 
  * @author Russell Newton, Walton Robotics
  *
@@ -16,21 +13,23 @@ public class Pose {
 	private final double angle;
 
 	/**
-	 * Can be used to create a point with just x, y, and derivative
 	 * 
 	 * @param x
-	 *            - the x at the Pose
 	 * @param y
-	 *            - the y at the Pose
 	 * @param angle
-	 *            - the angle at the Pose
 	 */
 	public Pose(double x, double y, double angle) {
 		this.x = x;
 		this.y = y;
 		this.angle = angle;
 	}
-	
+
+	/**
+	 * Creates a Pose without specifying an angle
+	 * 
+	 * @param x
+	 * @param y
+	 */
 	public Pose(double x, double y) {
 		this(x, y, 0);
 	}
@@ -75,7 +74,7 @@ public class Pose {
 	 * @param arcAngle
 	 *            - the angle to rotate the point to (degrees)
 	 * @param backwards
-	 *            - whether or not to rotate the point backwards
+	 *            - whether or not to rotate the point backwards (clockwise)
 	 * @return the rotated point
 	 */
 	public Pose rotate(Pose centerPoint, double arcAngle, boolean backwards) {
@@ -84,7 +83,15 @@ public class Pose {
 		double x_displacement = distance * Math.cos(Math.toRadians(arcAngle));
 		return new Pose(centerPoint.getX() + x_displacement, centerPoint.getY() + y_displacement);
 	}
-	
+
+	/**
+	 * Creates an offset Pose by a dX, dY, and dAngle
+	 * 
+	 * @param dX
+	 * @param dY
+	 * @param dAngle
+	 * @return the offset Pose
+	 */
 	public Pose offset(double dX, double dY, double dAngle) {
 		return new Pose(this.x + dX, this.y + dY, this.angle + dAngle);
 	}

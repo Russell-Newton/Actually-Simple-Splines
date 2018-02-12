@@ -47,10 +47,12 @@ public class BezierCurve extends Path {
 	 *            - the end velocity
 	 * @param robotWidth
 	 *            - the width of the robot
-	 * @param startTime
-	 *            - the starting time of the motion
+	 * @param isBackwards
+	 *            - whether or not to move the robot backwards
+	 * @param startPathData
+	 *            - the starting PathData for the curve
 	 * @param controlPoints
-	 *            - the control points that define the robot
+	 *            - the control points that define the curve
 	 */
 	public BezierCurve(double vCruise, double aMax, double v0, double v1, double robotWidth, boolean isBackwards,
 			PathData startPathData, List<Pose> controlPoints) {
@@ -68,6 +70,17 @@ public class BezierCurve extends Path {
 		setData(startPathData);
 	}
 
+	/**
+	 * Use this if you don't need to define a starting PathData
+	 * 
+	 * @param vCruise
+	 * @param aMax
+	 * @param v0
+	 * @param v1
+	 * @param robotWidth
+	 * @param isBackwards
+	 * @param controlPoints
+	 */
 	public BezierCurve(double vCruise, double aMax, double v0, double v1, double robotWidth, boolean isBackwards,
 			List<Pose> controlPoints) {
 		this(vCruise, aMax, v0, v1, robotWidth, isBackwards,
@@ -106,6 +119,9 @@ public class BezierCurve extends Path {
 		return r;
 	}
 
+	/**
+	 * Caluclates the length of the curve
+	 */
 	private void getCurveLength() {
 		curveLength = 0;
 		for (double i = 1; i < numberOfSteps; i++) {
@@ -125,12 +141,9 @@ public class BezierCurve extends Path {
 	}
 
 	/**
-	 * Returns the point on the curve at any percentage on the line, t
-	 * 
 	 * @param percentage
 	 *            - t
-	 * @param controlPoints
-	 * @return the Point that is at percentage t along the curve
+	 * @return the Pose that is at percentage t along the curve
 	 */
 	private Pose getPoint(double percentage) {
 		double xCoordinateAtPercentage = 0;
@@ -162,13 +175,9 @@ public class BezierCurve extends Path {
 	}
 
 	/**
-	 * Given the control points defining the curve, find the derivative at any point
-	 * on the curve
-	 * 
 	 * @param t
 	 *            - percent along curve
-	 * @param controlPoints
-	 * @return derivative at point
+	 * @return angle at point
 	 */
 	private double getAngle(double t) {
 		int n = getDegree();
@@ -189,6 +198,12 @@ public class BezierCurve extends Path {
 		return angle;
 	}
 
+	/**
+	 * Creates the PathData list
+	 * 
+	 * @param startData
+	 *            - the starting PathData
+	 */
 	public void setData(PathData startData) {
 		PathData previousData = startData;
 		PathData currentData;
@@ -199,6 +214,13 @@ public class BezierCurve extends Path {
 		}
 	}
 
+	/**
+	 * 
+	 * @param previousPathData
+	 * @param currentCenter
+	 *            - The Pose of the PathData to calculate on
+	 * @return a new PathData from the calculations
+	 */
 	private PathData calculateData(PathData previousPathData, Pose currentCenter) {
 		Pose previousCenter = previousPathData.getCenterPose();
 		State previousLeft = previousPathData.getLeftState();
@@ -239,7 +261,7 @@ public class BezierCurve extends Path {
 		}
 		double velocityL = dlLeft / dTime;
 		double velocityR = dlRight / dTime;
-		
+
 		if (isBackwards) {
 			velocityL *= -1;
 			velocityR *= -1;

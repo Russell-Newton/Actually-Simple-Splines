@@ -1,7 +1,8 @@
 package org.waltonrobotics.controller;
 
 /**
- * Utilized to identify left and right encoder measurements
+ * Holds information about the left and right sides of the robot at a specific
+ * time
  * 
  * @author Russell Newton, Walton Robotics
  *
@@ -14,9 +15,8 @@ public class RobotPair {
 
 	/**
 	 * @param left
-	 *            - the left encoder distance
 	 * @param right
-	 *            - the right encoder distance
+	 * @param time
 	 */
 	public RobotPair(double left, double right, double time) {
 		this.left = left;
@@ -25,21 +25,21 @@ public class RobotPair {
 	}
 
 	/**
-	 * @return - the left encoder distance
+	 * @return left
 	 */
 	public double getLeft() {
 		return left;
 	}
 
 	/**
-	 * @return - the right encoder distance
+	 * @return right
 	 */
 	public double getRight() {
 		return right;
 	}
-	
+
 	/**
-	 * @return - time when the encoders were measured
+	 * @return time
 	 */
 	public double getTime() {
 		return time;
