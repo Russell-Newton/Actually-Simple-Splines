@@ -68,7 +68,9 @@ public class Spline extends Path {
 		this.startVelocity = startVelocity;
 		pathControlPoints = computeControlPoints(knots);
 		PathData startPathData = new PathData(new State(0, startVelocity, 0), new State(0, startVelocity, 0),
-				pathControlPoints.get(0).get(0), 0);
+				new Pose(pathControlPoints.get(0).get(0).getX(), pathControlPoints.get(0).get(0).getY(),
+						Math.toRadians(startAngle)),
+				0);
 		pathData = new ArrayList<PathData>();
 		stitchPathData(startPathData);
 	}

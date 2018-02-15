@@ -108,9 +108,9 @@ public abstract class AbstractDrivetrain extends Subsystem {
 	 * boost while accelerating or decelerating. Make this a very small number
 	 * greater than 0 if anything.
 	 * 
-	 * @return KA
+	 * @return KAcc
 	 */
-	public abstract double getKA();
+	public abstract double getKAcc();
 
 	/**
 	 * This constant gives a slight boost to the motors. Make this a very small
@@ -121,21 +121,21 @@ public abstract class AbstractDrivetrain extends Subsystem {
 	public abstract double getKK();
 
 	/**
-	 * This is the proportional constant for steering control. Using the
-	 * MotionLogger, KS_P is correct when the cross track error provides a steady
-	 * oscillation.
+	 * This is the constant for steering control. Using the MotionLogger, KS is
+	 * correct when the cross track error provides a steady oscillation. Set this
+	 * before KAng.
 	 * 
-	 * @return KS_P
+	 * @return KS
 	 */
-	public abstract double getKS_P();
+	public abstract double getKS();
 
 	/**
-	 * This is the integral constant for steering control. Using the MotionLogger,
-	 * KS_I is correct when XTE is (close to) 0. Find this after finding KS_P.
+	 * This is the constant for angle control. Using the MotionLogger, KT is correct
+	 * when the angle and cross track errors approach 0.
 	 * 
-	 * @return KS_I
+	 * @return KAng
 	 */
-	public abstract double getKS_I();
+	public abstract double getKAng();
 
 	/**
 	 * This is the lag constant. Using the MotionLogger, KL is correct when the lag

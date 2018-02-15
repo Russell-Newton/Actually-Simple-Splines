@@ -1,6 +1,5 @@
 package org.waltonrobotics.controller;
 
-import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -19,7 +18,7 @@ import org.waltonrobotics.MotionLogger;
 public class MotionController {
 
 	/**
-	 * Runs the calculations with a TimerTask
+	 * 1 Runs the calculations with a TimerTask
 	 * 
 	 * @author Russell Newton, WaltonRobotics
 	 *
@@ -50,11 +49,10 @@ public class MotionController {
 	private final AbstractDrivetrain drivetrain;
 	private final double kV;
 	private final double kK;
-	private final double kA;
-	private final double kS_P;
-	private final double kS_I;
-	private double xteIntegral;
+	private final double kAcc;
+	private final double kS;
 	private final double kL;
+	private final double kAng;
 	private Pose actualPosition;
 	private PathData targetPathData;
 	private RobotPair previousLengths;
@@ -63,7 +61,6 @@ public class MotionController {
 	private PathData pdPrevious;
 	private PathData pdNext;
 	private ErrorVector errorVector;
-	private LinkedList<MotionData> motionDataList;
 	private MotionLogger motionLogger;
 	private RobotPair powers;
 
@@ -85,12 +82,10 @@ public class MotionController {
 		this.drivetrain = drivetrain;
 		this.kV = drivetrain.getKV();
 		this.kK = drivetrain.getKK();
-		this.kA = drivetrain.getKA();
-		this.kS_P = drivetrain.getKS_P();
-		this.kS_I = drivetrain.getKS_I();
-		xteIntegral = 0;
+		this.kAcc = drivetrain.getKAcc();
+		this.kS = drivetrain.getKS();
 		this.kL = drivetrain.getKL();
-		motionDataList = new LinkedList<>();
+		this.kAng = drivetrain.getKAng();
 	}
 
 	/**
@@ -116,6 +111,7 @@ public class MotionController {
 		double rightPower = 0;
 		boolean enabled;
 		double steerPowerXTE;
+		double steerPowerAngle;
 		double centerPowerLag;
 
 		synchronized (this) {
@@ -144,7 +140,6 @@ public class MotionController {
 				pdIterator = currentPath.getPathData().listIterator();
 				pdPrevious = targetPathData = pdIterator.next();
 				pdNext = pdIterator.next();
-				xteIntegral = 0;
 				return new RobotPair(0, 0, wheelPositions.getTime());
 			}
 
@@ -152,18 +147,18 @@ public class MotionController {
 				// feed forward
 				leftPower += (kV * targetPathData.getLeftState().getVelocity()
 						+ kK * Math.signum(targetPathData.getLeftState().getVelocity()))
-						+ kA * targetPathData.getLeftState().getAcceleration();
+						+ kAcc * targetPathData.getLeftState().getAcceleration();
 				rightPower += (kV * targetPathData.getRightState().getVelocity()
 						+ kK * Math.signum(targetPathData.getRightState().getVelocity()))
-						+ kA * targetPathData.getRightState().getAcceleration();
+						+ kAcc * targetPathData.getRightState().getAcceleration();
 				// feed back
-				steerPowerXTE = kS_P * errorVector.getXTrack();
-				xteIntegral += errorVector.getXTrack();
-				steerPowerXTE += kS_I * xteIntegral;
+				steerPowerXTE = kS * errorVector.getXTrack();
+				steerPowerAngle = kAng * errorVector.getAngle();
 				centerPowerLag = kL * errorVector.getLag();
 			}
 			double centerPower = (leftPower + rightPower) / 2 + centerPowerLag;
-			double steerPower = Math.max(-1, Math.min(1, (rightPower - leftPower) / 2 + steerPowerXTE));
+			double steerPower = Math.max(-1,
+					Math.min(1, (rightPower - leftPower) / 2 + steerPowerXTE + steerPowerAngle));
 			centerPower = Math.max(-1 + Math.abs(steerPower), Math.min(1 - Math.abs(steerPower), centerPower));
 			return new RobotPair(centerPower - steerPower, centerPower + steerPower, wheelPositions.getTime());
 		}
@@ -237,7 +232,6 @@ public class MotionController {
 			pdIterator = currentPath.getPathData().listIterator();
 			pdPrevious = targetPathData = pdIterator.next();
 			pdNext = pdIterator.next();
-			xteIntegral = 0;
 		}
 	}
 
@@ -306,6 +300,13 @@ public class MotionController {
 		double lagError = dX * Math.cos(angle) + dY * Math.sin(angle);
 		// error perpendicular to direction facing
 		double crossTrackError = -dX * Math.sin(angle) + dY * Math.cos(angle);
-		errorVector = new ErrorVector(lagError, crossTrackError);
+		// the error of the current angle
+		double angleError = targetPose.getAngle() - actualPose.getAngle();
+		if (angleError > Math.PI) {
+			angleError -= 2 * Math.PI;
+		} else if (angleError < -Math.PI) {
+			angleError += 2 * Math.PI;
+		}
+		errorVector = new ErrorVector(lagError, crossTrackError, angleError);
 	}
 }

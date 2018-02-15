@@ -23,8 +23,10 @@ public class DebugCurves {
 
 	public static void main(String[] args) {
 		points.add(new Pose(0, 0));
-		points.add(new Pose(.5, .5));
-		points.add(new Pose(1, 0));
+		points.add(new Pose(0, 5.18));
+		points.add(new Pose(5.64, 5.18));
+		points.add(new Pose(5.64, 1));
+		points.add(new Pose(.3, 1));
 
 		System.out.println("Bezier Curve:");
 		BezierCurve curve = new BezierCurve(1, 1, 0, 0, width, isBackwards, points);
@@ -35,7 +37,7 @@ public class DebugCurves {
 					+ pathData.get(i).getTime());
 		}
 		System.out.println("\n \n Spline:");
-		Spline spline = new Spline(1, 1, 0, 0, width, 0, 0, isBackwards, points);
+		Spline spline = new Spline(2, 2, 0, 0, width, 90, 180, isBackwards, points);
 		pathData = spline.getPathData();
 		for (int i = 0; i < pathData.size(); i++) {
 			System.out.println(pathData.get(i).getCenterPose().getX() + " " + pathData.get(i).getCenterPose().getY()

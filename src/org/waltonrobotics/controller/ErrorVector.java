@@ -9,19 +9,21 @@ package org.waltonrobotics.controller;
 public class ErrorVector {
 	private final double lag;
 	private final double crossTrack;
+	private final double angle;
 
 	/**
 	 * @param lag
 	 * @param crossTrack
 	 */
-	public ErrorVector(double lag, double crossTrack) {
+	public ErrorVector(double lag, double crossTrack, double angle) {
 		this.lag = lag;
 		this.crossTrack = crossTrack;
+		this.angle = angle;
 	}
 
 	/**
 	 * 
-	 * @return
+	 * @return lag error
 	 */
 	public double getLag() {
 		return lag;
@@ -29,9 +31,17 @@ public class ErrorVector {
 
 	/**
 	 * 
-	 * @return
+	 * @return xtrack error
 	 */
 	public double getXTrack() {
 		return crossTrack;
+	}
+	
+	/**
+	 * 
+	 * @return angle error
+	 */
+	public double getAngle() {
+		return angle;
 	}
 }

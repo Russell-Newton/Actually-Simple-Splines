@@ -232,6 +232,11 @@ public class BezierCurve extends Path {
 
 		// The change in angle of the robot
 		double dAngle = currentCenter.getAngle() - previousCenter.getAngle();
+		if (dAngle > Math.PI) {
+			dAngle -= 2 * Math.PI;
+		} else if (dAngle < -Math.PI) {
+			dAngle += 2 * Math.PI;
+		}
 
 		// The change in distance of the robot sides
 		double dLength = previousCenter.distance(currentCenter) * (isBackwards ? -1 : 1);
@@ -271,7 +276,8 @@ public class BezierCurve extends Path {
 
 		State left = new State(previousLeft.getLength() + dlLeft, velocityL, acceleration);
 		State right = new State(previousRight.getLength() + dlRight, velocityR, acceleration);
-		return new PathData(left, right, currentCenter, previousTime + dTime);
+		Pose center = new Pose(currentCenter.getX(), currentCenter.getY(), previousCenter.getAngle() + dAngle);
+		return new PathData(left, right, center, previousTime + dTime);
 	}
 
 	@Override
