@@ -1,5 +1,7 @@
 package org.waltonrobotics.controller;
 
+import javafx.beans.property.SimpleDoubleProperty;
+
 /**
  * This holds the x, y, and angle of the robot.
  *
@@ -7,9 +9,9 @@ package org.waltonrobotics.controller;
  */
 public class Pose {
 
-	private final double x;
-	private final double y;
-	private final double angle;
+	private final SimpleDoubleProperty x;
+	private final SimpleDoubleProperty y;
+	private final SimpleDoubleProperty angle;
 
 	/**
 	 *
@@ -18,9 +20,9 @@ public class Pose {
 	 * @param angle
 	 */
 	public Pose(double x, double y, double angle) {
-		this.x = x;
-		this.y = y;
-		this.angle = angle;
+		this.x = new SimpleDoubleProperty(x);
+		this.y = new SimpleDoubleProperty(y);
+		this.angle = new SimpleDoubleProperty(angle);
 	}
 
 	/**
@@ -34,13 +36,27 @@ public class Pose {
 	 * @return the x value of the point
 	 */
 	public double getX() {
-		return x;
+		return x.get();
 	}
 
 	/**
 	 * @return the y value of the point
 	 */
 	public double getY() {
+		return y.get();
+	}
+
+	/**
+	 * @return the x property of the point
+	 */
+	public SimpleDoubleProperty xProperty() {
+		return x;
+	}
+
+	/**
+	 * @return the y property of the point
+	 */
+	public SimpleDoubleProperty yProperty() {
 		return y;
 	}
 
@@ -48,6 +64,13 @@ public class Pose {
 	 * @return the derivative of the point
 	 */
 	public double getAngle() {
+		return angle.get();
+	}
+
+	/**
+	 * @return the angle property of the point
+	 */
+	public SimpleDoubleProperty angleProperty() {
 		return angle;
 	}
 
@@ -59,7 +82,7 @@ public class Pose {
 	 */
 	public double distance(Pose otherPoint) {
 		return Math.sqrt(
-			Math.pow(this.x - otherPoint.getX(), 2) + Math.pow(this.y - otherPoint.getY(), 2));
+			Math.pow(this.getX() - otherPoint.getX(), 2) + Math.pow(getX() - otherPoint.getY(), 2));
 	}
 
 	/**
@@ -83,7 +106,7 @@ public class Pose {
 	 * @return the offset Pose
 	 */
 	public Pose offset(double dX, double dY, double dAngle) {
-		return new Pose(this.x + dX, this.y + dY, this.angle + dAngle);
+		return new Pose(this.getX() + dX, this.getY() + dY, this.getAngle() + dAngle);
 	}
 
 	@Override
