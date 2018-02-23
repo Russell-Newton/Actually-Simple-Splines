@@ -15,18 +15,16 @@ import org.waltonrobotics.controller.State;
  *
  * @author Marius Juston, Walton Robotics
  * @author Russell Newton, Walton Robotics
- * @see {@link https://en.wikipedia.org/wiki/B%C3%A9zier_curve}
- * @see {@link https://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-der.html}
+ * @link https://en.wikipedia.org/wiki/B%C3%A9zier_curve
+ * @link https://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-der.html
  */
 public class BezierCurve extends Path {
 
 	private final double startVelocity;
 	private final double endVelocity;
+	private final PathData startPathData;
 	private final double startLCenter;
-	private final int numberOfSteps;
-	private final boolean isBackwards;
-	private final List<PathData> pathData;
-	private final List<Pose> controlPoints;
+	private List<PathData> pathData;
 	private double curveLength = 0;
 	private double[] coefficients;
 
@@ -46,18 +44,13 @@ public class BezierCurve extends Path {
 	public BezierCurve(double vCruise, double aMax, double v0, double v1, double robotWidth,
 		boolean isBackwards,
 		PathData startPathData, List<Pose> controlPoints) {
-		super(vCruise, aMax, robotWidth);
-		this.controlPoints = controlPoints;
-		this.numberOfSteps = 50;
-		this.isBackwards = isBackwards;
+		super(vCruise, aMax, robotWidth, isBackwards, 50, controlPoints);
 		startVelocity = v0;
 		endVelocity = v1;
+		this.startPathData = startPathData;
 		// The starting average encoder distance should always be 0
 		startLCenter = startPathData.getLCenter();
-		updateCoefficients();
-		pathData = new ArrayList<>(numberOfSteps);
-		getCurveLength();
-		setData(startPathData);
+		makePathData();
 	}
 
 	/**
@@ -99,13 +92,23 @@ public class BezierCurve extends Path {
 		return r;
 	}
 
+	@Override
+	protected void makePathData() {
+		updateCoefficients();
+		pathData = new ArrayList<>(getNumberOfSteps());
+		getCurveLength();
+		setData(startPathData);
+		makePathData();
+	}
+
 	/**
 	 * Caluclates the length of the curve
 	 */
 	private void getCurveLength() {
 		curveLength = 0;
-		for (double i = 1; i < numberOfSteps; i++) {
-			curveLength += getPoint(i / numberOfSteps).distance(getPoint((i - 1) / numberOfSteps));
+		for (double i = 1; i < getNumberOfSteps(); i++) {
+			curveLength += getPoint(i / getNumberOfSteps())
+				.distance(getPoint((i - 1) / getNumberOfSteps()));
 		}
 	}
 
@@ -137,7 +140,7 @@ public class BezierCurve extends Path {
 
 			double powerOfT = Math.pow(percentage, (double) i);
 
-			Pose pointI = controlPoints.get(i);
+			Pose pointI = getKeyPoints().get(i);
 
 			xCoordinateAtPercentage += (coefficient * oneMinusT * powerOfT * pointI.getX());
 			yCoordinateAtPercentage += (coefficient * oneMinusT * powerOfT * pointI.getY());
@@ -150,7 +153,7 @@ public class BezierCurve extends Path {
 	 * @return the degree of the curve
 	 */
 	private int getDegree() {
-		return controlPoints.size() - 1;
+		return getKeyPoints().size() - 1;
 	}
 
 	/**
@@ -164,16 +167,16 @@ public class BezierCurve extends Path {
 		for (int i = 0; i < n; i++) {
 			double coefficient =
 				findNumberOfCombination(n, i) * Math.pow(t, i) * Math.pow(1 - t, n - i);
-			dx += coefficient * (n + 1) * (controlPoints.get(i + 1).getX() - controlPoints.get(i)
+			dx += coefficient * (n + 1) * (getKeyPoints().get(i + 1).getX() - getKeyPoints().get(i)
 				.getX());
-			dy += coefficient * (n + 1) * (controlPoints.get(i + 1).getY() - controlPoints.get(i)
+			dy += coefficient * (n + 1) * (getKeyPoints().get(i + 1).getY() - getKeyPoints().get(i)
 				.getY());
 		}
 		if (t == 1) {
-			dx = controlPoints.get(controlPoints.size() - 1).getX()
-				- controlPoints.get(controlPoints.size() - 2).getX();
-			dy = controlPoints.get(controlPoints.size() - 1).getY()
-				- controlPoints.get(controlPoints.size() - 2).getY();
+			dx = getKeyPoints().get(getKeyPoints().size() - 1).getX()
+				- getKeyPoints().get(getKeyPoints().size() - 2).getX();
+			dy = getKeyPoints().get(getKeyPoints().size() - 1).getY()
+				- getKeyPoints().get(getKeyPoints().size() - 2).getY();
 		}
 		double angle = Math.atan2(dy, dx);
 		return angle;
@@ -187,8 +190,8 @@ public class BezierCurve extends Path {
 	public void setData(PathData startData) {
 		PathData previousData = startData;
 		PathData currentData;
-		for (int i = 1; i <= numberOfSteps; i++) {
-			currentData = calculateData(previousData, getPoint((double) i / numberOfSteps));
+		for (int i = 1; i <= getNumberOfSteps(); i++) {
+			currentData = calculateData(previousData, getPoint((double) i / getNumberOfSteps()));
 			pathData.add(currentData);
 			previousData = currentData;
 		}
@@ -216,7 +219,7 @@ public class BezierCurve extends Path {
 		}
 
 		// The change in distance of the robot sides
-		double dLength = previousCenter.distance(currentCenter) * (isBackwards ? -1 : 1);
+		double dLength = previousCenter.distance(currentCenter) * (isBackwards() ? -1 : 1);
 		double dlLeft = dLength - dAngle * robotWidth / 2;
 		double dlRight = dLength + dAngle * robotWidth / 2;
 
@@ -245,7 +248,7 @@ public class BezierCurve extends Path {
 		double velocityL = dlLeft / dTime;
 		double velocityR = dlRight / dTime;
 
-		if (isBackwards) {
+		if (isBackwards()) {
 			velocityL *= -1;
 			velocityR *= -1;
 			dlLeft *= -1;
@@ -271,10 +274,10 @@ public class BezierCurve extends Path {
 			", endVelocity=" + endVelocity +
 			", startLCenter=" + startLCenter +
 			", curveLength=" + curveLength +
-			", numberOfSteps=" + numberOfSteps +
-			", isBackwards=" + isBackwards +
+			", numberOfSteps=" + getNumberOfSteps() +
+			", isBackwards=" + isBackwards() +
 			", pathData=" + pathData +
-			", controlPoints=" + controlPoints +
+			", controlPoints=" + getKeyPoints() +
 			", coefficients=" + Arrays.toString(coefficients) +
 			"} " + super.toString();
 	}

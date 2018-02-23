@@ -16,15 +16,14 @@ import org.waltonrobotics.controller.State;
  * with only 2 knots. If you want a straight line, make a Bezier Curve.
  *
  * @author Russell Newton, Walton Robotics
- * @see {@link https://www.particleincell.com/2012/bezier-splines/}
- * @see {@link https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm}
+ * @link https://www.particleincell.com/2012/bezier-splines/
+ * @link https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm
  */
 
 public class Spline extends Path {
 
 	private final double startAngle;
 	private final double endAngle;
-	private final boolean isBackwards;
 	private final double startVelocity;
 	private final double endVelocity;
 	private List<List<Pose>> pathControlPoints;
@@ -48,13 +47,17 @@ public class Spline extends Path {
 	public Spline(double vCruise, double aMax, double startVelocity, double endVelocity,
 		double robotWidth,
 		double startAngle, double endAngle, boolean isBackwards, List<Pose> knots) {
-		super(vCruise, aMax, robotWidth);
+		super(vCruise, aMax, robotWidth, isBackwards, 50, knots);
 		this.startAngle = startAngle;
 		this.endAngle = endAngle;
-		this.isBackwards = isBackwards;
 		this.endVelocity = endVelocity;
 		this.startVelocity = startVelocity;
-		pathControlPoints = computeControlPoints(knots);
+		makePathData();
+	}
+
+	@Override
+	protected void makePathData() {
+		pathControlPoints = computeControlPoints(getKeyPoints());
 		PathData startPathData = new PathData(new State(0, startVelocity, 0),
 			new State(0, startVelocity, 0),
 			new Pose(pathControlPoints.get(0).get(0).getX(), pathControlPoints.get(0).get(0).getY(),
@@ -131,9 +134,9 @@ public class Spline extends Path {
 		List<List<Pose>> controlPoints = new ArrayList<>();
 		for (int i = 0; i < degree; i++) {
 			List<Pose> segmentControlPoints = new ArrayList<>();
-			points1[0] = points1[0].rotate(knots.get(0), startAngle, isBackwards);
+			points1[0] = points1[0].rotate(knots.get(0), startAngle, isBackwards());
 			points2[degree - 1] = points2[degree - 1]
-				.rotate(knots.get(knots.size() - 1), endAngle, !isBackwards);
+				.rotate(knots.get(knots.size() - 1), endAngle, !isBackwards());
 			Collections.addAll(segmentControlPoints, knots.get(i), points1[i], points2[i],
 				knots.get(i + 1));
 			Collections.addAll(controlPoints, segmentControlPoints);
@@ -164,7 +167,7 @@ public class Spline extends Path {
 			} else {
 				nextV1 = vCruise;
 			}
-			curve = new BezierCurve(vCruise, aMax, nextV0, nextV1, robotWidth, isBackwards,
+			curve = new BezierCurve(vCruise, aMax, nextV0, nextV1, robotWidth, isBackwards(),
 				nextStartPathData,
 				iterator.next());
 			pathData.addAll(curve.getPathData());
@@ -184,7 +187,7 @@ public class Spline extends Path {
 			", pathData=" + pathData +
 			", startAngle=" + startAngle +
 			", endAngle=" + endAngle +
-			", isBackwards=" + isBackwards +
+			", isBackwards=" + isBackwards() +
 			", startVelocity=" + startVelocity +
 			", endVelocity=" + endVelocity +
 			"} " + super.toString();
