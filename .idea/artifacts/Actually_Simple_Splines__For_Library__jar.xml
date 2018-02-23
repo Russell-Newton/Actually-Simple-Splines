@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Actually Simple Splines (For Library):jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Actually_Simple_Splines__For_Library__jar</output-path>
+    <root id="archive" name="2974Splines.jar">
+      <element id="module-output" name="Actually Simple Splines (For Library)" />
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/out/META-INF/MANIFEST.MF" />
+      </element>
+    </root>
+  </artifact>
+</component>

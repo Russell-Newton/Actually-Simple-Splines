@@ -1,11 +1,9 @@
 package org.waltonrobotics.controller;
 
 /**
- * Holds information about the left and right sides of the robot at a specific
- * time
- * 
- * @author Russell Newton, Walton Robotics
+ * Holds information about the left and right sides of the robot at a specific time
  *
+ * @author Russell Newton, Walton Robotics
  */
 public class RobotPair {
 
@@ -45,4 +43,12 @@ public class RobotPair {
 		return time;
 	}
 
+	@Override
+	public String toString() {
+		return "RobotPair{" +
+			"left=" + left +
+			", right=" + right +
+			", time=" + time +
+			'}';
+	}
 }

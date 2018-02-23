@@ -2,9 +2,8 @@ package org.waltonrobotics.controller;
 
 /**
  * This holds the x, y, and angle of the robot.
- * 
- * @author Russell Newton, Walton Robotics
  *
+ * @author Russell Newton, Walton Robotics
  */
 public class Pose {
 
@@ -13,7 +12,7 @@ public class Pose {
 	private final double angle;
 
 	/**
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param angle
@@ -26,9 +25,6 @@ public class Pose {
 
 	/**
 	 * Creates a Pose without specifying an angle
-	 * 
-	 * @param x
-	 * @param y
 	 */
 	public Pose(double x, double y) {
 		this(x, y, 0);
@@ -57,24 +53,21 @@ public class Pose {
 
 	/**
 	 * Finds the distance between two points
-	 * 
-	 * @param otherPoint
-	 *            - the point you want to find the distance from
+	 *
+	 * @param otherPoint - the point you want to find the distance from
 	 * @return the distance from this point to the other point
 	 */
 	public double distance(Pose otherPoint) {
-		return Math.sqrt(Math.pow(this.x - otherPoint.getX(), 2) + Math.pow(this.y - otherPoint.getY(), 2));
+		return Math.sqrt(
+			Math.pow(this.x - otherPoint.getX(), 2) + Math.pow(this.y - otherPoint.getY(), 2));
 	}
 
 	/**
 	 * Rotates a point around a central point. Imagine making an arc on a circle
-	 * 
-	 * @param centerPoint
-	 *            - the center of the circle
-	 * @param arcAngle
-	 *            - the angle to rotate the point to (degrees)
-	 * @param backwards
-	 *            - whether or not to rotate the point backwards (clockwise)
+	 *
+	 * @param centerPoint - the center of the circle
+	 * @param arcAngle - the angle to rotate the point to (degrees)
+	 * @param backwards - whether or not to rotate the point backwards (clockwise)
 	 * @return the rotated point
 	 */
 	public Pose rotate(Pose centerPoint, double arcAngle, boolean backwards) {
@@ -86,14 +79,19 @@ public class Pose {
 
 	/**
 	 * Creates an offset Pose by a dX, dY, and dAngle
-	 * 
-	 * @param dX
-	 * @param dY
-	 * @param dAngle
+	 *
 	 * @return the offset Pose
 	 */
 	public Pose offset(double dX, double dY, double dAngle) {
 		return new Pose(this.x + dX, this.y + dY, this.angle + dAngle);
 	}
 
+	@Override
+	public String toString() {
+		return "Pose{" +
+			"x=" + x +
+			", y=" + y +
+			", angle=" + angle +
+			'}';
+	}
 }

@@ -2,9 +2,8 @@ package org.waltonrobotics.controller;
 
 /**
  * Holds an encoder length, velocity, and acceleration
- * 
- * @author Russell Newton, Walton Robotics
  *
+ * @author Russell Newton, Walton Robotics
  */
 public class State {
 
@@ -44,4 +43,12 @@ public class State {
 		return acceleration;
 	}
 
+	@Override
+	public String toString() {
+		return "State{" +
+			"length=" + length +
+			", velocity=" + velocity +
+			", acceleration=" + acceleration +
+			'}';
+	}
 }

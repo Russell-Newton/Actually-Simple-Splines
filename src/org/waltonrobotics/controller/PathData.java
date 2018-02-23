@@ -2,9 +2,8 @@ package org.waltonrobotics.controller;
 
 /**
  * Holds information about the robot at a specific time in a Path
- * 
- * @author Russell Newton, Walton Robotics
  *
+ * @author Russell Newton, Walton Robotics
  */
 public class PathData {
 
@@ -28,15 +27,12 @@ public class PathData {
 
 	/**
 	 * Can be used to make a generic PathData without motion and time
-	 * 
-	 * @param centerPose
 	 */
 	public PathData(Pose centerPose) {
 		this(new State(0, 0, 0), new State(0, 0, 0), centerPose, 0);
 	}
 
 	/**
-	 * 
 	 * @return leftState
 	 */
 	public State getLeftState() {
@@ -44,7 +40,6 @@ public class PathData {
 	}
 
 	/**
-	 * 
 	 * @return rightState
 	 */
 	public State getRightState() {
@@ -52,7 +47,6 @@ public class PathData {
 	}
 
 	/**
-	 * 
 	 * @return centerPose
 	 */
 	public Pose getCenterPose() {
@@ -60,7 +54,6 @@ public class PathData {
 	}
 
 	/**
-	 * 
 	 * @return time
 	 */
 	public double getTime() {
@@ -68,10 +61,19 @@ public class PathData {
 	}
 
 	/**
-	 * 
 	 * @return the average length of the left and right States
 	 */
 	public double getLCenter() {
 		return (leftState.getLength() + rightState.getLength()) / 2;
+	}
+
+	@Override
+	public String toString() {
+		return "PathData{" +
+			"leftState=" + leftState +
+			", rightState=" + rightState +
+			", centerPose=" + centerPose +
+			", time=" + time +
+			'}';
 	}
 }

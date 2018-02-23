@@ -6,37 +6,33 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
-
 import org.waltonrobotics.controller.MotionData;
 
 /**
  * This class is used to log MotionData during autonomous
- * 
- * @author Russell Newton, WaltonRobotics
  *
+ * @author Russell Newton, WaltonRobotics
  */
 public class MotionLogger {
+
 	private final LinkedList<MotionData> motionDataList;
 	private final String filePath;
 
 	/**
 	 * Call this in robotInit() before making the drivetrain
-	 * 
-	 * @param filePath
-	 *            - Where do you want to save the logs? To save to the roboRIO, use
-	 *            base directory "/home/lvuser/". To save to a thumb drive, use
-	 *            winSCP or similar program to find the right filepath
+	 *
+	 * @param filePath - Where do you want to save the logs? To save to the roboRIO, use base
+	 * directory "/home/lvuser/". To save to a thumb drive, use winSCP or similar program to find
+	 * the right filepath
 	 */
 	public MotionLogger(String filePath) {
-		motionDataList = new LinkedList<MotionData>();
+		motionDataList = new LinkedList<>();
 		this.filePath = filePath;
 	}
 
 	/**
-	 * This is called in the MotionController to add MotionData to the
-	 * motionDataList that MotionLogger has
-	 * 
-	 * @param dataAdd
+	 * This is called in the MotionController to add MotionData to the motionDataList that
+	 * MotionLogger has
 	 */
 	public void addMotionData(MotionData dataAdd) {
 		motionDataList.add(dataAdd);
@@ -123,5 +119,13 @@ public class MotionLogger {
 			System.out.println("There is no file at " + file);
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "MotionLogger{" +
+			"motionDataList=" + motionDataList +
+			", filePath='" + filePath + '\'' +
+			'}';
 	}
 }
