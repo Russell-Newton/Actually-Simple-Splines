@@ -7,12 +7,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4eda06af-254d-4d58-b011-187ef388e791" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/artifacts/Actually_Simple_Splines__For_Library__jar.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/lib.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/out/META-INF/MANIFEST.MF" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/out/artifacts/Actually_Simple_Splines__For_Library__jar/2974Splines.jar" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/Actually Simple Splines (For Library).iml" afterPath="$PROJECT_DIR$/Actually Simple Splines (For Library).iml" />
       <change beforePath="$PROJECT_DIR$/bin/org/waltonrobotics/AbstractDrivetrain.class" afterPath="$PROJECT_DIR$/bin/org/waltonrobotics/AbstractDrivetrain.class" />
       <change beforePath="$PROJECT_DIR$/bin/org/waltonrobotics/DebugCurves.class" afterPath="$PROJECT_DIR$/bin/org/waltonrobotics/DebugCurves.class" />
       <change beforePath="$PROJECT_DIR$/bin/org/waltonrobotics/MotionLogger.class" afterPath="$PROJECT_DIR$/bin/org/waltonrobotics/MotionLogger.class" />
@@ -27,19 +22,8 @@
       <change beforePath="$PROJECT_DIR$/bin/org/waltonrobotics/controller/State.class" afterPath="$PROJECT_DIR$/bin/org/waltonrobotics/controller/State.class" />
       <change beforePath="$PROJECT_DIR$/bin/org/waltonrobotics/motion/BezierCurve.class" afterPath="$PROJECT_DIR$/bin/org/waltonrobotics/motion/BezierCurve.class" />
       <change beforePath="$PROJECT_DIR$/bin/org/waltonrobotics/motion/Spline.class" afterPath="$PROJECT_DIR$/bin/org/waltonrobotics/motion/Spline.class" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/AbstractDrivetrain.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/AbstractDrivetrain.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/DebugCurves.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/DebugCurves.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/MotionLogger.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/MotionLogger.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/controller/ErrorVector.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/controller/ErrorVector.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/controller/MotionController.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/controller/MotionController.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/controller/MotionData.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/controller/MotionData.java" />
+      <change beforePath="$PROJECT_DIR$/out/artifacts/Actually_Simple_Splines__For_Library__jar/2974Splines.jar" afterPath="$PROJECT_DIR$/out/artifacts/Actually_Simple_Splines__For_Library__jar/2974Splines.jar" />
       <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/controller/Path.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/controller/Path.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/controller/PathData.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/controller/PathData.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/controller/Pose.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/controller/Pose.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/controller/RobotPair.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/controller/RobotPair.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/controller/State.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/controller/State.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/motion/BezierCurve.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/motion/BezierCurve.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/motion/Spline.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/motion/Spline.java" />
     </list>
     <ignored path="$PROJECT_DIR$/bin/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -61,11 +45,31 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BezierCurve.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="BezierCurve.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/motion/BezierCurve.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="350">
-              <caret line="20" column="13" lean-forward="false" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
+            <state relative-caret-position="-11">
+              <caret line="186" column="30" lean-forward="false" selection-start-line="186" selection-start-column="30" selection-end-line="186" selection-end-column="30" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MotionData.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/controller/MotionData.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="175">
+              <caret line="7" column="13" lean-forward="false" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ErrorVector.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/controller/ErrorVector.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="175">
+              <caret line="7" column="13" lean-forward="false" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -108,26 +112,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="125">
               <caret line="7" column="13" lean-forward="false" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Pose.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/controller/Pose.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2025">
-              <caret line="89" column="18" lean-forward="false" selection-start-line="89" selection-start-column="18" selection-end-line="89" selection-end-column="18" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RobotPair.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/controller/RobotPair.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1000">
-              <caret line="46" column="18" lean-forward="false" selection-start-line="46" selection-start-column="18" selection-end-line="46" selection-end-column="18" />
               <folding />
             </state>
           </provider>
@@ -221,6 +205,24 @@
             <path>
               <item name="Actually-Simple-Splines" type="b2602c69:ProjectViewProjectNode" />
               <item name="Actually-Simple-Splines" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Actually-Simple-Splines" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Actually-Simple-Splines" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Actually-Simple-Splines" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Actually-Simple-Splines" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="artifacts" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Actually-Simple-Splines" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Actually-Simple-Splines" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="artifacts" type="462c0819:PsiDirectoryNode" />
+              <item name="Actually_Simple_Splines__For_Library__jar" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Actually-Simple-Splines" type="b2602c69:ProjectViewProjectNode" />
@@ -374,12 +376,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1511992200269</updated>
-      <workItem from="1519414274185" duration="1041000" />
+      <workItem from="1519414274185" duration="1450000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2872000" />
+    <option name="totallyTimeSpent" value="3281000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-11" y="-11" width="1942" height="1102" extended-state="6" />
@@ -546,22 +548,6 @@
     <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/motion/Path.java" />
     <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/motion/curve/Spline.java" />
     <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/motion/curve/BezierCurve.java" />
-    <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/controller/ErrorVector.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="462">
-          <caret line="49" column="18" lean-forward="false" selection-start-line="49" selection-start-column="18" selection-end-line="49" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/controller/MotionData.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="437">
-          <caret line="60" column="18" lean-forward="false" selection-start-line="60" selection-start-column="18" selection-end-line="60" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/controller/Path.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1075">
@@ -646,8 +632,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/motion/BezierCurve.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="350">
-          <caret line="20" column="13" lean-forward="false" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
+        <state relative-caret-position="-11">
+          <caret line="186" column="30" lean-forward="false" selection-start-line="186" selection-start-column="30" selection-end-line="186" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/controller/MotionData.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="175">
+          <caret line="7" column="13" lean-forward="false" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/controller/ErrorVector.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="175">
+          <caret line="7" column="13" lean-forward="false" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
           <folding />
         </state>
       </provider>
