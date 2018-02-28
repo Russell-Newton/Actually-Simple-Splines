@@ -1,5 +1,6 @@
 package org.waltonrobotics.controller;
 
+import java.util.Collections;
 import java.util.ListIterator;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -67,9 +68,7 @@ public class MotionController {
 	 * @param paths - the paths to add to the queue
 	 */
 	public void addPaths(Path... paths) {
-		for (Path path : paths) {
-			this.paths.addLast(path);
-		}
+		Collections.addAll(this.paths, paths);
 	}
 
 	/**
