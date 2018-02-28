@@ -1,7 +1,7 @@
 package org.waltonrobotics.motion;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import org.waltonrobotics.controller.Path;
 import org.waltonrobotics.controller.PathData;
@@ -25,7 +25,7 @@ public class BezierCurve extends Path {
 	private final double startLCenter;
 	private final int numberOfSteps;
 	private final boolean isBackwards;
-	private final List<PathData> pathData;
+	private final LinkedList<PathData> pathData;
 	private final List<Pose> controlPoints;
 	private double curveLength = 0;
 	private double[] coefficients;
@@ -55,7 +55,7 @@ public class BezierCurve extends Path {
 		// The starting average encoder distance should always be 0
 		startLCenter = startPathData.getLCenter();
 		updateCoefficients();
-		pathData = new ArrayList<>(numberOfSteps);
+		pathData = new LinkedList<>();
 		getCurveLength();
 		setData(startPathData);
 	}
@@ -175,22 +175,16 @@ public class BezierCurve extends Path {
 			dy = controlPoints.get(controlPoints.size() - 1).getY()
 				- controlPoints.get(controlPoints.size() - 2).getY();
 		}
-		double angle = Math.atan2(dy, dx);
-		return angle;
+		return Math.atan2(dy, dx);
 	}
 
 	/**
 	 * Creates the PathData list
-	 *
-	 * @param startData - the starting PathData
 	 */
-	public void setData(PathData startData) {
-		PathData previousData = startData;
-		PathData currentData;
+	private void setData(PathData data) {
 		for (int i = 1; i <= numberOfSteps; i++) {
-			currentData = calculateData(previousData, getPoint((double) i / numberOfSteps));
-			pathData.add(currentData);
-			previousData = currentData;
+			data = calculateData(data, getPoint((double) i / numberOfSteps));
+			pathData.add(data);
 		}
 	}
 
@@ -260,7 +254,7 @@ public class BezierCurve extends Path {
 	}
 
 	@Override
-	public List<PathData> getPathData() {
+	public LinkedList<PathData> getPathData() {
 		return pathData;
 	}
 

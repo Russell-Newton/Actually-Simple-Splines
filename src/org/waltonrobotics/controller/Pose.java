@@ -72,9 +72,9 @@ public class Pose {
 	 */
 	public Pose rotate(Pose centerPoint, double arcAngle, boolean backwards) {
 		double distance = this.distance(centerPoint) * (backwards ? -1 : 1);
-		double y_displacement = distance * Math.sin(Math.toRadians(arcAngle));
-		double x_displacement = distance * Math.cos(Math.toRadians(arcAngle));
-		return new Pose(centerPoint.getX() + x_displacement, centerPoint.getY() + y_displacement);
+		double yDisplacement = distance * Math.sin(Math.toRadians(arcAngle));
+		double xDisplacement = distance * Math.cos(Math.toRadians(arcAngle));
+		return new Pose(centerPoint.getX() + xDisplacement, centerPoint.getY() + yDisplacement);
 	}
 
 	/**

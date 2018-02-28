@@ -1,6 +1,7 @@
 package org.waltonrobotics.controller;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -93,25 +94,31 @@ public class MotionController {
 
 			if (currentPath != null) {
 				targetPathData = interpolate(wheelPositions);
-			} else {
-				targetPathData = staticPathData;
+
+				if (currentPath.isFinished) {
+					LinkedList<PathData> temp = currentPath.getPathData();
+					currentPath = paths.pollFirst();
+					if (currentPath != null) {
+						double time = temp.getLast().getTime() - temp.getFirst().getTime();
+
+						//Used to allow smooth transition between motions not making assumption that it finishes perfectly on time
+						startingWheelPositions = new RobotPair(wheelPositions.getLeft(),
+							wheelPositions.getRight(), time + startingWheelPositions.getTime());
+
+						pdIterator = currentPath.getPathData().listIterator();
+						pdPrevious = targetPathData = pdIterator.next();
+						pdNext = pdIterator.next();
+					} else {
+						System.out.println("Done with motions! :)");
+					}
+				}
 			}
 
-			if (currentPath.isFinished) {
-				currentPath = paths.pollFirst();
-				if (currentPath != null) {
-					startingWheelPositions = wheelPositions;
-				} else {
-					System.out.println("Done with motions! :)");
-					return new RobotPair(0, 0, wheelPositions.getTime());
-				}
+			if (currentPath == null) {  // if there is absolutely no more paths at the moment
+				// says to not move
 				staticPathData = new PathData(new State(wheelPositions.getLeft(), 0, 0),
 					new State(wheelPositions.getRight(), 0, 0), new Pose(0, 0, 0), 0);
 				targetPathData = staticPathData;
-				pdIterator = currentPath.getPathData().listIterator();
-				pdPrevious = targetPathData = pdIterator.next();
-				pdNext = pdIterator.next();
-				return new RobotPair(0, 0, wheelPositions.getTime());
 			}
 
 			synchronized (this) {
@@ -127,6 +134,7 @@ public class MotionController {
 				steerPowerAngle = kAng * errorVector.getAngle();
 				centerPowerLag = kL * errorVector.getLag();
 			}
+
 			double centerPower = (leftPower + rightPower) / 2 + centerPowerLag;
 			double steerPower = Math.max(-1,
 				Math.min(1, (rightPower - leftPower) / 2 + steerPowerXTE + steerPowerAngle));
@@ -202,12 +210,14 @@ public class MotionController {
 			if (newPath != null) {
 				currentPath = newPath;
 				running = true;
+				actualPosition = currentPath.getPathData().get(0).getCenterPose();
+				previousLengths = startingWheelPositions = drivetrain.getWheelPositions();
+				pdIterator = currentPath.getPathData().listIterator();
+				pdPrevious = targetPathData = pdIterator.next();
+				pdNext = pdIterator.next();
+			} else {
+				running = false;
 			}
-			actualPosition = currentPath.getPathData().get(0).getCenterPose();
-			previousLengths = startingWheelPositions = drivetrain.getWheelPositions();
-			pdIterator = currentPath.getPathData().listIterator();
-			pdPrevious = targetPathData = pdIterator.next();
-			pdNext = pdIterator.next();
 		}
 	}
 

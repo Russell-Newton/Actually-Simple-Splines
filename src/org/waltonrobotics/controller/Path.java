@@ -1,5 +1,6 @@
 package org.waltonrobotics.controller;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -36,7 +37,7 @@ public abstract class Path {
 	 * @return the path data for the whole path
 	 * @see PathData
 	 */
-	public abstract List<PathData> getPathData();
+	public abstract LinkedList<PathData> getPathData();
 
 	@Override
 	public String toString() {
