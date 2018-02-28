@@ -7,20 +7,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4eda06af-254d-4d58-b011-187ef388e791" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/Actually_Simple_Splines__For_Library__jar.xml" afterPath="$PROJECT_DIR$/.idea/artifacts/Actually_Simple_Splines__For_Library__jar.xml" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/AbstractDrivetrain.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/AbstractDrivetrain.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/DebugCurves.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/DebugCurves.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/MotionLogger.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/MotionLogger.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/controller/ErrorVector.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/controller/ErrorVector.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/controller/MotionController.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/controller/MotionController.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/controller/MotionData.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/controller/MotionData.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/controller/Path.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/controller/Path.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/controller/PathData.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/controller/PathData.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/controller/Pose.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/controller/Pose.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/controller/RobotPair.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/controller/RobotPair.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/controller/State.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/controller/State.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/motion/BezierCurve.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/motion/BezierCurve.java" />
-      <change beforePath="$PROJECT_DIR$/src/org/waltonrobotics/motion/Spline.java" afterPath="$PROJECT_DIR$/src/org/waltonrobotics/motion/Spline.java" />
+      <change beforePath="$PROJECT_DIR$/bin/org/waltonrobotics/AbstractDrivetrain.class" afterPath="$PROJECT_DIR$/bin/org/waltonrobotics/AbstractDrivetrain.class" />
+      <change beforePath="$PROJECT_DIR$/bin/org/waltonrobotics/DebugCurves.class" afterPath="$PROJECT_DIR$/bin/org/waltonrobotics/DebugCurves.class" />
+      <change beforePath="$PROJECT_DIR$/bin/org/waltonrobotics/MotionLogger.class" afterPath="$PROJECT_DIR$/bin/org/waltonrobotics/MotionLogger.class" />
+      <change beforePath="$PROJECT_DIR$/bin/org/waltonrobotics/controller/ErrorVector.class" afterPath="$PROJECT_DIR$/bin/org/waltonrobotics/controller/ErrorVector.class" />
+      <change beforePath="$PROJECT_DIR$/bin/org/waltonrobotics/controller/MotionController$MotionTask.class" afterPath="$PROJECT_DIR$/bin/org/waltonrobotics/controller/MotionController$MotionTask.class" />
+      <change beforePath="$PROJECT_DIR$/bin/org/waltonrobotics/controller/MotionController.class" afterPath="$PROJECT_DIR$/bin/org/waltonrobotics/controller/MotionController.class" />
+      <change beforePath="$PROJECT_DIR$/bin/org/waltonrobotics/controller/MotionData.class" afterPath="$PROJECT_DIR$/bin/org/waltonrobotics/controller/MotionData.class" />
+      <change beforePath="$PROJECT_DIR$/bin/org/waltonrobotics/controller/Path.class" afterPath="$PROJECT_DIR$/bin/org/waltonrobotics/controller/Path.class" />
+      <change beforePath="$PROJECT_DIR$/bin/org/waltonrobotics/controller/PathData.class" afterPath="$PROJECT_DIR$/bin/org/waltonrobotics/controller/PathData.class" />
+      <change beforePath="$PROJECT_DIR$/bin/org/waltonrobotics/controller/Pose.class" afterPath="$PROJECT_DIR$/bin/org/waltonrobotics/controller/Pose.class" />
+      <change beforePath="$PROJECT_DIR$/bin/org/waltonrobotics/controller/RobotPair.class" afterPath="$PROJECT_DIR$/bin/org/waltonrobotics/controller/RobotPair.class" />
+      <change beforePath="$PROJECT_DIR$/bin/org/waltonrobotics/controller/State.class" afterPath="$PROJECT_DIR$/bin/org/waltonrobotics/controller/State.class" />
+      <change beforePath="$PROJECT_DIR$/bin/org/waltonrobotics/motion/BezierCurve.class" afterPath="$PROJECT_DIR$/bin/org/waltonrobotics/motion/BezierCurve.class" />
+      <change beforePath="$PROJECT_DIR$/bin/org/waltonrobotics/motion/Spline.class" afterPath="$PROJECT_DIR$/bin/org/waltonrobotics/motion/Spline.class" />
+      <change beforePath="$PROJECT_DIR$/out/artifacts/Actually_Simple_Splines__For_Library__jar/2974Splines.jar" afterPath="$PROJECT_DIR$/out/artifacts/Actually_Simple_Splines__For_Library__jar/2974Splines.jar" />
     </list>
     <ignored path="$PROJECT_DIR$/bin/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -47,8 +50,8 @@
       <file leaf-file-name="MotionController.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/controller/MotionController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="335" column="12" lean-forward="false" selection-start-line="335" selection-start-column="12" selection-end-line="335" selection-end-column="12" />
+            <state relative-caret-position="331">
+              <caret line="339" column="20" lean-forward="false" selection-start-line="339" selection-start-column="20" selection-end-line="339" selection-end-column="20" />
               <folding>
                 <element signature="e#1999#2000#0" expanded="true" />
                 <element signature="e#2043#2044#0" expanded="true" />
@@ -63,101 +66,12 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AbstractDrivetrain.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/AbstractDrivetrain.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="178">
-              <caret line="20" column="4" lean-forward="false" selection-start-line="20" selection-start-column="4" selection-end-line="20" selection-end-column="4" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MotionLogger.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/MotionLogger.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="178">
-              <caret line="60" column="51" lean-forward="false" selection-start-line="60" selection-start-column="51" selection-end-line="60" selection-end-column="51" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="BezierCurve.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/motion/BezierCurve.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-3625">
-              <caret line="20" column="13" lean-forward="false" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
-              <folding>
-                <element signature="e#4477#4478#0" expanded="true" />
-                <element signature="e#4516#4517#0" expanded="true" />
-                <element signature="e#8191#8192#0" expanded="true" />
-                <element signature="e#8213#8214#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DebugCurves.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="DebugCurves.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/DebugCurves.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="178">
-              <caret line="39" column="8" lean-forward="false" selection-start-line="39" selection-start-column="8" selection-end-line="39" selection-end-column="8" />
+            <state relative-caret-position="214">
+              <caret line="47" column="16" lean-forward="false" selection-start-line="47" selection-start-column="16" selection-end-line="47" selection-end-column="16" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Path.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/controller/Path.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1050">
-              <caret line="55" column="44" lean-forward="false" selection-start-line="55" selection-start-column="44" selection-end-line="55" selection-end-column="44" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#1115#1116#0" expanded="true" />
-                <element signature="e#1139#1140#0" expanded="true" />
-                <element signature="e#1195#1196#0" expanded="true" />
-                <element signature="e#1230#1231#0" expanded="true" />
-                <element signature="e#1269#1270#0" expanded="true" />
-                <element signature="e#1294#1295#0" expanded="true" />
-                <element signature="e#1360#1361#0" expanded="true" />
-                <element signature="e#1398#1399#0" expanded="true" />
-                <element signature="e#1422#1423#0" expanded="true" />
-                <element signature="e#1474#1475#0" expanded="true" />
-                <element signature="e#1502#1503#0" expanded="true" />
-                <element signature="e#1536#1537#0" expanded="true" />
-                <element signature="e#1554#1555#0" expanded="true" />
-                <element signature="e#1904#1905#0" expanded="true" />
-                <element signature="e#1925#1926#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Spline.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/motion/Spline.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="147">
-              <caret line="177" column="26" lean-forward="false" selection-start-line="177" selection-start-column="26" selection-end-line="177" selection-end-column="26" />
-              <folding>
-                <element signature="e#6153#6154#0" expanded="true" />
-                <element signature="e#6175#6176#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Pose.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/controller/Pose.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="189">
-              <caret line="61" column="43" lean-forward="false" selection-start-line="61" selection-start-column="43" selection-end-line="61" selection-end-column="43" />
-              <folding>
-                <marker date="1519792109221" expanded="true" signature="2051:2065" ph="{...}" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -198,7 +112,6 @@
         <option value="$PROJECT_DIR$/src/org/waltonrobotics/controller/PathData.java" />
         <option value="$PROJECT_DIR$/src/org/waltonrobotics/controller/RobotPair.java" />
         <option value="$PROJECT_DIR$/src/org/waltonrobotics/controller/State.java" />
-        <option value="$PROJECT_DIR$/src/org/waltonrobotics/DebugCurves.java" />
         <option value="$PROJECT_DIR$/src/org/waltonrobotics/AbstractDrivetrain.java" />
         <option value="$PROJECT_DIR$/src/org/waltonrobotics/controller/MotionController.java" />
         <option value="$PROJECT_DIR$/src/org/waltonrobotics/MotionLogger.java" />
@@ -206,6 +119,7 @@
         <option value="$PROJECT_DIR$/src/org/waltonrobotics/controller/Path.java" />
         <option value="$PROJECT_DIR$/src/org/waltonrobotics/motion/Spline.java" />
         <option value="$PROJECT_DIR$/src/org/waltonrobotics/motion/BezierCurve.java" />
+        <option value="$PROJECT_DIR$/src/org/waltonrobotics/DebugCurves.java" />
       </list>
     </option>
   </component>
@@ -241,6 +155,24 @@
             <path>
               <item name="Actually-Simple-Splines" type="b2602c69:ProjectViewProjectNode" />
               <item name="Actually-Simple-Splines" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Actually-Simple-Splines" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Actually-Simple-Splines" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Actually-Simple-Splines" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Actually-Simple-Splines" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="artifacts" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Actually-Simple-Splines" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Actually-Simple-Splines" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="artifacts" type="462c0819:PsiDirectoryNode" />
+              <item name="Actually_Simple_Splines__For_Library__jar" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Actually-Simple-Splines" type="b2602c69:ProjectViewProjectNode" />
@@ -352,6 +284,25 @@
       <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
       <module />
     </configuration>
+    <configuration name="DebugCurves" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="org.waltonrobotics.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="MAIN_CLASS_NAME" value="org.waltonrobotics.DebugCurves" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="Actually Simple Splines (For Library)" />
+      <envs />
+    </configuration>
     <configuration default="true" type="Application" factoryName="Application">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <option name="MAIN_CLASS_NAME" />
@@ -426,6 +377,11 @@
       <option name="PROGRAM_PARAMETERS" />
       <predefined_log_file id="idea.log" enabled="true" />
     </configuration>
+    <recent_temporary>
+      <list size="1">
+        <item index="0" class="java.lang.String" itemvalue="Application.DebugCurves" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
@@ -441,30 +397,32 @@
       <option name="presentableId" value="Default" />
       <updated>1511992200269</updated>
       <workItem from="1519414274185" duration="1450000" />
-      <workItem from="1519788405824" duration="3674000" />
+      <workItem from="1519788405824" duration="3831000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="10009000" />
+    <option name="totallyTimeSpent" value="10166000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-11" y="-11" width="1942" height="1102" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32998884" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32998884" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32998884" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.0490524" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2589189" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Inspection Results" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.6399108" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection Results" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.6399108" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -477,7 +435,6 @@
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32998884" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Run with VisualVM" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Debug with VisualVM" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
@@ -499,7 +456,7 @@
         <state relative-caret-position="275">
           <caret line="14" column="51" lean-forward="false" selection-start-line="14" selection-start-column="51" selection-end-line="14" selection-end-column="51" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="imports" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -538,8 +495,8 @@
         <state relative-caret-position="175">
           <caret line="7" column="13" lean-forward="false" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
           <folding>
-            <element signature="e#1041#1042#0" expanded="true" />
-            <element signature="e#1065#1066#0" expanded="true" />
+            <element signature="e#1041#1042#0" expanded="false" />
+            <element signature="e#1065#1066#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -580,7 +537,7 @@
         <state relative-caret-position="525">
           <caret line="21" column="29" lean-forward="false" selection-start-line="21" selection-start-column="29" selection-end-line="21" selection-end-column="29" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="imports" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -590,8 +547,8 @@
         <state relative-caret-position="975">
           <caret line="46" column="8" lean-forward="false" selection-start-line="46" selection-start-column="8" selection-end-line="46" selection-end-column="8" />
           <folding>
-            <element signature="e#6153#6154#0" expanded="true" />
-            <element signature="e#6175#6176#0" expanded="true" />
+            <element signature="e#6153#6154#0" expanded="false" />
+            <element signature="e#6175#6176#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -601,22 +558,22 @@
         <state relative-caret-position="475">
           <caret line="19" column="46" lean-forward="false" selection-start-line="19" selection-start-column="46" selection-end-line="19" selection-end-column="46" />
           <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1115#1116#0" expanded="true" />
-            <element signature="e#1139#1140#0" expanded="true" />
-            <element signature="e#1195#1196#0" expanded="true" />
-            <element signature="e#1230#1231#0" expanded="true" />
-            <element signature="e#1269#1270#0" expanded="true" />
-            <element signature="e#1294#1295#0" expanded="true" />
-            <element signature="e#1360#1361#0" expanded="true" />
-            <element signature="e#1398#1399#0" expanded="true" />
-            <element signature="e#1422#1423#0" expanded="true" />
-            <element signature="e#1474#1475#0" expanded="true" />
-            <element signature="e#1502#1503#0" expanded="true" />
-            <element signature="e#1536#1537#0" expanded="true" />
-            <element signature="e#1554#1555#0" expanded="true" />
-            <element signature="e#1904#1905#0" expanded="true" />
-            <element signature="e#1925#1926#0" expanded="true" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#1115#1116#0" expanded="false" />
+            <element signature="e#1139#1140#0" expanded="false" />
+            <element signature="e#1195#1196#0" expanded="false" />
+            <element signature="e#1230#1231#0" expanded="false" />
+            <element signature="e#1269#1270#0" expanded="false" />
+            <element signature="e#1294#1295#0" expanded="false" />
+            <element signature="e#1360#1361#0" expanded="false" />
+            <element signature="e#1398#1399#0" expanded="false" />
+            <element signature="e#1422#1423#0" expanded="false" />
+            <element signature="e#1474#1475#0" expanded="false" />
+            <element signature="e#1502#1503#0" expanded="false" />
+            <element signature="e#1536#1537#0" expanded="false" />
+            <element signature="e#1554#1555#0" expanded="false" />
+            <element signature="e#1904#1905#0" expanded="false" />
+            <element signature="e#1925#1926#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -643,10 +600,10 @@
         <state relative-caret-position="325">
           <caret line="46" column="57" lean-forward="false" selection-start-line="46" selection-start-column="57" selection-end-line="46" selection-end-column="57" />
           <folding>
-            <element signature="e#4477#4478#0" expanded="true" />
-            <element signature="e#4516#4517#0" expanded="true" />
-            <element signature="e#8191#8192#0" expanded="true" />
-            <element signature="e#8213#8214#0" expanded="true" />
+            <element signature="e#4477#4478#0" expanded="false" />
+            <element signature="e#4516#4517#0" expanded="false" />
+            <element signature="e#8191#8192#0" expanded="false" />
+            <element signature="e#8213#8214#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -673,10 +630,10 @@
         <state relative-caret-position="4950">
           <caret line="207" column="16" lean-forward="false" selection-start-line="207" selection-start-column="16" selection-end-line="207" selection-end-column="16" />
           <folding>
-            <element signature="e#4477#4478#0" expanded="true" />
-            <element signature="e#4516#4517#0" expanded="true" />
-            <element signature="e#8191#8192#0" expanded="true" />
-            <element signature="e#8213#8214#0" expanded="true" />
+            <element signature="e#4477#4478#0" expanded="false" />
+            <element signature="e#4516#4517#0" expanded="false" />
+            <element signature="e#8191#8192#0" expanded="false" />
+            <element signature="e#8213#8214#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -686,7 +643,7 @@
         <state relative-caret-position="325">
           <caret line="17" column="28" lean-forward="false" selection-start-line="17" selection-start-column="28" selection-end-line="17" selection-end-column="28" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="imports" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -704,22 +661,22 @@
         <state relative-caret-position="1075">
           <caret line="43" column="18" lean-forward="false" selection-start-line="43" selection-start-column="18" selection-end-line="43" selection-end-column="18" />
           <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1115#1116#0" expanded="true" />
-            <element signature="e#1139#1140#0" expanded="true" />
-            <element signature="e#1195#1196#0" expanded="true" />
-            <element signature="e#1230#1231#0" expanded="true" />
-            <element signature="e#1269#1270#0" expanded="true" />
-            <element signature="e#1294#1295#0" expanded="true" />
-            <element signature="e#1360#1361#0" expanded="true" />
-            <element signature="e#1398#1399#0" expanded="true" />
-            <element signature="e#1422#1423#0" expanded="true" />
-            <element signature="e#1474#1475#0" expanded="true" />
-            <element signature="e#1502#1503#0" expanded="true" />
-            <element signature="e#1536#1537#0" expanded="true" />
-            <element signature="e#1554#1555#0" expanded="true" />
-            <element signature="e#1904#1905#0" expanded="true" />
-            <element signature="e#1925#1926#0" expanded="true" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#1115#1116#0" expanded="false" />
+            <element signature="e#1139#1140#0" expanded="false" />
+            <element signature="e#1195#1196#0" expanded="false" />
+            <element signature="e#1230#1231#0" expanded="false" />
+            <element signature="e#1269#1270#0" expanded="false" />
+            <element signature="e#1294#1295#0" expanded="false" />
+            <element signature="e#1360#1361#0" expanded="false" />
+            <element signature="e#1398#1399#0" expanded="false" />
+            <element signature="e#1422#1423#0" expanded="false" />
+            <element signature="e#1474#1475#0" expanded="false" />
+            <element signature="e#1502#1503#0" expanded="false" />
+            <element signature="e#1536#1537#0" expanded="false" />
+            <element signature="e#1554#1555#0" expanded="false" />
+            <element signature="e#1904#1905#0" expanded="false" />
+            <element signature="e#1925#1926#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -729,8 +686,8 @@
         <state relative-caret-position="1650">
           <caret line="78" column="18" lean-forward="false" selection-start-line="78" selection-start-column="18" selection-end-line="78" selection-end-column="18" />
           <folding>
-            <element signature="e#1041#1042#0" expanded="true" />
-            <element signature="e#1065#1066#0" expanded="true" />
+            <element signature="e#1041#1042#0" expanded="false" />
+            <element signature="e#1065#1066#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -766,8 +723,8 @@
         <state relative-caret-position="4475">
           <caret line="189" column="18" lean-forward="false" selection-start-line="189" selection-start-column="18" selection-end-line="189" selection-end-column="18" />
           <folding>
-            <element signature="e#6153#6154#0" expanded="true" />
-            <element signature="e#6175#6176#0" expanded="true" />
+            <element signature="e#6153#6154#0" expanded="false" />
+            <element signature="e#6175#6176#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -802,10 +759,10 @@
         <state relative-caret-position="5125">
           <caret line="205" column="16" lean-forward="false" selection-start-line="205" selection-start-column="16" selection-end-line="205" selection-end-column="16" />
           <folding>
-            <element signature="e#4477#4478#0" expanded="true" />
-            <element signature="e#4516#4517#0" expanded="true" />
-            <element signature="e#8191#8192#0" expanded="true" />
-            <element signature="e#8213#8214#0" expanded="true" />
+            <element signature="e#4477#4478#0" expanded="false" />
+            <element signature="e#4516#4517#0" expanded="false" />
+            <element signature="e#8191#8192#0" expanded="false" />
+            <element signature="e#8213#8214#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -815,7 +772,7 @@
         <state relative-caret-position="275">
           <caret line="14" column="51" lean-forward="false" selection-start-line="14" selection-start-column="51" selection-end-line="14" selection-end-column="51" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="imports" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -844,8 +801,8 @@
         <state relative-caret-position="175">
           <caret line="7" column="13" lean-forward="false" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
           <folding>
-            <element signature="e#1041#1042#0" expanded="true" />
-            <element signature="e#1065#1066#0" expanded="true" />
+            <element signature="e#1041#1042#0" expanded="false" />
+            <element signature="e#1065#1066#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -863,24 +820,6 @@
         <state relative-caret-position="175">
           <caret line="7" column="13" lean-forward="false" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/DebugCurves.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="178">
-          <caret line="39" column="8" lean-forward="false" selection-start-line="39" selection-start-column="8" selection-end-line="39" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/AbstractDrivetrain.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="178">
-          <caret line="20" column="4" lean-forward="false" selection-start-line="20" selection-start-column="4" selection-end-line="20" selection-end-column="4" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -916,23 +855,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/controller/MotionController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="335" column="12" lean-forward="false" selection-start-line="335" selection-start-column="12" selection-end-line="335" selection-end-column="12" />
-          <folding>
-            <element signature="e#1999#2000#0" expanded="true" />
-            <element signature="e#2043#2044#0" expanded="true" />
-            <element signature="e#6596#6597#0" expanded="true" />
-            <element signature="e#6616#6617#0" expanded="true" />
-            <element signature="e#7434#7435#0" expanded="true" />
-            <element signature="e#7467#7468#0" expanded="true" />
-            <element signature="e#7561#7562#0" expanded="true" />
-            <element signature="e#7582#7583#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/MotionLogger.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="178">
@@ -956,22 +878,22 @@
         <state relative-caret-position="-1050">
           <caret line="55" column="44" lean-forward="false" selection-start-line="55" selection-start-column="44" selection-end-line="55" selection-end-column="44" />
           <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1115#1116#0" expanded="true" />
-            <element signature="e#1139#1140#0" expanded="true" />
-            <element signature="e#1195#1196#0" expanded="true" />
-            <element signature="e#1230#1231#0" expanded="true" />
-            <element signature="e#1269#1270#0" expanded="true" />
-            <element signature="e#1294#1295#0" expanded="true" />
-            <element signature="e#1360#1361#0" expanded="true" />
-            <element signature="e#1398#1399#0" expanded="true" />
-            <element signature="e#1422#1423#0" expanded="true" />
-            <element signature="e#1474#1475#0" expanded="true" />
-            <element signature="e#1502#1503#0" expanded="true" />
-            <element signature="e#1536#1537#0" expanded="true" />
-            <element signature="e#1554#1555#0" expanded="true" />
-            <element signature="e#1904#1905#0" expanded="true" />
-            <element signature="e#1925#1926#0" expanded="true" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#1115#1116#0" expanded="false" />
+            <element signature="e#1139#1140#0" expanded="false" />
+            <element signature="e#1195#1196#0" expanded="false" />
+            <element signature="e#1230#1231#0" expanded="false" />
+            <element signature="e#1269#1270#0" expanded="false" />
+            <element signature="e#1294#1295#0" expanded="false" />
+            <element signature="e#1360#1361#0" expanded="false" />
+            <element signature="e#1398#1399#0" expanded="false" />
+            <element signature="e#1422#1423#0" expanded="false" />
+            <element signature="e#1474#1475#0" expanded="false" />
+            <element signature="e#1502#1503#0" expanded="false" />
+            <element signature="e#1536#1537#0" expanded="false" />
+            <element signature="e#1554#1555#0" expanded="false" />
+            <element signature="e#1904#1905#0" expanded="false" />
+            <element signature="e#1925#1926#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -981,8 +903,18 @@
         <state relative-caret-position="147">
           <caret line="177" column="26" lean-forward="false" selection-start-line="177" selection-start-column="26" selection-end-line="177" selection-end-column="26" />
           <folding>
-            <element signature="e#6153#6154#0" expanded="true" />
-            <element signature="e#6175#6176#0" expanded="true" />
+            <element signature="e#6153#6154#0" expanded="false" />
+            <element signature="e#6175#6176#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/AbstractDrivetrain.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="178">
+          <caret line="20" column="4" lean-forward="false" selection-start-line="20" selection-start-column="4" selection-end-line="20" selection-end-column="4" />
+          <folding>
+            <element signature="imports" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -992,11 +924,36 @@
         <state relative-caret-position="-3625">
           <caret line="20" column="13" lean-forward="false" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
           <folding>
-            <element signature="e#4477#4478#0" expanded="true" />
-            <element signature="e#4516#4517#0" expanded="true" />
-            <element signature="e#8191#8192#0" expanded="true" />
-            <element signature="e#8213#8214#0" expanded="true" />
+            <element signature="e#4477#4478#0" expanded="false" />
+            <element signature="e#4516#4517#0" expanded="false" />
+            <element signature="e#8191#8192#0" expanded="false" />
+            <element signature="e#8213#8214#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/controller/MotionController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="331">
+          <caret line="339" column="20" lean-forward="false" selection-start-line="339" selection-start-column="20" selection-end-line="339" selection-end-column="20" />
+          <folding>
+            <element signature="e#1999#2000#0" expanded="true" />
+            <element signature="e#2043#2044#0" expanded="true" />
+            <element signature="e#6596#6597#0" expanded="true" />
+            <element signature="e#6616#6617#0" expanded="true" />
+            <element signature="e#7434#7435#0" expanded="true" />
+            <element signature="e#7467#7468#0" expanded="true" />
+            <element signature="e#7561#7562#0" expanded="true" />
+            <element signature="e#7582#7583#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/waltonrobotics/DebugCurves.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="214">
+          <caret line="47" column="16" lean-forward="false" selection-start-line="47" selection-start-column="16" selection-end-line="47" selection-end-column="16" />
+          <folding />
         </state>
       </provider>
     </entry>
