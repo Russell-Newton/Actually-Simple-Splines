@@ -1,5 +1,6 @@
 package org.waltonrobotics.controller;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,16 +11,20 @@ import java.util.List;
  */
 public abstract class Path {
 
-	public final double robotWidth;
-	public boolean isFinished;
-	protected double vCruise;
-	protected double aMax;
+	private static double robotWidth;
+	private final double vCruise;
+	private final double aMax;
+	private final boolean isBackwards;
+	private final List<Pose> keyPoints;
+	private boolean isFinished;
 
 	/**
 	 * @param vCruise - cruise velocity
 	 * @param aMax - max acceleration
 	 */
-	protected Path(double vCruise, double aMax, double robotWidth) {
+	public Path(double vCruise, double aMax, boolean isBackwards, List<Pose> keyPoints) {
+		this.isBackwards = isBackwards;
+		this.keyPoints = keyPoints;
 		if (vCruise == 0) {
 			throw new IllegalArgumentException("vCruise cannot be 0");
 		}
@@ -29,8 +34,39 @@ public abstract class Path {
 			throw new IllegalArgumentException("aMax cannot be 0");
 		}
 		this.aMax = aMax;
-		this.robotWidth = robotWidth;
 		isFinished = false;
+	}
+
+	public Path(double vCruise, double aMax, boolean isBackwards, Pose... keyPoints) {
+		this(vCruise, aMax, isBackwards, Arrays.asList(keyPoints));
+	}
+
+	public static double getRobotWidth() {
+		return robotWidth;
+	}
+
+	public static void setRobotWidth(double robotWidth) {
+		Path.robotWidth = robotWidth;
+	}
+
+	public final boolean isBackwards() {
+		return isBackwards;
+	}
+
+	public final List<Pose> getKeyPoints() {
+		return keyPoints;
+	}
+
+	public final boolean isFinished() {
+		return isFinished;
+	}
+
+	public final void setFinished(boolean finished) {
+		isFinished = finished;
+	}
+
+	public final double getAMax() {
+		return aMax;
 	}
 
 	/**
@@ -47,5 +83,9 @@ public abstract class Path {
 			", isFinished=" + isFinished +
 			", robotWidth=" + robotWidth +
 			'}';
+	}
+
+	public final double getVCruise() {
+		return vCruise;
 	}
 }

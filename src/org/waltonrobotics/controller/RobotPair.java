@@ -25,26 +25,26 @@ public class RobotPair {
 	/**
 	 * @return left
 	 */
-	public double getLeft() {
+	public final double getLeft() {
 		return left;
 	}
 
 	/**
 	 * @return right
 	 */
-	public double getRight() {
+	public final double getRight() {
 		return right;
 	}
 
 	/**
 	 * @return time
 	 */
-	public double getTime() {
+	public final double getTime() {
 		return time;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return "RobotPair{" +
 			"left=" + left +
 			", right=" + right +

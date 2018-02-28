@@ -24,27 +24,27 @@ public class ErrorVector {
 	/**
 	 * @return lag error
 	 */
-	public double getLag() {
+	public final double getLag() {
 		return lag;
 	}
 
 	/**
 	 * @return xtrack error
 	 */
-	public double getXTrack() {
+	public final double getXTrack() {
 		return crossTrack;
 	}
 
 	/**
 	 * @return angle error
 	 */
-	public double getAngle() {
+	public final double getAngle() {
 		return angle;
 	}
 
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return "ErrorVector{" +
 			"lag=" + lag +
 			", crossTrack=" + crossTrack +

@@ -35,40 +35,40 @@ public class PathData {
 	/**
 	 * @return leftState
 	 */
-	public State getLeftState() {
+	public final State getLeftState() {
 		return leftState;
 	}
 
 	/**
 	 * @return rightState
 	 */
-	public State getRightState() {
+	public final State getRightState() {
 		return rightState;
 	}
 
 	/**
 	 * @return centerPose
 	 */
-	public Pose getCenterPose() {
+	public final Pose getCenterPose() {
 		return centerPose;
 	}
 
 	/**
 	 * @return time
 	 */
-	public double getTime() {
+	public final double getTime() {
 		return time;
 	}
 
 	/**
 	 * @return the average length of the left and right States
 	 */
-	public double getLCenter() {
+	public final double getLCenter() {
 		return (leftState.getLength() + rightState.getLength()) / 2;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return "PathData{" +
 			"leftState=" + leftState +
 			", rightState=" + rightState +

@@ -25,33 +25,33 @@ public class MotionData {
 	/**
 	 * @return actualPose
 	 */
-	public Pose getActualPose() {
+	public final Pose getActualPose() {
 		return actual;
 	}
 
 	/**
 	 * @return targetPose
 	 */
-	public Pose getTargetPose() {
+	public final Pose getTargetPose() {
 		return target;
 	}
 
 	/**
 	 * @return error ErrorVector
 	 */
-	public ErrorVector getError() {
+	public final ErrorVector getError() {
 		return error;
 	}
 
 	/**
 	 * @return powers and time RobotPair
 	 */
-	public RobotPair getPowers() {
+	public final RobotPair getPowers() {
 		return powers;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return "MotionData{" +
 			"actual=" + actual +
 			", target=" + target +

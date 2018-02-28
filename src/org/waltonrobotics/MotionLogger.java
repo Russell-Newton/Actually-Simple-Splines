@@ -1,9 +1,12 @@
 package org.waltonrobotics;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.AbstractList;
 import java.util.Date;
 import java.util.LinkedList;
 import org.waltonrobotics.controller.MotionData;
@@ -15,7 +18,7 @@ import org.waltonrobotics.controller.MotionData;
  */
 public class MotionLogger {
 
-	private final LinkedList<MotionData> motionDataList;
+	private final AbstractList<MotionData> motionDataList;
 	private final String filePath;
 
 	/**
@@ -34,29 +37,28 @@ public class MotionLogger {
 	 * This is called in the MotionController to add MotionData to the motionDataList that
 	 * MotionLogger has
 	 */
-	public void addMotionData(MotionData dataAdd) {
+	public final void addMotionData(MotionData dataAdd) {
 		motionDataList.add(dataAdd);
 	}
 
 	/**
 	 * Call this in autonomousInit() to clear the motionDataList
 	 */
-	public void initialize() {
+	public final void initialize() {
 		motionDataList.clear();
 	}
 
 	/**
 	 * Call this in disabledInit() to send the motionDataList to a .csv file.
 	 */
-	public void writeMotionDataCSV() {
+	public final void writeMotionDataCSV() {
 		if (motionDataList.isEmpty()) {
 			return;
 		}
 		String fileName = new SimpleDateFormat("yyyy-MM-dd hh-mm-ss").format(new Date());
 		File file = new File(filePath + fileName + ".csv");
-		PrintWriter pw;
 
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder(204800);
 		sb.append("Time");
 		sb.append(", ");
 		sb.append("xActual");
@@ -109,20 +111,21 @@ public class MotionLogger {
 			sb.append('\n');
 		}
 
-		try {
-			pw = new PrintWriter(file);
+		try (BufferedWriter bf = new BufferedWriter(new FileWriter(file), 32768)) {
 			System.out.println("File " + fileName + " has been made!");
-			pw.write(sb.toString());
-			pw.flush();
-			pw.close();
+			bf.write(sb.toString());
+//			pw.flush();
+//			pw.close();
 		} catch (FileNotFoundException e) {
 			System.out.println("There is no file at " + file);
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return "MotionLogger{" +
 			"motionDataList=" + motionDataList +
 			", filePath='" + filePath + '\'' +

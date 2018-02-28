@@ -24,11 +24,12 @@ public class MotionController {
 	private final double kS;
 	private final double kL;
 	private final double kAng;
-	private BlockingDeque<Path> paths = new LinkedBlockingDeque<>();
-	private Timer controller;
+	private final BlockingDeque<Path> paths = new LinkedBlockingDeque<>();
+	private final Timer controller;
+	private final int period;
+	private final MotionLogger motionLogger;
 	private boolean running;
-	private int period;
-	private Path currentPath = null;
+	private Path currentPath;
 	private PathData staticPathData;
 	private Pose actualPosition;
 	private PathData targetPathData;
@@ -38,7 +39,6 @@ public class MotionController {
 	private PathData pdPrevious;
 	private PathData pdNext;
 	private ErrorVector errorVector;
-	private MotionLogger motionLogger;
 	private RobotPair powers;
 
 	/**
@@ -51,16 +51,16 @@ public class MotionController {
 		this.motionLogger = motionLogger;
 
 		controller = new Timer();
-		this.period = 5;
+		period = 5;
 		controller.schedule(new MotionTask(), 0L, (long) period);
 
 		this.drivetrain = drivetrain;
-		this.kV = drivetrain.getKV();
-		this.kK = drivetrain.getKK();
-		this.kAcc = drivetrain.getKAcc();
-		this.kS = drivetrain.getKS();
-		this.kL = drivetrain.getKL();
-		this.kAng = drivetrain.getKAng();
+		kV = drivetrain.getKV();
+		kK = drivetrain.getKK();
+		kAcc = drivetrain.getKAcc();
+		kS = drivetrain.getKS();
+		kL = drivetrain.getKL();
+		kAng = drivetrain.getKAng();
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class MotionController {
 	 *
 	 * @param paths - the paths to add to the queue
 	 */
-	public void addPaths(Path... paths) {
+	public final void addPaths(Path... paths) {
 		Collections.addAll(this.paths, paths);
 	}
 
@@ -87,7 +87,7 @@ public class MotionController {
 		double centerPowerLag;
 
 		synchronized (this) {
-			enabled = this.running;
+			enabled = running;
 		}
 
 		if (enabled) {
@@ -95,7 +95,7 @@ public class MotionController {
 			if (currentPath != null) {
 				targetPathData = interpolate(wheelPositions);
 
-				if (currentPath.isFinished) {
+				if (currentPath.isFinished()) {
 					LinkedList<PathData> temp = currentPath.getPathData();
 					currentPath = paths.pollFirst();
 					if (currentPath != null) {
@@ -123,21 +123,21 @@ public class MotionController {
 
 			synchronized (this) {
 				// feed forward
-				leftPower += (kV * targetPathData.getLeftState().getVelocity()
-					+ kK * Math.signum(targetPathData.getLeftState().getVelocity()))
-					+ kAcc * targetPathData.getLeftState().getAcceleration();
-				rightPower += (kV * targetPathData.getRightState().getVelocity()
-					+ kK * Math.signum(targetPathData.getRightState().getVelocity()))
-					+ kAcc * targetPathData.getRightState().getAcceleration();
+				leftPower += ((kV * targetPathData.getLeftState().getVelocity())
+					+ (kK * Math.signum(targetPathData.getLeftState().getVelocity())))
+					+ (kAcc * targetPathData.getLeftState().getAcceleration());
+				rightPower += ((kV * targetPathData.getRightState().getVelocity())
+					+ (kK * Math.signum(targetPathData.getRightState().getVelocity())))
+					+ (kAcc * targetPathData.getRightState().getAcceleration());
 				// feed back
 				steerPowerXTE = kS * errorVector.getXTrack();
 				steerPowerAngle = kAng * errorVector.getAngle();
 				centerPowerLag = kL * errorVector.getLag();
 			}
 
-			double centerPower = (leftPower + rightPower) / 2 + centerPowerLag;
+			double centerPower = ((leftPower + rightPower) / 2) + centerPowerLag;
 			double steerPower = Math.max(-1,
-				Math.min(1, (rightPower - leftPower) / 2 + steerPowerXTE + steerPowerAngle));
+				Math.min(1, ((rightPower - leftPower) / 2) + steerPowerXTE + steerPowerAngle));
 			centerPower = Math
 				.max(-1 + Math.abs(steerPower), Math.min(1 - Math.abs(steerPower), centerPower));
 			return new RobotPair(centerPower - steerPower, centerPower + steerPower,
@@ -159,7 +159,7 @@ public class MotionController {
 				pdNext = pdIterator.next();
 			} else {
 				pdPrevious = pdNext;
-				currentPath.isFinished = true;
+				currentPath.setFinished(true);
 				return pdNext;
 			}
 		}
@@ -173,16 +173,19 @@ public class MotionController {
 			(currentTime - timePrevious) / dTime; // Ratio of the previous time to the current pose
 		// time
 
-		double lengthLeft = (pdPrevious.getLeftState().getLength()) * rctn
-			+ (pdNext.getLeftState().getLength()) * rltc;
-		double lengthRight = (pdPrevious.getRightState().getLength()) * rctn
-			+ (pdNext.getRightState().getLength()) * rltc;
+		double lengthLeft = ((pdPrevious.getLeftState().getLength()) * rctn)
+			+ ((pdNext.getLeftState().getLength()) * rltc);
+		double lengthRight = ((pdPrevious.getRightState().getLength()) * rctn)
+			+ ((pdNext.getRightState().getLength()) * rltc);
 
 		// Current pose is made from the weighted average of the x, y, and angle values
-		double x = pdPrevious.getCenterPose().getX() * rctn + pdNext.getCenterPose().getX() * rltc;
-		double y = pdPrevious.getCenterPose().getY() * rctn + pdNext.getCenterPose().getY() * rltc;
+		double x =
+			(pdPrevious.getCenterPose().getX() * rctn) + (pdNext.getCenterPose().getX() * rltc);
+		double y =
+			(pdPrevious.getCenterPose().getY() * rctn) + (pdNext.getCenterPose().getY() * rltc);
 		double angle =
-			pdPrevious.getCenterPose().getAngle() * rctn + pdNext.getCenterPose().getAngle() * rltc;
+			(pdPrevious.getCenterPose().getAngle() * rctn) + (pdNext.getCenterPose().getAngle()
+				* rltc);
 
 		State left = new State(lengthLeft, pdNext.getLeftState().getVelocity(),
 			pdNext.getLeftState().getAcceleration());
@@ -195,14 +198,14 @@ public class MotionController {
 	/**
 	 * Removes all queued motions
 	 */
-	public void clearMotions() {
+	public final void clearMotions() {
 		paths.clear();
 	}
 
 	/**
 	 * Starts the queue of motions
 	 */
-	public void enableScheduler() {
+	public final void enableScheduler() {
 		if (!running) {
 			staticPathData = new PathData(new State(drivetrain.getWheelPositions().getLeft(), 0, 0),
 				new State(drivetrain.getWheelPositions().getRight(), 0, 0), new Pose(0, 0, 0), 0);
@@ -224,21 +227,21 @@ public class MotionController {
 	/**
 	 * @return Whether or not the queue has ended
 	 */
-	public boolean isFinished() {
+	public final boolean isFinished() {
 		return currentPath == null;
 	}
 
 	/**
 	 * @return Whether or not a motion is running
 	 */
-	public boolean isRunning() {
+	public final boolean isRunning() {
 		return running;
 	}
 
 	/**
 	 * Pauses the motions,
 	 */
-	public void stopScheduler() {
+	public final void stopScheduler() {
 		running = false;
 		currentPath = null;
 		controller.cancel();
@@ -251,18 +254,22 @@ public class MotionController {
 	private void updateActualPosition(RobotPair wheelPositions) {
 		double arcLeft = wheelPositions.getLeft() - previousLengths.getLeft();
 		double arcRight = wheelPositions.getRight() - previousLengths.getRight();
-		double dAngle = (arcRight - arcLeft) / currentPath.robotWidth;
+		double dAngle = (arcRight - arcLeft) / Path.getRobotWidth();
 		double arcCenter = (arcRight + arcLeft) / 2;
 		double dX;
 		double dY;
 		if (Math.abs(dAngle) < 0.01) {
-			dX = arcCenter * Math.cos(actualPosition.getAngle());
-			dY = arcCenter * Math.sin(actualPosition.getAngle());
+			dX = arcCenter * StrictMath.cos(actualPosition.getAngle());
+			dY = arcCenter * StrictMath.sin(actualPosition.getAngle());
 		} else {
-			dX = arcCenter * ((Math.sin(dAngle) * Math.cos(actualPosition.getAngle()) / dAngle)
-				- ((Math.cos(dAngle) - 1) * Math.sin(actualPosition.getAngle()) / dAngle));
-			dY = arcCenter * ((Math.sin(dAngle) * Math.sin(actualPosition.getAngle()) / dAngle)
-				- ((Math.cos(dAngle) - 1) * Math.cos(actualPosition.getAngle()) / dAngle));
+			dX = arcCenter * (
+				((StrictMath.sin(dAngle) * StrictMath.cos(actualPosition.getAngle())) / dAngle)
+					- (((StrictMath.cos(dAngle) - 1) * StrictMath.sin(actualPosition.getAngle()))
+					/ dAngle));
+			dY = arcCenter * (
+				((StrictMath.sin(dAngle) * StrictMath.sin(actualPosition.getAngle())) / dAngle)
+					- (((StrictMath.cos(dAngle) - 1) * StrictMath.cos(actualPosition.getAngle()))
+					/ dAngle));
 		}
 
 		actualPosition = actualPosition.offset(dX, dY, dAngle);
@@ -279,9 +286,9 @@ public class MotionController {
 		double dY = targetPose.getY() - actualPose.getY();
 		double angle = targetPose.getAngle();
 		// error in direction facing
-		double lagError = dX * Math.cos(angle) + dY * Math.sin(angle);
+		double lagError = (dX * StrictMath.cos(angle)) + (dY * StrictMath.sin(angle));
 		// error perpendicular to direction facing
-		double crossTrackError = -dX * Math.sin(angle) + dY * Math.cos(angle);
+		double crossTrackError = (-dX * StrictMath.sin(angle)) + (dY * StrictMath.cos(angle));
 		// the error of the current angle
 		double angleError = targetPose.getAngle() - actualPose.getAngle();
 		if (angleError > Math.PI) {
@@ -293,7 +300,7 @@ public class MotionController {
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return "MotionController{" +
 			"paths=" + paths +
 			", controller=" + controller +
@@ -329,7 +336,7 @@ public class MotionController {
 	private class MotionTask extends TimerTask {
 
 		@Override
-		public void run() {
+		public final void run() {
 			if (currentPath != null) {
 				RobotPair wheelPositions = drivetrain.getWheelPositions();
 				updateActualPosition(wheelPositions);

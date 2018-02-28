@@ -25,26 +25,26 @@ public class State {
 	/**
 	 * @return length
 	 */
-	public double getLength() {
+	public final double getLength() {
 		return length;
 	}
 
 	/**
 	 * @return velocity
 	 */
-	public double getVelocity() {
+	public final double getVelocity() {
 		return velocity;
 	}
 
 	/**
 	 * @return acceleration
 	 */
-	public double getAcceleration() {
+	public final double getAcceleration() {
 		return acceleration;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return "State{" +
 			"length=" + length +
 			", velocity=" + velocity +

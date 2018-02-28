@@ -33,21 +33,21 @@ public class Pose {
 	/**
 	 * @return the x value of the point
 	 */
-	public double getX() {
+	public final double getX() {
 		return x;
 	}
 
 	/**
 	 * @return the y value of the point
 	 */
-	public double getY() {
+	public final double getY() {
 		return y;
 	}
 
 	/**
 	 * @return the derivative of the point
 	 */
-	public double getAngle() {
+	public final double getAngle() {
 		return angle;
 	}
 
@@ -57,9 +57,10 @@ public class Pose {
 	 * @param otherPoint - the point you want to find the distance from
 	 * @return the distance from this point to the other point
 	 */
-	public double distance(Pose otherPoint) {
+	public final double distance(Pose otherPoint) {
 		return Math.sqrt(
-			Math.pow(this.x - otherPoint.getX(), 2) + Math.pow(this.y - otherPoint.getY(), 2));
+			StrictMath.pow(x - otherPoint.x, 2) + StrictMath
+				.pow(y - otherPoint.y, 2));
 	}
 
 	/**
@@ -70,11 +71,11 @@ public class Pose {
 	 * @param backwards - whether or not to rotate the point backwards (clockwise)
 	 * @return the rotated point
 	 */
-	public Pose rotate(Pose centerPoint, double arcAngle, boolean backwards) {
-		double distance = this.distance(centerPoint) * (backwards ? -1 : 1);
-		double yDisplacement = distance * Math.sin(Math.toRadians(arcAngle));
-		double xDisplacement = distance * Math.cos(Math.toRadians(arcAngle));
-		return new Pose(centerPoint.getX() + xDisplacement, centerPoint.getY() + yDisplacement);
+	public final Pose rotate(Pose centerPoint, double arcAngle, boolean backwards) {
+		double distance = distance(centerPoint) * (backwards ? -1 : 1);
+		double yDisplacement = distance * StrictMath.sin(Math.toRadians(arcAngle));
+		double xDisplacement = distance * StrictMath.cos(Math.toRadians(arcAngle));
+		return new Pose(centerPoint.x + xDisplacement, centerPoint.y + yDisplacement);
 	}
 
 	/**
@@ -82,12 +83,12 @@ public class Pose {
 	 *
 	 * @return the offset Pose
 	 */
-	public Pose offset(double dX, double dY, double dAngle) {
-		return new Pose(this.x + dX, this.y + dY, this.angle + dAngle);
+	public final Pose offset(double dX, double dY, double dAngle) {
+		return new Pose(x + dX, y + dY, angle + dAngle);
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return "Pose{" +
 			"x=" + x +
 			", y=" + y +

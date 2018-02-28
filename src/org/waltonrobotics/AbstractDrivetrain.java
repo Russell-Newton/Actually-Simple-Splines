@@ -12,13 +12,13 @@ import org.waltonrobotics.controller.RobotPair;
  */
 public abstract class AbstractDrivetrain extends Subsystem {
 
-	public MotionController controller;
+	private final MotionController controller;
 
 	/**
 	 * Create the static drivetrain after creating the motion logger so you can use the
 	 * MotionContoller
 	 */
-	public AbstractDrivetrain(MotionLogger motionLogger) {
+	protected AbstractDrivetrain(MotionLogger motionLogger) {
 		controller = new MotionController(this, motionLogger);
 	}
 
@@ -37,42 +37,42 @@ public abstract class AbstractDrivetrain extends Subsystem {
 	/**
 	 * @return whether or not the MotionController is running
 	 */
-	public boolean getControllerStatus() {
+	public final boolean getControllerStatus() {
 		return controller.isRunning();
 	}
 
 	/**
 	 * Starts the MotionController
 	 */
-	public void startControllerMotion() {
+	public final void startControllerMotion() {
 		controller.enableScheduler();
 	}
 
 	/**
 	 * Cancels the MotionController
 	 */
-	public void cancelControllerMotion() {
+	public final void cancelControllerMotion() {
 		controller.stopScheduler();
 	}
 
 	/**
 	 * Clears the current queue
 	 */
-	public void clearControllerMotions() {
+	public final void clearControllerMotions() {
 		controller.clearMotions();
 	}
 
 	/**
 	 * @param paths - paths to add to the MotionController queue
 	 */
-	public void addControllerMotions(Path... paths) {
+	public final void addControllerMotions(Path... paths) {
 		controller.addPaths(paths);
 	}
 
 	/**
 	 * @return if the robot has completed all motions
 	 */
-	public boolean isControllerFinished() {
+	public final boolean isControllerFinished() {
 		return controller.isFinished();
 	}
 
