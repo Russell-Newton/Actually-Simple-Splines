@@ -43,10 +43,13 @@ public class MotionController {
 
 	/**
 	 * @param drivetrain - the drivetrain to use the AbstractDrivetrain methods from
+	 * @param robotWidth - the robot width from the outside of the wheels
 	 * @param motionLogger - the MotionLogger from the AbstractDrivetrain
 	 */
-	public MotionController(AbstractDrivetrain drivetrain, MotionLogger motionLogger) {
+	public MotionController(AbstractDrivetrain drivetrain, double robotWidth,
+		MotionLogger motionLogger) {
 		running = false;
+		Path.setRobotWidth(robotWidth);
 
 		this.motionLogger = motionLogger;
 
@@ -61,6 +64,14 @@ public class MotionController {
 		kS = drivetrain.getKS();
 		kL = drivetrain.getKL();
 		kAng = drivetrain.getKAng();
+	}
+
+	/**
+	 * @param drivetrain - the drivetrain to use the AbstractDrivetrain methods from
+	 * @param motionLogger - the MotionLogger from the AbstractDrivetrain
+	 */
+	public MotionController(AbstractDrivetrain drivetrain, MotionLogger motionLogger) {
+		this(drivetrain, 0, motionLogger);
 	}
 
 	/**
