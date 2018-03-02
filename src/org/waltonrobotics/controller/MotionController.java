@@ -25,7 +25,7 @@ public class MotionController {
 	private final double kL;
 	private final double kAng;
 	private final BlockingDeque<Path> paths = new LinkedBlockingDeque<>();
-	private final Timer controller;
+	private Timer controller;
 	private final int period;
 	private final MotionLogger motionLogger;
 	private boolean running;
@@ -112,13 +112,20 @@ public class MotionController {
 						pdIterator = currentPath.getPathData().listIterator();
 						pdPrevious = targetPathData = pdIterator.next();
 						pdNext = pdIterator.next();
+
+						staticPathData = null;
 					} else {
 						System.out.println("Done with motions! :)");
+
+						//FIXME make thisi less messy
+						staticPathData = new PathData(new State(wheelPositions.getLeft(), 0, 0),
+							new State(wheelPositions.getRight(), 0, 0), new Pose(0, 0, 0), 0);
+						targetPathData = staticPathData;
 					}
 				}
 			}
 
-			if (currentPath == null) {  // if there is absolutely no more paths at the moment
+			if (currentPath == null && staticPathData == null) {  // if there is absolutely no more paths at the moment
 				// says to not move
 				staticPathData = new PathData(new State(wheelPositions.getLeft(), 0, 0),
 					new State(wheelPositions.getRight(), 0, 0), new Pose(0, 0, 0), 0);
@@ -221,6 +228,7 @@ public class MotionController {
 				pdPrevious = targetPathData = pdIterator.next();
 				pdNext = pdIterator.next();
 
+				controller = new Timer(); //FIXME make this more efficient
 				controller.schedule(new MotionTask(), 0L, (long) period);
 			} else {
 				running = false;
