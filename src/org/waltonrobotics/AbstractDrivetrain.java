@@ -19,7 +19,7 @@ public abstract class AbstractDrivetrain extends Subsystem {
 	 * MotionContoller
 	 */
 	protected AbstractDrivetrain(MotionLogger motionLogger) {
-		controller = new MotionController(this,  getRobotWidth() ,motionLogger);
+		controller = new MotionController(this, getRobotWidth(), motionLogger);
 	}
 
 	/**
@@ -30,7 +30,8 @@ public abstract class AbstractDrivetrain extends Subsystem {
 	public abstract RobotPair getWheelPositions();
 
 	/**
-	 * return the width of t he robot from teh outside of the wheel on the left side and the right side
+	 * return the width of t he robot from teh outside of the wheel on the left side and the right
+	 * side
 	 *
 	 * @return a double informing the width of the robot
 	 */

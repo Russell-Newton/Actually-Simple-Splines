@@ -37,21 +37,21 @@ public class MotionLogger {
 	 * This is called in the MotionController to add MotionData to the motionDataList that
 	 * MotionLogger has
 	 */
-	public final void addMotionData(MotionData dataAdd) {
+	public final synchronized void addMotionData(MotionData dataAdd) {
 		motionDataList.add(dataAdd);
 	}
 
 	/**
 	 * Call this in autonomousInit() to clear the motionDataList
 	 */
-	public final void initialize() {
+	public synchronized final void initialize() {
 		motionDataList.clear();
 	}
 
 	/**
 	 * Call this in disabledInit() to send the motionDataList to a .csv file.
 	 */
-	public final void writeMotionDataCSV() {
+	public synchronized final void writeMotionDataCSV() {
 		if (motionDataList.isEmpty()) {
 			return;
 		}

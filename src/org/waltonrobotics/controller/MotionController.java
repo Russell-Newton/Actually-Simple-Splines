@@ -55,7 +55,6 @@ public class MotionController {
 
 		controller = new Timer();
 		period = 5;
-		controller.schedule(new MotionTask(), 0L, (long) period);
 
 		this.drivetrain = drivetrain;
 		kV = drivetrain.getKV();
@@ -88,21 +87,15 @@ public class MotionController {
 	 *
 	 * @return a RobotPair with the powers and the time
 	 */
-	private RobotPair calculateSpeeds(RobotPair wheelPositions) {
+	private synchronized RobotPair calculateSpeeds(RobotPair wheelPositions) {
 
 		double leftPower = 0;
 		double rightPower = 0;
-		boolean enabled;
 		double steerPowerXTE;
 		double steerPowerAngle;
 		double centerPowerLag;
 
-		synchronized (this) {
-			enabled = running;
-		}
-
-		if (enabled) {
-
+		if (running) {
 			if (currentPath != null) {
 				targetPathData = interpolate(wheelPositions);
 
@@ -132,19 +125,17 @@ public class MotionController {
 				targetPathData = staticPathData;
 			}
 
-			synchronized (this) {
-				// feed forward
-				leftPower += ((kV * targetPathData.getLeftState().getVelocity())
-					+ (kK * Math.signum(targetPathData.getLeftState().getVelocity())))
-					+ (kAcc * targetPathData.getLeftState().getAcceleration());
-				rightPower += ((kV * targetPathData.getRightState().getVelocity())
-					+ (kK * Math.signum(targetPathData.getRightState().getVelocity())))
-					+ (kAcc * targetPathData.getRightState().getAcceleration());
-				// feed back
-				steerPowerXTE = kS * errorVector.getXTrack();
-				steerPowerAngle = kAng * errorVector.getAngle();
-				centerPowerLag = kL * errorVector.getLag();
-			}
+			// feed forward
+			leftPower += ((kV * targetPathData.getLeftState().getVelocity())
+				+ (kK * Math.signum(targetPathData.getLeftState().getVelocity())))
+				+ (kAcc * targetPathData.getLeftState().getAcceleration());
+			rightPower += ((kV * targetPathData.getRightState().getVelocity())
+				+ (kK * Math.signum(targetPathData.getRightState().getVelocity())))
+				+ (kAcc * targetPathData.getRightState().getAcceleration());
+			// feed back
+			steerPowerXTE = kS * errorVector.getXTrack();
+			steerPowerAngle = kAng * errorVector.getAngle();
+			centerPowerLag = kL * errorVector.getLag();
 
 			double centerPower = ((leftPower + rightPower) / 2) + centerPowerLag;
 			double steerPower = Math.max(-1,
@@ -209,14 +200,14 @@ public class MotionController {
 	/**
 	 * Removes all queued motions
 	 */
-	public final void clearMotions() {
+	public synchronized final void clearMotions() {
 		paths.clear();
 	}
 
 	/**
 	 * Starts the queue of motions
 	 */
-	public final void enableScheduler() {
+	public synchronized final void enableScheduler() {
 		if (!running) {
 			staticPathData = new PathData(new State(drivetrain.getWheelPositions().getLeft(), 0, 0),
 				new State(drivetrain.getWheelPositions().getRight(), 0, 0), new Pose(0, 0, 0), 0);
@@ -229,6 +220,8 @@ public class MotionController {
 				pdIterator = currentPath.getPathData().listIterator();
 				pdPrevious = targetPathData = pdIterator.next();
 				pdNext = pdIterator.next();
+
+				controller.schedule(new MotionTask(), 0L, (long) period);
 			} else {
 				running = false;
 			}
@@ -252,10 +245,11 @@ public class MotionController {
 	/**
 	 * Pauses the motions,
 	 */
-	public final void stopScheduler() {
+	public synchronized final void stopScheduler() {
 		running = false;
-		currentPath = null;
 		controller.cancel();
+		controller.purge();
+		currentPath = null;
 		drivetrain.setSpeeds(0, 0);
 	}
 
