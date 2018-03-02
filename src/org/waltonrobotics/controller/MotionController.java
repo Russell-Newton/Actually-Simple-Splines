@@ -25,9 +25,9 @@ public class MotionController {
 	private final double kL;
 	private final double kAng;
 	private final BlockingDeque<Path> paths = new LinkedBlockingDeque<>();
-	private Timer controller;
 	private final int period;
 	private final MotionLogger motionLogger;
+	private Timer controller;
 	private boolean running;
 	private Path currentPath;
 	private PathData staticPathData;
@@ -40,6 +40,7 @@ public class MotionController {
 	private PathData pdNext;
 	private ErrorVector errorVector;
 	private RobotPair powers;
+	private TimerTask currentTimerTask;
 
 	/**
 	 * @param drivetrain - the drivetrain to use the AbstractDrivetrain methods from
@@ -109,7 +110,7 @@ public class MotionController {
 						startingWheelPositions = new RobotPair(wheelPositions.getLeft(),
 							wheelPositions.getRight(), time + startingWheelPositions.getTime());
 
-						pdIterator = currentPath.getPathData().listIterator();
+						pdIterator = this.currentPath.getPathData().listIterator();
 						pdPrevious = targetPathData = pdIterator.next();
 						pdNext = pdIterator.next();
 
@@ -117,7 +118,7 @@ public class MotionController {
 					} else {
 						System.out.println("Done with motions! :)");
 
-						//FIXME make thisi less messy
+						//FIXME make this less messy
 						staticPathData = new PathData(new State(wheelPositions.getLeft(), 0, 0),
 							new State(wheelPositions.getRight(), 0, 0), new Pose(0, 0, 0), 0);
 						targetPathData = staticPathData;
@@ -125,8 +126,11 @@ public class MotionController {
 				}
 			}
 
-			if (currentPath == null && staticPathData == null) {  // if there is absolutely no more paths at the moment
+			if (currentPath == null
+				&& staticPathData == null) {  // if there is absolutely no more paths at the moment
 				// says to not move
+
+				//FIXME make it so that this scenario only runs when there is
 				staticPathData = new PathData(new State(wheelPositions.getLeft(), 0, 0),
 					new State(wheelPositions.getRight(), 0, 0), new Pose(0, 0, 0), 0);
 				targetPathData = staticPathData;
@@ -228,8 +232,8 @@ public class MotionController {
 				pdPrevious = targetPathData = pdIterator.next();
 				pdNext = pdIterator.next();
 
-				controller = new Timer(); //FIXME make this more efficient
-				controller.schedule(new MotionTask(), 0L, (long) period);
+				currentTimerTask = new MotionTask();
+				controller.schedule(currentTimerTask, 0L, (long) period);
 			} else {
 				running = false;
 			}
@@ -254,11 +258,13 @@ public class MotionController {
 	 * Pauses the motions,
 	 */
 	public synchronized final void stopScheduler() {
-		running = false;
-		controller.cancel();
-		controller.purge();
-		currentPath = null;
-		drivetrain.setSpeeds(0, 0);
+		if (running) {
+			running = false;
+			currentTimerTask.cancel();
+			controller.purge();
+			currentPath = null;
+			drivetrain.setSpeeds(0, 0);
+		}
 	}
 
 	/**
