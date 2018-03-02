@@ -11,7 +11,7 @@ import java.util.List;
  */
 public abstract class Path {
 
-	private static double robotWidth;
+	private static double robotWidth; // WHat if you have multiple robots running the same code? Should we account for that scenario?
 	private final double vCruise;
 	private final double aMax;
 	private final boolean isBackwards;
