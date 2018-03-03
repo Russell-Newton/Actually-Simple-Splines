@@ -71,7 +71,14 @@ public class MotionController {
 	 * @param motionLogger - the MotionLogger from the AbstractDrivetrain
 	 */
 	public MotionController(AbstractDrivetrain drivetrain, MotionLogger motionLogger) {
-		this(drivetrain, 0, motionLogger);
+		this(drivetrain, drivetrain.getRobotWidth(), motionLogger);
+	}
+
+	/**
+	 * @param drivetrain - the drivetrain to use the AbstractDrivetrain methods from
+	 */
+	public MotionController(AbstractDrivetrain drivetrain) {
+		this(drivetrain, drivetrain.getRobotWidth(), drivetrain.getMotionLogger());
 	}
 
 	/**

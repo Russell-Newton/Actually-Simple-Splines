@@ -1,6 +1,7 @@
 package org.waltonrobotics.motion;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,6 +59,12 @@ public class Spline extends Path {
 			0);
 		pathData = new LinkedList<>();
 		stitchPathData(startPathData);
+	}
+
+	public Spline(double vCruise, double aMax, double startVelocity, double endVelocity,
+		double startAngle, double endAngle, boolean isBackwards, Pose... knots) {
+		this(vCruise, aMax, startVelocity, endVelocity,
+			startAngle, endAngle, isBackwards, Arrays.asList(knots));
 	}
 
 	/**

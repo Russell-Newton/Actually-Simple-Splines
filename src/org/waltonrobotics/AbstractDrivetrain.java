@@ -13,13 +13,19 @@ import org.waltonrobotics.controller.RobotPair;
 public abstract class AbstractDrivetrain extends Subsystem {
 
 	private final MotionController controller;
+	private final MotionLogger motionLogger;
 
 	/**
 	 * Create the static drivetrain after creating the motion logger so you can use the
 	 * MotionContoller
 	 */
 	protected AbstractDrivetrain(MotionLogger motionLogger) {
-		controller = new MotionController(this, getRobotWidth(), motionLogger);
+		this.motionLogger = motionLogger;
+		controller = new MotionController(this);
+	}
+
+	public MotionLogger getMotionLogger() {
+		return motionLogger;
 	}
 
 	/**

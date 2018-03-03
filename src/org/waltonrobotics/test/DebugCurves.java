@@ -1,4 +1,4 @@
-package org.waltonrobotics;
+package org.waltonrobotics.test;
 
 import java.util.ArrayList;
 import java.util.List;
