@@ -121,7 +121,7 @@ public class MotionController {
 						pdPrevious = targetPathData = pdIterator.next();
 						pdNext = pdIterator.next();
 
-						staticPathData = null;
+//						staticPathData = null;
 					} else {
 						System.out.println("Done with motions! :)");
 
@@ -131,10 +131,7 @@ public class MotionController {
 						targetPathData = staticPathData;
 					}
 				}
-			}
-
-			if (currentPath == null
-				&& staticPathData == null) {  // if there is absolutely no more paths at the moment
+			} else {  // if there is absolutely no more paths at the moment
 				// says to not move
 
 				//FIXME make it so that this scenario only runs when there is
