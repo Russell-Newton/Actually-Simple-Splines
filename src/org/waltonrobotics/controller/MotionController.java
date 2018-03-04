@@ -113,9 +113,11 @@ public class MotionController {
 				targetPathData = interpolate(wheelPositions);
 
 				if (currentPath.isFinished()) {
+					System.out.println("Current path is finished");
 					LinkedList<PathData> temp = currentPath.getPathData();
 					currentPath = paths.poll();
 					if (currentPath != null) {
+						System.out.println("Getting new path");
 						double time = temp.getLast().getTime() - temp.getFirst().getTime();
 
 						//Used to allow smooth transition between motions not making assumption that it finishes perfectly on time
@@ -144,6 +146,7 @@ public class MotionController {
 
 				currentPath = paths.poll();
 				if (currentPath != null) {
+					System.out.println("Getting initial path");
 					actualPosition = currentPath.getPathData().get(0).getCenterPose();
 					previousLengths = startingWheelPositions = drivetrain.getWheelPositions();
 					pdIterator = currentPath.getPathData().listIterator();
@@ -152,6 +155,7 @@ public class MotionController {
 
 					hasFinishedPath = false;
 				} else {
+//					System.out.println("No initial path not moving");
 					targetPathData = staticPathData;
 				}
 			}
@@ -242,12 +246,16 @@ public class MotionController {
 	 */
 	public synchronized final void enableScheduler() {
 		if (!running) {
+			System.out.println("Enabling scheduler");
 			actualPosition = new Pose(0, 0, 0);
+			previousLengths = new RobotPair(0, 0, 0);
 
 			staticPathData = new PathData(
 				new State(drivetrain.getWheelPositions().getLeft(), 0, 0),
 				new State(drivetrain.getWheelPositions().getRight(), 0, 0), actualPosition,
 				0);
+
+			targetPathData = staticPathData;
 
 			currentTimerTask = new MotionTask();
 			controller.schedule(currentTimerTask, 0L, (long) period);
@@ -275,6 +283,7 @@ public class MotionController {
 	 */
 	public synchronized final void stopScheduler() {
 		if (running) {
+			System.out.println("Disabling scheduler");
 			running = false;
 			currentTimerTask.cancel();
 			controller.purge();
@@ -374,16 +383,16 @@ public class MotionController {
 
 		@Override
 		public final void run() {
-			if (currentPath != null) {
-				RobotPair wheelPositions = drivetrain.getWheelPositions();
-				updateActualPosition(wheelPositions);
-				findCurrentError();
-				powers = calculateSpeeds(wheelPositions);
-				drivetrain.setSpeeds(powers.getLeft(), powers.getRight());
-				motionLogger.addMotionData(
-					new MotionData(actualPosition, targetPathData.getCenterPose(), errorVector,
-						powers));
-			}
+//			if (currentPath != null) {
+			RobotPair wheelPositions = drivetrain.getWheelPositions();
+			updateActualPosition(wheelPositions);
+			findCurrentError();
+			powers = calculateSpeeds(wheelPositions);
+			drivetrain.setSpeeds(powers.getLeft(), powers.getRight());
+			motionLogger.addMotionData(
+				new MotionData(actualPosition, targetPathData.getCenterPose(), errorVector,
+					powers));
+//			}
 		}
 
 	}
