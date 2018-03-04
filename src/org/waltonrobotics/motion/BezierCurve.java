@@ -62,10 +62,31 @@ public class BezierCurve extends Path {
 		boolean isBackwards,
 		List<Pose> controlPoints) {
 		this(vCruise, aMax, v0, v1, isBackwards,
-			new PathData(new Pose(controlPoints.get(0).getX(), controlPoints.get(0).getY(),
-				StrictMath.atan2(controlPoints.get(1).getY() - controlPoints.get(0).getY(),
-					controlPoints.get(1).getX() - controlPoints.get(0).getX()))),
+			(controlPoints.size() == 0) ?
+				new PathData(new Pose(0, 0)) :
+				(controlPoints.size() == 1) ?
+					new PathData(
+						new Pose(
+							controlPoints.get(0).getX(),
+							controlPoints.get(0).getY(),
+							controlPoints.get(0).getAngle())
+					) :
+					new PathData(
+						new Pose(
+							controlPoints.get(0).getX(),
+							controlPoints.get(0).getY(),
+							StrictMath.atan2(
+								controlPoints.get(1).getY() - controlPoints.get(0).getY(),
+								controlPoints.get(1).getX() - controlPoints.get(0).getX())
+						)
+					),
 			controlPoints);
+	}
+
+	public BezierCurve(double vCruise, double aMax, double v0, double v1,
+		boolean isBackwards,
+		Pose... controlPoints) {
+		this(vCruise, aMax, v0, v1, isBackwards, Arrays.asList(controlPoints));
 	}
 
 	/**
@@ -100,8 +121,12 @@ public class BezierCurve extends Path {
 	 */
 	private void getCurveLength() {
 		curveLength = 0;
-		for (double i = 1; i < numberOfSteps; i++) {
-			curveLength += getPoint(i / numberOfSteps).distance(getPoint((i - 1) / numberOfSteps));
+
+		if (getKeyPoints().size() > 1) {
+			for (double i = 1; i < numberOfSteps; i++) {
+				curveLength += getPoint(i / numberOfSteps)
+					.distance(getPoint((i - 1) / numberOfSteps));
+			}
 		}
 	}
 

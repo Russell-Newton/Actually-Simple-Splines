@@ -41,6 +41,7 @@ public class MotionController {
 	private ErrorVector errorVector;
 	private RobotPair powers;
 	private TimerTask currentTimerTask;
+	private boolean hasFinishedPath;
 
 	/**
 	 * @param drivetrain - the drivetrain to use the AbstractDrivetrain methods from
@@ -56,6 +57,10 @@ public class MotionController {
 
 		controller = new Timer();
 		period = 5;
+
+		RobotPair wheelPositions = drivetrain.getWheelPositions();
+		staticPathData = new PathData(new State(wheelPositions.getLeft(), 0, 0),
+			new State(wheelPositions.getRight(), 0, 0), new Pose(0, 0, 0), 0);
 
 		this.drivetrain = drivetrain;
 		kV = drivetrain.getKV();
@@ -109,7 +114,7 @@ public class MotionController {
 
 				if (currentPath.isFinished()) {
 					LinkedList<PathData> temp = currentPath.getPathData();
-					currentPath = paths.pollFirst();
+					currentPath = paths.poll();
 					if (currentPath != null) {
 						double time = temp.getLast().getTime() - temp.getFirst().getTime();
 
@@ -121,23 +126,34 @@ public class MotionController {
 						pdPrevious = targetPathData = pdIterator.next();
 						pdNext = pdIterator.next();
 
-//						staticPathData = null;
+						targetPathData = interpolate(wheelPositions);
+						hasFinishedPath = false;
 					} else {
 						System.out.println("Done with motions! :)");
 
 						//FIXME make this less messy
 						staticPathData = new PathData(new State(wheelPositions.getLeft(), 0, 0),
-							new State(wheelPositions.getRight(), 0, 0), new Pose(0, 0, 0), 0);
+							new State(wheelPositions.getRight(), 0, 0),
+							targetPathData.getCenterPose(), 0);
 						targetPathData = staticPathData;
+						hasFinishedPath = true;
 					}
 				}
-			} else {  // if there is absolutely no more paths at the moment
-				// says to not move
+			} else {
+				// if there is absolutely no more paths at the moment says to not move
 
-				//FIXME make it so that this scenario only runs when there is
-				staticPathData = new PathData(new State(wheelPositions.getLeft(), 0, 0),
-					new State(wheelPositions.getRight(), 0, 0), new Pose(0, 0, 0), 0);
-				targetPathData = staticPathData;
+				currentPath = paths.poll();
+				if (currentPath != null) {
+					actualPosition = currentPath.getPathData().get(0).getCenterPose();
+					previousLengths = startingWheelPositions = drivetrain.getWheelPositions();
+					pdIterator = currentPath.getPathData().listIterator();
+					pdPrevious = targetPathData = pdIterator.next();
+					pdNext = pdIterator.next();
+
+					hasFinishedPath = false;
+				} else {
+					targetPathData = staticPathData;
+				}
 			}
 
 			// feed forward
@@ -156,7 +172,8 @@ public class MotionController {
 			double steerPower = Math.max(-1,
 				Math.min(1, ((rightPower - leftPower) / 2) + steerPowerXTE + steerPowerAngle));
 			centerPower = Math
-				.max(-1 + Math.abs(steerPower), Math.min(1 - Math.abs(steerPower), centerPower));
+				.max(-1 + Math.abs(steerPower),
+					Math.min(1 - Math.abs(steerPower), centerPower));
 			return new RobotPair(centerPower - steerPower, centerPower + steerPower,
 				wheelPositions.getTime());
 		}
@@ -187,7 +204,8 @@ public class MotionController {
 		double rctn =
 			(timeNext - currentTime) / dTime; // Ratio of the current time to the next pose time
 		double rltc =
-			(currentTime - timePrevious) / dTime; // Ratio of the previous time to the current pose
+			(currentTime - timePrevious)
+				/ dTime; // Ratio of the previous time to the current pose
 		// time
 
 		double lengthLeft = ((pdPrevious.getLeftState().getLength()) * rctn)
@@ -224,23 +242,17 @@ public class MotionController {
 	 */
 	public synchronized final void enableScheduler() {
 		if (!running) {
-			staticPathData = new PathData(new State(drivetrain.getWheelPositions().getLeft(), 0, 0),
-				new State(drivetrain.getWheelPositions().getRight(), 0, 0), new Pose(0, 0, 0), 0);
-			Path newPath = paths.poll();
-			if (newPath != null) {
-				currentPath = newPath;
-				running = true;
-				actualPosition = currentPath.getPathData().get(0).getCenterPose();
-				previousLengths = startingWheelPositions = drivetrain.getWheelPositions();
-				pdIterator = currentPath.getPathData().listIterator();
-				pdPrevious = targetPathData = pdIterator.next();
-				pdNext = pdIterator.next();
+			actualPosition = new Pose(0, 0, 0);
 
-				currentTimerTask = new MotionTask();
-				controller.schedule(currentTimerTask, 0L, (long) period);
-			} else {
-				running = false;
-			}
+			staticPathData = new PathData(
+				new State(drivetrain.getWheelPositions().getLeft(), 0, 0),
+				new State(drivetrain.getWheelPositions().getRight(), 0, 0), actualPosition,
+				0);
+
+			currentTimerTask = new MotionTask();
+			controller.schedule(currentTimerTask, 0L, (long) period);
+			hasFinishedPath = false;
+			running = true;
 		}
 	}
 
@@ -248,7 +260,7 @@ public class MotionController {
 	 * @return Whether or not the queue has ended
 	 */
 	public final boolean isFinished() {
-		return currentPath == null;
+		return currentPath == null && hasFinishedPath;
 	}
 
 	/**
@@ -287,12 +299,14 @@ public class MotionController {
 		} else {
 			dX = arcCenter * (
 				((StrictMath.sin(dAngle) * StrictMath.cos(actualPosition.getAngle())) / dAngle)
-					- (((StrictMath.cos(dAngle) - 1) * StrictMath.sin(actualPosition.getAngle()))
-					/ dAngle));
+					- (
+					((StrictMath.cos(dAngle) - 1) * StrictMath.sin(actualPosition.getAngle()))
+						/ dAngle));
 			dY = arcCenter * (
 				((StrictMath.sin(dAngle) * StrictMath.sin(actualPosition.getAngle())) / dAngle)
-					- (((StrictMath.cos(dAngle) - 1) * StrictMath.cos(actualPosition.getAngle()))
-					/ dAngle));
+					- (
+					((StrictMath.cos(dAngle) - 1) * StrictMath.cos(actualPosition.getAngle()))
+						/ dAngle));
 		}
 
 		actualPosition = actualPosition.offset(dX, dY, dAngle);
