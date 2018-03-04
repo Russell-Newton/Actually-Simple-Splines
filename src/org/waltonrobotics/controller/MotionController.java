@@ -109,6 +109,7 @@ public class MotionController {
 		double centerPowerLag;
 
 		if (running) {
+
 			if (currentPath != null) {
 				targetPathData = interpolate(wheelPositions);
 
@@ -148,17 +149,20 @@ public class MotionController {
 				if (currentPath != null) {
 					System.out.println("Getting initial path");
 					actualPosition = currentPath.getPathData().get(0).getCenterPose();
-					previousLengths = startingWheelPositions = drivetrain.getWheelPositions();
+					previousLengths = startingWheelPositions = wheelPositions;
 					pdIterator = currentPath.getPathData().listIterator();
 					pdPrevious = targetPathData = pdIterator.next();
 					pdNext = pdIterator.next();
 
 					hasFinishedPath = false;
+					targetPathData = interpolate(wheelPositions);
 				} else {
 //					System.out.println("No initial path not moving");
 					targetPathData = staticPathData;
 				}
 			}
+			updateActualPosition(wheelPositions);
+			findCurrentError();
 
 			// feed forward
 			leftPower += ((kV * targetPathData.getLeftState().getVelocity())
@@ -385,8 +389,8 @@ public class MotionController {
 		public final void run() {
 //			if (currentPath != null) {
 			RobotPair wheelPositions = drivetrain.getWheelPositions();
-			updateActualPosition(wheelPositions);
-			findCurrentError();
+//			updateActualPosition(wheelPositions);
+//			findCurrentError();
 			powers = calculateSpeeds(wheelPositions);
 			drivetrain.setSpeeds(powers.getLeft(), powers.getRight());
 			motionLogger.addMotionData(
