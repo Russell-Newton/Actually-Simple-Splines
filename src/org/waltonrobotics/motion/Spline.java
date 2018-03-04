@@ -61,12 +61,36 @@ public class Spline extends Path {
 		stitchPathData(startPathData);
 	}
 
+	/**
+	 * Construct a spline. Note that the x axis is the direction the robot is facing if the start
+	 * angle is 0
+	 *
+	 * @param vCruise - max velocity
+	 * @param aMax - max acceleration
+	 * @param startVelocity - the starting velocity of the Path
+	 * @param endVelocity - the ending velocity of the Path
+	 * @param startAngle - the angle at the start of the motion (degrees)
+	 * @param endAngle - the angle at the end of the motion (degrees)
+	 * @param isBackwards - if the robot will be moving backwards, make this true
+	 * @param knots - the points you want the robot to drive through
+	 */
 	public Spline(double vCruise, double aMax, double startVelocity, double endVelocity,
 		double startAngle, double endAngle, boolean isBackwards, Pose... knots) {
 		this(vCruise, aMax, startVelocity, endVelocity,
 			startAngle, endAngle, isBackwards, Arrays.asList(knots));
 	}
 
+	/**
+	 * Construct a spline. Note that the x axis is the direction the robot is facing if the start
+	 * angle is 0
+	 *
+	 * @param vCruise - max velocity
+	 * @param aMax - max acceleration
+	 * @param startVelocity - the starting velocity of the Path
+	 * @param endVelocity - the ending velocity of the Path
+	 * @param isBackwards - if the robot will be moving backwards, make this true
+	 * @param knots - the points you want the robot to drive through
+	 */
 	public Spline(double vCruise, double aMax, double startVelocity, double endVelocity,
 		boolean isBackwards, Pose... knots) {
 		this(vCruise, aMax, startVelocity, endVelocity,
