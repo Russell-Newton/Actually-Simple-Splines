@@ -67,6 +67,15 @@ public class Spline extends Path {
 			startAngle, endAngle, isBackwards, Arrays.asList(knots));
 	}
 
+	public Spline(double vCruise, double aMax, double startVelocity, double endVelocity,
+		boolean isBackwards, Pose... knots) {
+		this(vCruise, aMax, startVelocity, endVelocity,
+			knots.length == 0 ? 0 : knots[0].getAngle(),
+			knots.length == 0 ? 0 : knots[knots.length - 1].getAngle(), isBackwards,
+			Arrays.asList(knots));
+	}
+
+
 	/**
 	 * Creates the control points required to make cubic bezier curves that transition between
 	 * knots. Will make them for the shortest path possible.
