@@ -148,4 +148,9 @@ public abstract class AbstractDrivetrain extends Subsystem {
 	 */
 	public abstract double getKL();
 
+	//TODO do documentation for theses variables
+	public abstract double getILag();
+
+	public abstract double getIAng();
+
 }

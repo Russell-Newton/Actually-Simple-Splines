@@ -27,6 +27,8 @@ public class MotionController {
 	private final BlockingDeque<Path> paths = new LinkedBlockingDeque<>();
 	private final int period;
 	private final MotionLogger motionLogger;
+	private final double iAng;
+	private final double iLag;
 	private Timer controller;
 	private boolean running;
 	private Path currentPath;
@@ -42,6 +44,8 @@ public class MotionController {
 	private RobotPair powers;
 	private TimerTask currentTimerTask;
 	private boolean hasFinishedPath;
+	private double intergratedLagError;
+	private double intergratedAngleError;
 
 	/**
 	 * @param drivetrain - the drivetrain to use the AbstractDrivetrain methods from
@@ -69,6 +73,8 @@ public class MotionController {
 		kS = drivetrain.getKS();
 		kL = drivetrain.getKL();
 		kAng = drivetrain.getKAng();
+		iLag = drivetrain.getILag();
+		iAng = drivetrain.getIAng();
 	}
 
 	/**
@@ -101,14 +107,9 @@ public class MotionController {
 	 * @return a RobotPair with the powers and the time
 	 */
 	private synchronized RobotPair calculateSpeeds(RobotPair wheelPositions) {
-
-		double leftPower = 0;
-		double rightPower = 0;
-		double steerPowerXTE;
-		double steerPowerAngle;
-		double centerPowerLag;
-
 		if (running) {
+			double leftPower = 0;
+			double rightPower = 0;
 
 			if (currentPath != null) {
 				targetPathData = interpolate(wheelPositions);
@@ -117,6 +118,10 @@ public class MotionController {
 					System.out.println("Current path is finished");
 					LinkedList<PathData> temp = currentPath.getPathData();
 					currentPath = paths.poll();
+
+					intergratedLagError = 0;
+					intergratedAngleError = 0;
+
 					if (currentPath != null) {
 						System.out.println("Getting new path");
 						double time = temp.getLast().getTime() - temp.getFirst().getTime();
@@ -156,6 +161,9 @@ public class MotionController {
 
 					hasFinishedPath = false;
 					targetPathData = interpolate(wheelPositions);
+
+					intergratedLagError = 0;
+					intergratedAngleError = 0;
 				} else {
 //					System.out.println("No initial path not moving");
 					targetPathData = staticPathData;
@@ -172,9 +180,9 @@ public class MotionController {
 				+ (kK * Math.signum(targetPathData.getRightState().getVelocity())))
 				+ (kAcc * targetPathData.getRightState().getAcceleration());
 			// feed back
-			steerPowerXTE = kS * errorVector.getXTrack();
-			steerPowerAngle = kAng * errorVector.getAngle();
-			centerPowerLag = kL * errorVector.getLag();
+			double steerPowerXTE = kS * errorVector.getXTrack();
+			double steerPowerAngle = kAng * errorVector.getAngle();
+			double centerPowerLag = kL * errorVector.getLag();
 
 			double centerPower = ((leftPower + rightPower) / 2) + centerPowerLag;
 			double steerPower = Math.max(-1,
@@ -182,6 +190,20 @@ public class MotionController {
 			centerPower = Math
 				.max(-1 + Math.abs(steerPower),
 					Math.min(1 - Math.abs(steerPower), centerPower));
+
+//          to give the extra oomph when finished the path but there is a little bit more to do
+			//FIXME speeds somehow manage to be greater than 1
+			if (targetPathData.equals(staticPathData)) {
+				intergratedLagError += iLag * errorVector.getLag();
+				intergratedAngleError += iAng * errorVector.getAngle();
+
+				intergratedAngleError = Math.max(Math.min(0.5, intergratedAngleError), -0.5);
+				intergratedLagError = Math.max(Math.min(0.5, intergratedLagError), -0.5);
+
+				steerPower += intergratedAngleError;
+				centerPower += intergratedLagError;
+			}
+
 			return new RobotPair(centerPower - steerPower, centerPower + steerPower,
 				wheelPositions.getTime());
 		}
