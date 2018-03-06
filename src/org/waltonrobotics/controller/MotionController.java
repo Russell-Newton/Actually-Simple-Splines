@@ -43,10 +43,9 @@ public class MotionController {
 	private ErrorVector errorVector;
 	private RobotPair powers;
 	private TimerTask currentTimerTask;
-	private boolean hasFinishedPath;
+	private MotionState currentMotionState = MotionState.WAITING;
 	private double intergratedLagError;
 	private double intergratedAngleError;
-
 	/**
 	 * @param drivetrain - the drivetrain to use the AbstractDrivetrain methods from
 	 * @param robotWidth - the robot width from the outside of the wheels
@@ -135,16 +134,15 @@ public class MotionController {
 						pdNext = pdIterator.next();
 
 						targetPathData = interpolate(wheelPositions);
-						hasFinishedPath = false;
+						currentMotionState = MotionState.MOVING;
 					} else {
 						System.out.println("Done with motions! :)");
 
-						//FIXME make this less messy
 						staticPathData = new PathData(new State(wheelPositions.getLeft(), 0, 0),
 							new State(wheelPositions.getRight(), 0, 0),
-							targetPathData.getCenterPose(), 0);
+							targetPathData.getCenterPose(), wheelPositions.getTime());
 						targetPathData = staticPathData;
-						hasFinishedPath = true;
+						currentMotionState = MotionState.FINISHING;
 					}
 				}
 			} else {
@@ -159,7 +157,7 @@ public class MotionController {
 					pdPrevious = targetPathData = pdIterator.next();
 					pdNext = pdIterator.next();
 
-					hasFinishedPath = false;
+					currentMotionState = MotionState.MOVING;
 					targetPathData = interpolate(wheelPositions);
 
 					intergratedLagError = 0;
@@ -172,28 +170,35 @@ public class MotionController {
 			updateActualPosition(wheelPositions);
 			findCurrentError();
 
-			// feed forward
-			leftPower += ((kV * targetPathData.getLeftState().getVelocity())
-				+ (kK * Math.signum(targetPathData.getLeftState().getVelocity())))
-				+ (kAcc * targetPathData.getLeftState().getAcceleration());
-			rightPower += ((kV * targetPathData.getRightState().getVelocity())
-				+ (kK * Math.signum(targetPathData.getRightState().getVelocity())))
-				+ (kAcc * targetPathData.getRightState().getAcceleration());
-			// feed back
-			double steerPowerXTE = kS * errorVector.getXTrack();
-			double steerPowerAngle = kAng * errorVector.getAngle();
-			double centerPowerLag = kL * errorVector.getLag();
+			double centerPower = 0;
+			double steerPower = 0;
+			if (currentMotionState == MotionState.MOVING) {
+				// feed forward
 
-			double centerPower = ((leftPower + rightPower) / 2) + centerPowerLag;
-			double steerPower = Math.max(-1,
-				Math.min(1, ((rightPower - leftPower) / 2) + steerPowerXTE + steerPowerAngle));
-			centerPower = Math
-				.max(-1 + Math.abs(steerPower),
-					Math.min(1 - Math.abs(steerPower), centerPower));
+				leftPower += ((kV * targetPathData.getLeftState().getVelocity())
+					+ (kK * Math.signum(targetPathData.getLeftState().getVelocity())))
+					+ (kAcc * targetPathData.getLeftState().getAcceleration());
+				rightPower += ((kV * targetPathData.getRightState().getVelocity())
+					+ (kK * Math.signum(targetPathData.getRightState().getVelocity())))
+					+ (kAcc * targetPathData.getRightState().getAcceleration());
+				// feed back
+				double steerPowerXTE = kS * errorVector.getXTrack();
+				double steerPowerAngle = kAng * errorVector.getAngle();
+				double centerPowerLag = kL * errorVector.getLag();
 
-//          to give the extra oomph when finished the path but there is a little bit more to do
-			//FIXME speeds somehow manage to be greater than 1
-			if (targetPathData.equals(staticPathData)) {
+				centerPower = ((leftPower + rightPower) / 2) + centerPowerLag;
+				steerPower = Math.max(-1,
+					Math.min(1, ((rightPower - leftPower) / 2) + steerPowerXTE + steerPowerAngle));
+				centerPower = Math
+					.max(-1 + Math.abs(steerPower),
+						Math.min(1 - Math.abs(steerPower), centerPower));
+			} else if (currentMotionState == MotionState.FINISHING) {
+//          to give the extra oomph when finished the path but there is a little bit more to do//FIXME left, right powers somehow manage to be greater than 1
+				//				System.out.println("Integrating powers");
+				if (wheelPositions.getTime() - staticPathData.getTime() >= 2) {
+					currentMotionState = MotionState.WAITING;
+				}
+
 				intergratedLagError += iLag * errorVector.getLag();
 				intergratedAngleError += iAng * errorVector.getAngle();
 
@@ -202,6 +207,11 @@ public class MotionController {
 
 				steerPower += intergratedAngleError;
 				centerPower += intergratedLagError;
+
+
+			} else {
+				steerPower = 0;
+				centerPower = 0;
 			}
 
 			return new RobotPair(centerPower - steerPower, centerPower + steerPower,
@@ -285,7 +295,7 @@ public class MotionController {
 
 			currentTimerTask = new MotionTask();
 			controller.schedule(currentTimerTask, 0L, (long) period);
-			hasFinishedPath = false;
+			currentMotionState = MotionState.WAITING;
 			running = true;
 		}
 	}
@@ -294,7 +304,7 @@ public class MotionController {
 	 * @return Whether or not the queue has ended
 	 */
 	public final boolean isFinished() {
-		return currentPath == null && hasFinishedPath;
+		return currentPath == null && currentMotionState == MotionState.FINISHING;
 	}
 
 	/**
@@ -398,6 +408,10 @@ public class MotionController {
 			", motionLogger=" + motionLogger +
 			", powers=" + powers +
 			'}';
+	}
+
+	private enum MotionState {
+		MOVING, FINISHING, WAITING
 	}
 
 	/**
