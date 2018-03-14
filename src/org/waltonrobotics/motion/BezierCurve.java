@@ -197,10 +197,10 @@ public class BezierCurve extends Path {
 				- getKeyPoints().get(getKeyPoints().size() - 2).getY();
 		}
 		double angle = StrictMath.atan2(dy, dx);
-		if(isBackwards()) {
+		if (isBackwards()) {
 			angle += Math.PI;
 		}
-		angle %= (2*Math.PI);
+		angle %= (2 * Math.PI);
 		return angle;
 	}
 
@@ -244,35 +244,49 @@ public class BezierCurve extends Path {
 		double dTime = Math.max(Math.abs(dlLeft), Math.abs(dlRight)) / getVCruise();
 
 		// The hypothetical velocity to get to that point
-		double velocity = Math.abs(dLength) / dTime;
+		double velocity = dLength / dTime;
 
 		// The average encoder distance to the next point
 		double lCenter = (previousLCenter + (0.5 * dLength)) - startLCenter;
-
-		double vAccelerating = Math
-			.sqrt(StrictMath.pow(startVelocity, 2) + (getAMax() * Math.abs(lCenter)));
-		double vDecelerating = Math
-			.sqrt(StrictMath.pow(endVelocity, 2) + (getAMax() * Math.abs(curveLength - lCenter)));
-		// System.out.println("acc: " + vAccelerating + " dec: " + vDecelerating + "
-		// vel: " + velocity);
-		if ((vAccelerating < velocity) && (vAccelerating < vDecelerating)) {
-			acceleration = getAMax();
-			dTime = Math.abs(dLength) / vAccelerating;
-		}
-		if ((vDecelerating < velocity) && (vDecelerating < vAccelerating)) {
-			acceleration = -getAMax();
-			dTime = Math.abs(dLength) / vDecelerating;
-		}
-		double velocityL = dlLeft / dTime;
-		double velocityR = dlRight / dTime;
+		double vAccelerating;
+		double vDecelerating;
 
 		if (isBackwards()) {
-			velocityL *= -1;
-			velocityR *= -1;
-			dlLeft *= -1;
-			dlRight *= -1;
-			acceleration *= -1;
+			vAccelerating = -Math
+				.sqrt(StrictMath.pow(startVelocity, 2) + (getAMax() * Math.abs(lCenter)));
+			vDecelerating = -Math
+				.sqrt(
+					StrictMath.pow(endVelocity, 2) + (getAMax() * Math
+						.abs(curveLength - Math.abs(lCenter))));
+			if ((vAccelerating > velocity) && (vAccelerating > vDecelerating)) {
+				acceleration = -getAMax();
+				dTime = dLength / vAccelerating;
+			}
+			if ((vDecelerating > velocity) && (vDecelerating > vAccelerating)) {
+				acceleration = getAMax();
+				dTime = dLength / vDecelerating;
+			}
+		} else {
+			vAccelerating = Math
+				.sqrt(StrictMath.pow(startVelocity, 2) + (getAMax() * Math.abs(lCenter)));
+			vDecelerating = Math
+				.sqrt(
+					StrictMath.pow(endVelocity, 2) + (getAMax() * Math
+						.abs(curveLength - Math.abs(lCenter))));
+
+			if ((vAccelerating < velocity) && (vAccelerating < vDecelerating)) {
+				acceleration = getAMax();
+				dTime = dLength / vAccelerating;
+			}
+			if ((vDecelerating < velocity) && (vDecelerating < vAccelerating)) {
+				acceleration = -getAMax();
+				dTime = dLength / vDecelerating;
+			}
 		}
+//		System.out
+//			.println("acc: " + vAccelerating + " dec: " + vDecelerating + " vel: " + velocity + " velAct: " + dLength/dTime);
+		double velocityL = dlLeft / dTime;
+		double velocityR = dlRight / dTime;
 
 		State left = new State(previousLeft.getLength() + dlLeft, velocityL, acceleration);
 		State right = new State(previousRight.getLength() + dlRight, velocityR, acceleration);

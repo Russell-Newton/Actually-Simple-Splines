@@ -18,21 +18,18 @@ public class DebugCurves {
 	// Change these to see their effect
 	private static double width = 0.70485;
 	private static List<Pose> points = new ArrayList<>();
-	private static boolean isBackwards;
+	private static boolean isBackwards = true;
 
 	public static void main(String[] args) {
-		points.add(new Pose(0, 0));
-		points.add(new Pose(0, 5.18));
-		points.add(new Pose(5.64, 5.18));
-		points.add(new Pose(5.64, 1));
-		points.add(new Pose(0.3, 1));
+		points.add(new Pose(-1.59388, 3.12791, 90));
+		points.add(new Pose(0, 1.4478, 90));
 		BezierCurve curve = new BezierCurve(1, 1, 0, 0, isBackwards,
 			points
 		);
 		System.out.println("Bezier Curve:");
 		printPath(curve);
 
-		Spline spline = new Spline(2, 2, 0, 0, 90, 180, isBackwards, points);
+		Spline spline = new Spline(2, 2, 0, 0, 90, 90, isBackwards, points);
 		System.out.println("\n\nSpline:");
 		printPath(spline);
 	}

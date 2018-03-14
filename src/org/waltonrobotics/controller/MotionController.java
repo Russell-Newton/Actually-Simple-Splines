@@ -46,6 +46,7 @@ public class MotionController {
 	private MotionState currentMotionState = MotionState.WAITING;
 	private double intergratedLagError;
 	private double intergratedAngleError;
+
 	/**
 	 * @param drivetrain - the drivetrain to use the AbstractDrivetrain methods from
 	 * @param robotWidth - the robot width from the outside of the wheels
