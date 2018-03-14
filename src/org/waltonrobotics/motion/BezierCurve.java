@@ -9,14 +9,16 @@ import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.controller.State;
 
 /**
- * This Path is a simple curve. The shape of the curve is controlled by the control points. There
+ * <p>This Path is a simple curve. The shape of the curve is controlled by the control points. There
  * are tangents from the first and second control points and the second to last and last control
- * points. Use this to make a straight line (use two control points)
+ * points. Use this to make a straight line (use two control points) <br> <a
+ * href=https://en.wikipedia.org/wiki/B%C3%A9zier_curve>Wikipedia page on Bezier Curves</a> <br> <a
+ * href=https://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-der.html>Bezier curve
+ * equations for N number of control points</a>
+ * <p/>
  *
  * @author Marius Juston, Walton Robotics
  * @author Russell Newton, Walton Robotics
- * @see {@link https://en.wikipedia.org/wiki/B%C3%A9zier_curve}
- * @see {@link https://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-der.html}
  */
 public class BezierCurve extends Path {
 
