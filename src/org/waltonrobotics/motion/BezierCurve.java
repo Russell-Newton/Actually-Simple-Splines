@@ -196,7 +196,12 @@ public class BezierCurve extends Path {
 			dy = getKeyPoints().get(getKeyPoints().size() - 1).getY()
 				- getKeyPoints().get(getKeyPoints().size() - 2).getY();
 		}
-		return StrictMath.atan2(dy, dx);
+		double angle = StrictMath.atan2(dy, dx);
+		if(isBackwards()) {
+			angle += Math.PI;
+		}
+		angle %= (2*Math.PI);
+		return angle;
 	}
 
 	/**
@@ -266,6 +271,7 @@ public class BezierCurve extends Path {
 			velocityR *= -1;
 			dlLeft *= -1;
 			dlRight *= -1;
+			acceleration *= -1;
 		}
 
 		State left = new State(previousLeft.getLength() + dlLeft, velocityL, acceleration);
