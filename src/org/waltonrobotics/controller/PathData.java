@@ -11,6 +11,7 @@ public class PathData {
 	private final State rightState;
 	private final Pose centerPose;
 	private final double time;
+	private final boolean isBackwards;
 
 	/**
 	 * @param leftState
@@ -18,18 +19,36 @@ public class PathData {
 	 * @param centerPose
 	 * @param time
 	 */
-	public PathData(State leftState, State rightState, Pose centerPose, double time) {
+	public PathData(State leftState, State rightState, Pose centerPose, double time,
+		boolean isBackwards) {
 		this.leftState = leftState;
 		this.rightState = rightState;
 		this.centerPose = centerPose;
 		this.time = time;
+		this.isBackwards = isBackwards;
+	}
+
+	public PathData(State leftState, State rightState, Pose centerPose, double time) {
+		this(leftState, rightState, centerPose, time, true);
 	}
 
 	/**
 	 * Can be used to make a generic PathData without motion and time
 	 */
+	public PathData(Pose centerPose, boolean isBackwords) {
+		this(new State(0, 0, 0), new State(0, 0, 0), centerPose, 0, isBackwords);
+	}
+
+
+	/**
+	 * Can be used to make a generic PathData without motion and time
+	 */
 	public PathData(Pose centerPose) {
-		this(new State(0, 0, 0), new State(0, 0, 0), centerPose, 0);
+		this(new State(0, 0, 0), new State(0, 0, 0), centerPose, 0, true);
+	}
+
+	public boolean isBackwards() {
+		return isBackwards;
 	}
 
 	/**

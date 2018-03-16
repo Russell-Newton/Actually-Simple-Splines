@@ -65,14 +65,14 @@ public class BezierCurve extends Path {
 		List<Pose> controlPoints) {
 		this(vCruise, aMax, v0, v1, isBackwards,
 			(controlPoints.size() == 0) ?
-				new PathData(new Pose(0, 0)) :
+				new PathData(new Pose(0, 0), isBackwards) :
 				(controlPoints.size() == 1) ?
 					new PathData(
 						new Pose(
 							controlPoints.get(0).getX(),
 							controlPoints.get(0).getY(),
 							controlPoints.get(0).getAngle())
-					) :
+						, isBackwards) :
 					new PathData(
 						new Pose(
 							controlPoints.get(0).getX(),
@@ -81,7 +81,7 @@ public class BezierCurve extends Path {
 								controlPoints.get(1).getY() - controlPoints.get(0).getY(),
 								controlPoints.get(1).getX() - controlPoints.get(0).getX())
 						)
-					),
+						, isBackwards),
 			controlPoints);
 	}
 

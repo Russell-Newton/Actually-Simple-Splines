@@ -3,6 +3,7 @@ package org.waltonrobotics;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import org.waltonrobotics.controller.MotionController;
 import org.waltonrobotics.controller.Path;
+import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.controller.RobotPair;
 
 /**
@@ -58,8 +59,8 @@ public abstract class AbstractDrivetrain extends Subsystem {
 	/**
 	 * Starts the MotionController
 	 */
-	public final void startControllerMotion() {
-		controller.enableScheduler();
+	public final void startControllerMotion(Pose startPosition) {
+		controller.enableScheduler(startPosition);
 	}
 
 	/**

@@ -55,7 +55,7 @@ public class Spline extends Path {
 		PathData startPathData = new PathData(new State(0, startVelocity, 0),
 			new State(0, startVelocity, 0),
 			new Pose(pathControlPoints.get(0).get(0).getX(), pathControlPoints.get(0).get(0).getY(),
-				Math.toRadians(startAngle)),
+				startAngle),
 			0);
 		pathData = new LinkedList<>();
 		stitchPathData(startPathData);

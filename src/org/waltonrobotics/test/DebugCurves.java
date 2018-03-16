@@ -21,6 +21,7 @@ public class DebugCurves {
 	private static boolean isBackwards = true;
 
 	public static void main(String[] args) {
+		Path.setRobotWidth(width);
 		points.add(new Pose(-1.59388, 3.12791, 90));
 		points.add(new Pose(0, 1.4478, 90));
 		BezierCurve curve = new BezierCurve(1, 1, 0, 0, isBackwards,

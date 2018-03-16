@@ -36,7 +36,7 @@ public class MotionController {
 	private Pose actualPosition;
 	private PathData targetPathData;
 	private RobotPair previousLengths;
-	private RobotPair startingWheelPositions;
+	private double pathStartTime;
 	private ListIterator<PathData> pdIterator;
 	private PathData pdPrevious;
 	private PathData pdNext;
@@ -64,7 +64,7 @@ public class MotionController {
 
 		RobotPair wheelPositions = drivetrain.getWheelPositions();
 		staticPathData = new PathData(new State(wheelPositions.getLeft(), 0, 0),
-			new State(wheelPositions.getRight(), 0, 0), new Pose(0, 0, 0), 0);
+			new State(wheelPositions.getRight(), 0, 0), new Pose(0, 0, 0), 0, true);
 
 		this.drivetrain = drivetrain;
 		kV = drivetrain.getKV();
@@ -127,8 +127,7 @@ public class MotionController {
 						double time = temp.getLast().getTime() - temp.getFirst().getTime();
 
 						//Used to allow smooth transition between motions not making assumption that it finishes perfectly on time
-						startingWheelPositions = new RobotPair(wheelPositions.getLeft(),
-							wheelPositions.getRight(), time + startingWheelPositions.getTime());
+						pathStartTime = time + pathStartTime;
 
 						pdIterator = this.currentPath.getPathData().listIterator();
 						pdPrevious = targetPathData = pdIterator.next();
@@ -141,7 +140,8 @@ public class MotionController {
 
 						staticPathData = new PathData(new State(wheelPositions.getLeft(), 0, 0),
 							new State(wheelPositions.getRight(), 0, 0),
-							targetPathData.getCenterPose(), wheelPositions.getTime());
+							targetPathData.getCenterPose(), wheelPositions.getTime(),
+							targetPathData.isBackwards());
 						targetPathData = staticPathData;
 						currentMotionState = MotionState.FINISHING;
 					}
@@ -152,8 +152,8 @@ public class MotionController {
 				currentPath = paths.poll();
 				if (currentPath != null) {
 					System.out.println("Getting initial path");
-					actualPosition = currentPath.getPathData().get(0).getCenterPose();
-					previousLengths = startingWheelPositions = wheelPositions;
+//					actualPosition = currentPath.getPathData().get(0).getCenterPose();
+					pathStartTime = wheelPositions.getTime();
 					pdIterator = currentPath.getPathData().listIterator();
 					pdPrevious = targetPathData = pdIterator.next();
 					pdNext = pdIterator.next();
@@ -227,7 +227,7 @@ public class MotionController {
 	 * @return a new MotionData with the interpolated data
 	 */
 	private PathData interpolate(RobotPair wheelPositions) {
-		double currentTime = wheelPositions.getTime() - startingWheelPositions.getTime();
+		double currentTime = wheelPositions.getTime() - pathStartTime;
 		while (currentTime > pdNext.getTime()) {
 			if (pdIterator.hasNext()) {
 				pdPrevious = pdNext;
@@ -268,7 +268,7 @@ public class MotionController {
 		State right = new State(lengthRight, pdNext.getRightState().getVelocity(),
 			pdNext.getRightState().getAcceleration());
 		Pose centerPose = new Pose(x, y, angle);
-		return new PathData(left, right, centerPose, currentTime);
+		return new PathData(left, right, centerPose, currentTime, currentPath.isBackwards());
 	}
 
 	/**
@@ -281,16 +281,18 @@ public class MotionController {
 	/**
 	 * Starts the queue of motions
 	 */
-	public synchronized final void enableScheduler() {
+	public synchronized final void enableScheduler(Pose starting) {
 		if (!running) {
 			System.out.println("Enabling scheduler");
-			actualPosition = new Pose(0, 0, 0);
-			previousLengths = new RobotPair(0, 0, 0);
+			System.out.println(starting);
+			actualPosition = starting;
+			previousLengths = drivetrain.getWheelPositions();
 
 			staticPathData = new PathData(
 				new State(drivetrain.getWheelPositions().getLeft(), 0, 0),
-				new State(drivetrain.getWheelPositions().getRight(), 0, 0), actualPosition,
-				0);
+				new State(drivetrain.getWheelPositions().getRight(), 0, 0),
+				actualPosition,
+				0, true);
 
 			targetPathData = staticPathData;
 
@@ -371,9 +373,15 @@ public class MotionController {
 		// error in direction facing
 		double lagError = (dX * StrictMath.cos(angle)) + (dY * StrictMath.sin(angle));
 		// error perpendicular to direction facing
+
 		double crossTrackError = (-dX * StrictMath.sin(angle)) + (dY * StrictMath.cos(angle));
 		// the error of the current angle
 		double angleError = targetPose.getAngle() - actualPose.getAngle();
+
+		if (targetPathData.isBackwards()) {
+			crossTrackError *= -1;
+		}
+
 		if (angleError > Math.PI) {
 			angleError -= 2 * Math.PI;
 		} else if (angleError < -Math.PI) {
@@ -401,7 +409,7 @@ public class MotionController {
 			", actualPosition=" + actualPosition +
 			", targetPathData=" + targetPathData +
 			", previousLengths=" + previousLengths +
-			", startingWheelPositions=" + startingWheelPositions +
+			", startingWheelPositions=" + pathStartTime +
 			", pdIterator=" + pdIterator +
 			", pdPrevious=" + pdPrevious +
 			", pdNext=" + pdNext +
