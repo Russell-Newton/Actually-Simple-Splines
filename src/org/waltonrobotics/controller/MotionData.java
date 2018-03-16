@@ -11,15 +11,18 @@ public class MotionData {
 	private final Pose target;
 	private final ErrorVector error;
 	private final RobotPair powers;
+	private final int pathNumber;
 
 	/**
 	 * @param powers (as a RobotPair)
 	 */
-	public MotionData(Pose actual, Pose target, ErrorVector error, RobotPair powers) {
+	public MotionData(Pose actual, Pose target, ErrorVector error, RobotPair powers,
+		int pathNumber) {
 		this.actual = actual;
 		this.target = target;
 		this.error = error;
 		this.powers = powers;
+		this.pathNumber = pathNumber;
 	}
 
 	/**
@@ -51,12 +54,17 @@ public class MotionData {
 	}
 
 	@Override
-	public final String toString() {
+	public String toString() {
 		return "MotionData{" +
 			"actual=" + actual +
 			", target=" + target +
 			", error=" + error +
 			", powers=" + powers +
+			", pathNumber=" + pathNumber +
 			'}';
+	}
+
+	public int getPathNumber() {
+		return pathNumber;
 	}
 }

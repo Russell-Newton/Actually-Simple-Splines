@@ -46,6 +46,7 @@ public class MotionController {
 	private MotionState currentMotionState = MotionState.WAITING;
 	private double intergratedLagError;
 	private double intergratedAngleError;
+	private int pathNumber;
 
 	/**
 	 * @param drivetrain - the drivetrain to use the AbstractDrivetrain methods from
@@ -75,6 +76,8 @@ public class MotionController {
 		kAng = drivetrain.getKAng();
 		iLag = drivetrain.getILag();
 		iAng = drivetrain.getIAng();
+
+		pathNumber = 0;
 	}
 
 	/**
@@ -135,6 +138,7 @@ public class MotionController {
 
 						targetPathData = interpolate(wheelPositions);
 						currentMotionState = MotionState.MOVING;
+						pathNumber += 1;
 					} else {
 						System.out.println("Done with motions! :)");
 
@@ -163,6 +167,8 @@ public class MotionController {
 
 					intergratedLagError = 0;
 					intergratedAngleError = 0;
+
+					pathNumber += 1;
 				} else {
 //					System.out.println("No initial path not moving");
 					targetPathData = staticPathData;
@@ -328,6 +334,7 @@ public class MotionController {
 			controller.purge();
 			currentPath = null;
 			drivetrain.setSpeeds(0, 0);
+			pathNumber = 0;
 		}
 	}
 
@@ -440,7 +447,7 @@ public class MotionController {
 			drivetrain.setSpeeds(powers.getLeft(), powers.getRight());
 			motionLogger.addMotionData(
 				new MotionData(actualPosition, targetPathData.getCenterPose(), errorVector,
-					powers));
+					powers, pathNumber));
 //			}
 		}
 

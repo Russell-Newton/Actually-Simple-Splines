@@ -82,6 +82,8 @@ public class MotionLogger {
 		sb.append("pLeft");
 		sb.append(", ");
 		sb.append("pRight");
+		sb.append(", ");
+		sb.append("pathNumber");
 		sb.append('\n');
 
 		for (MotionData data : motionDataList) {
@@ -108,6 +110,8 @@ public class MotionLogger {
 			sb.append(data.getPowers().getLeft());
 			sb.append(", ");
 			sb.append(data.getPowers().getRight());
+			sb.append(", ");
+			sb.append(data.getPathNumber());
 			sb.append('\n');
 		}
 
