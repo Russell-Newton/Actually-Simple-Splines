@@ -398,36 +398,39 @@ public class MotionController {
 	}
 
 	@Override
-	public final String toString() {
+	public String toString() {
 		return "MotionController{" +
-			"paths=" + paths +
-			", controller=" + controller +
-			", running=" + running +
-			", period=" + period +
-			", currentPath=" + currentPath +
-			", staticPathData=" + staticPathData +
-			", drivetrain=" + drivetrain +
+			"drivetrain=" + drivetrain +
 			", kV=" + kV +
 			", kK=" + kK +
 			", kAcc=" + kAcc +
 			", kS=" + kS +
 			", kL=" + kL +
 			", kAng=" + kAng +
+			", paths=" + paths +
+			", period=" + period +
+			", motionLogger=" + motionLogger +
+			", iAng=" + iAng +
+			", iLag=" + iLag +
+			", controller=" + controller +
+			", running=" + running +
+			", currentPath=" + currentPath +
+			", staticPathData=" + staticPathData +
 			", actualPosition=" + actualPosition +
 			", targetPathData=" + targetPathData +
 			", previousLengths=" + previousLengths +
-			", startingWheelPositions=" + pathStartTime +
+			", pathStartTime=" + pathStartTime +
 			", pdIterator=" + pdIterator +
 			", pdPrevious=" + pdPrevious +
 			", pdNext=" + pdNext +
 			", errorVector=" + errorVector +
-			", motionLogger=" + motionLogger +
 			", powers=" + powers +
+			", currentTimerTask=" + currentTimerTask +
+			", currentMotionState=" + currentMotionState +
+			", intergratedLagError=" + intergratedLagError +
+			", intergratedAngleError=" + intergratedAngleError +
+			", pathNumber=" + pathNumber +
 			'}';
-	}
-
-	private enum MotionState {
-		MOVING, FINISHING, WAITING
 	}
 
 	/**
@@ -447,7 +450,7 @@ public class MotionController {
 			drivetrain.setSpeeds(powers.getLeft(), powers.getRight());
 			motionLogger.addMotionData(
 				new MotionData(actualPosition, targetPathData.getCenterPose(), errorVector,
-					powers, pathNumber));
+					powers, pathNumber, currentMotionState));
 //			}
 		}
 

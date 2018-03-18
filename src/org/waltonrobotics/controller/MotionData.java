@@ -12,17 +12,20 @@ public class MotionData {
 	private final ErrorVector error;
 	private final RobotPair powers;
 	private final int pathNumber;
+	private final MotionState currentMotionState;
 
 	/**
 	 * @param powers (as a RobotPair)
 	 */
 	public MotionData(Pose actual, Pose target, ErrorVector error, RobotPair powers,
-		int pathNumber) {
+		int pathNumber,
+		MotionState currentMotionState) {
 		this.actual = actual;
 		this.target = target;
 		this.error = error;
 		this.powers = powers;
 		this.pathNumber = pathNumber;
+		this.currentMotionState = currentMotionState;
 	}
 
 	/**
@@ -53,6 +56,10 @@ public class MotionData {
 		return powers;
 	}
 
+	public MotionState getCurrentMotionState() {
+		return currentMotionState;
+	}
+
 	@Override
 	public String toString() {
 		return "MotionData{" +
@@ -61,6 +68,7 @@ public class MotionData {
 			", error=" + error +
 			", powers=" + powers +
 			", pathNumber=" + pathNumber +
+			", currentMotionState=" + currentMotionState +
 			'}';
 	}
 
