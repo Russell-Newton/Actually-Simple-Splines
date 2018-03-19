@@ -71,8 +71,8 @@ public class Pose {
 	 * @param backwards - whether or not to rotate the point backwards (clockwise)
 	 * @return the rotated point
 	 */
-	public final Pose rotate(Pose centerPoint, double arcAngle, boolean backwards) {
-		double distance = distance(centerPoint) * (backwards ? -1 : 1);
+	public final Pose rotate(Pose centerPoint, double arcAngle, boolean backwards, double scale) {
+		double distance = distance(centerPoint) * (backwards ? -1 : 1) * scale;
 		double yDisplacement = distance * StrictMath.sin(arcAngle);
 		double xDisplacement = distance * StrictMath.cos(arcAngle);
 		return new Pose(centerPoint.x + xDisplacement, centerPoint.y + yDisplacement);

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="Copy Jar">
+  <target name="Copier">
+    <copy file="${artifact.output.path}/2974Splines.jar"
+      overwrite="true" tofile="${user.home}/wpilib/user/java/lib/2974Splines.jar"/>
+  </target>
+</project>
+

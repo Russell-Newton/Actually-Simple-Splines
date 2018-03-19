@@ -199,9 +199,10 @@ public class MotionController {
 				centerPower = Math
 					.max(-1 + Math.abs(steerPower),
 						Math.min(1 - Math.abs(steerPower), centerPower));
-			} else if (currentMotionState == MotionState.FINISHING) {
+			}
+			if (currentMotionState == MotionState.FINISHING || isClose(1)) {
 //          to give the extra oomph when finished the path but there is a little bit more to do//FIXME left, right powers somehow manage to be greater than 1
-				//				System.out.println("Integrating powers");
+
 				if (wheelPositions.getTime() - staticPathData.getTime() >= 2) {
 					currentMotionState = MotionState.WAITING;
 				}
@@ -216,7 +217,9 @@ public class MotionController {
 				centerPower += intergratedLagError;
 
 
-			} else {
+			}
+
+			if (currentMotionState == MotionState.WAITING) {
 				steerPower = 0;
 				centerPower = 0;
 			}
@@ -432,6 +435,14 @@ public class MotionController {
 			", pathNumber=" + pathNumber +
 			'}';
 	}
+
+	public boolean isClose(double closeTime) {
+		return currentPath != null && targetPathData != null
+			&& (currentPath.getPathData().getLast().getTime() + pathStartTime) - targetPathData
+			.getTime()
+			<= closeTime;
+	}
+
 
 	/**
 	 * 1 Runs the calculations with a TimerTask

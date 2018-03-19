@@ -26,6 +26,8 @@ public class Spline extends Path {
 
 	private final double startAngle;
 	private final double endAngle;
+	private final double startScale;
+	private final double endScale;
 	private final double startVelocity;
 	private final double endVelocity;
 	private final List<List<Pose>> pathControlPoints;
@@ -45,10 +47,13 @@ public class Spline extends Path {
 	 * @param knots - the points you want the robot to drive through
 	 */
 	public Spline(double vCruise, double aMax, double startVelocity, double endVelocity,
-		double startAngle, double endAngle, boolean isBackwards, List<Pose> knots) {
+		double startAngle, double endAngle, boolean isBackwards, double scaleStart, double scaleEnd,
+		List<Pose> knots) {
 		super(vCruise, aMax, isBackwards, knots);
 		this.startAngle = startAngle;
 		this.endAngle = endAngle;
+		startScale = scaleStart;
+		endScale = scaleEnd;
 		this.endVelocity = endVelocity;
 		this.startVelocity = startVelocity;
 		pathControlPoints = computeControlPoints(getKeyPoints());
@@ -59,6 +64,12 @@ public class Spline extends Path {
 			0);
 		pathData = new LinkedList<>();
 		stitchPathData(startPathData);
+	}
+
+	public Spline(double vCruise, double aMax, double startVelocity, double endVelocity,
+		double startAngle, double endAngle, boolean isBackwards, List<Pose> knots) {
+		this(vCruise, aMax, startVelocity, endVelocity, startAngle, endAngle, isBackwards, 1, 1,
+			knots);
 	}
 
 	/**
@@ -77,7 +88,7 @@ public class Spline extends Path {
 	public Spline(double vCruise, double aMax, double startVelocity, double endVelocity,
 		double startAngle, double endAngle, boolean isBackwards, Pose... knots) {
 		this(vCruise, aMax, startVelocity, endVelocity,
-			startAngle, endAngle, isBackwards, Arrays.asList(knots));
+			startAngle, endAngle, isBackwards, 1, 1, Arrays.asList(knots));
 	}
 
 	/**
@@ -95,7 +106,7 @@ public class Spline extends Path {
 		boolean isBackwards, Pose... knots) {
 		this(vCruise, aMax, startVelocity, endVelocity,
 			knots.length == 0 ? 0 : knots[0].getAngle(),
-			knots.length == 0 ? 0 : knots[knots.length - 1].getAngle(), isBackwards,
+			knots.length == 0 ? 0 : knots[knots.length - 1].getAngle(), isBackwards, 1, 1,
 			Arrays.asList(knots));
 	}
 
@@ -167,9 +178,9 @@ public class Spline extends Path {
 		List<List<Pose>> controlPoints = new ArrayList<>();
 		for (int i = 0; i < degree; i++) {
 			List<Pose> segmentControlPoints = new ArrayList<>();
-			points1[0] = points1[0].rotate(knots.get(0), startAngle, isBackwards());
+			points1[0] = points1[0].rotate(knots.get(0), startAngle, isBackwards(), startScale);
 			points2[degree - 1] = points2[degree - 1]
-				.rotate(knots.get(knots.size() - 1), endAngle, !isBackwards());
+				.rotate(knots.get(knots.size() - 1), endAngle, !isBackwards(), endScale);
 			Collections.addAll(segmentControlPoints, knots.get(i), points1[i], points2[i],
 				knots.get(i + 1));
 			Collections.addAll(controlPoints, segmentControlPoints);
