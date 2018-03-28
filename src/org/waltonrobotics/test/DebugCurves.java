@@ -23,7 +23,7 @@ public class DebugCurves {
 	public static void main(String[] args) {
 		Path.setRobotWidth(width);
 		points.add(new Pose(0, 0, StrictMath.toRadians(0)));
-		points.add(new Pose(0, 0, StrictMath.toRadians(180)));
+		points.add(new Pose(0, 0, StrictMath.toRadians(90)));
 		BezierCurve curve = new BezierCurve(1, 1, 0, 0, isBackwards,
 			points
 		);
