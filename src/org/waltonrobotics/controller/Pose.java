@@ -58,9 +58,13 @@ public class Pose {
 	 * @return the distance from this point to the other point
 	 */
 	public final double distance(Pose otherPoint) {
-		return Math.sqrt(
-			StrictMath.pow(x - otherPoint.x, 2) + StrictMath
-				.pow(y - otherPoint.y, 2));
+		if (getX() == otherPoint.getX() && getY() == otherPoint.getY()) {
+			return Math.abs(otherPoint.getAngle() - getAngle()); //TODO check this
+		} else {
+			return Math.sqrt(
+				StrictMath.pow(x - otherPoint.x, 2) + StrictMath
+					.pow(y - otherPoint.y, 2));
+		}
 	}
 
 	/**
