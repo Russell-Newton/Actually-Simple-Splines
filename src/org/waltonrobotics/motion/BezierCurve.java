@@ -9,9 +9,9 @@ import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.controller.State;
 
 /**
- * <p>This Path is a simple curve. The shape of the curve is controlled by the control points. There
- * are tangents from the first and second control points and the second to last and last control
- * points. Use this to make a straight line (use two control points) <br> <a
+ * <p>This Path is a simple curve. The shape of the curve is controlled by the control points.
+ * There are tangents from the first and second control points and the second to last and last
+ * control points. Use this to make a straight line (use two control points) <br> <a
  * href=https://en.wikipedia.org/wiki/B%C3%A9zier_curve>Wikipedia page on Bezier Curves</a> <br> <a
  * href=https://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-der.html>Bezier curve
  * equations for N number of control points</a>
@@ -36,19 +36,19 @@ public class BezierCurve extends Path {
 	 *
 	 * @param vCruise - the cruise velocity of the robot
 	 * @param aMax - the maximum acceleration of the robot
-	 * @param v0 - the start velocity
-	 * @param v1 - the end velocity
+	 * @param startVelocity - the start velocity
+	 * @param endVelocity - the end velocity
 	 * @param isBackwards - whether or not to move the robot backwards
 	 * @param startPathData - the starting PathData for the curve
 	 * @param controlPoints - the control points that define the curve
 	 */
-	public BezierCurve(double vCruise, double aMax, double v0, double v1,
+	public BezierCurve(double vCruise, double aMax, double startVelocity, double endVelocity,
 		boolean isBackwards,
 		PathData startPathData, List<Pose> controlPoints) {
 		super(vCruise, aMax, isBackwards, controlPoints);
 		numberOfSteps = 50;
-		startVelocity = v0;
-		endVelocity = v1;
+		this.startVelocity = startVelocity;
+		this.endVelocity = endVelocity;
 		// The starting average encoder distance should always be 0
 		startLCenter = startPathData.getLCenter();
 		updateCoefficients();
@@ -126,7 +126,7 @@ public class BezierCurve extends Path {
 
 		if (getKeyPoints().size() > 1) {
 			for (double i = 1; i < numberOfSteps; i++) {
-				curveLength += getPoint(i / numberOfSteps)
+				curveLength += getPoint(i / numberOfSteps) //why call this twice
 					.distance(getPoint((i - 1) / numberOfSteps));
 			}
 		}
@@ -192,17 +192,39 @@ public class BezierCurve extends Path {
 			dy += coefficient * (n + 1) * (getKeyPoints().get(i + 1).getY() - getKeyPoints().get(i)
 				.getY());
 		}
-		if (t == 1.0) {
-			dx = getKeyPoints().get(getKeyPoints().size() - 1).getX()
-				- getKeyPoints().get(getKeyPoints().size() - 2).getX();
-			dy = getKeyPoints().get(getKeyPoints().size() - 1).getY()
-				- getKeyPoints().get(getKeyPoints().size() - 2).getY();
+
+		// TODO use delta angle?
+
+		double angle;
+
+		if (dx == dy && dx == 0) {
+			double angleChange = (getKeyPoints().get(getKeyPoints().size() - 1).getAngle()
+				- getKeyPoints()
+				.get(0).getAngle());
+
+			if (angleChange > Math.PI) {
+				angleChange -= (2 * Math.PI);
+			}
+
+			angle = getKeyPoints().get(0).getAngle() + t * angleChange;
+		} else {
+
+			if (t == 1.0) {
+				dx = getKeyPoints().get(getKeyPoints().size() - 1).getX()
+					- getKeyPoints().get(getKeyPoints().size() - 2).getX();
+				dy = getKeyPoints().get(getKeyPoints().size() - 1).getY()
+					- getKeyPoints().get(getKeyPoints().size() - 2).getY();
+				angle = StrictMath.atan2(dy, dx);
+			} else {
+				angle = StrictMath.atan2(dy, dx);
+			}
+
+			if (isBackwards()) {
+				angle += Math.PI;
+			}
+			angle %= (2 * Math.PI);
 		}
-		double angle = StrictMath.atan2(dy, dx);
-		if (isBackwards()) {
-			angle += Math.PI;
-		}
-		angle %= (2 * Math.PI);
+
 		return angle;
 	}
 
