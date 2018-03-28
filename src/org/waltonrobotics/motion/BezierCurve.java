@@ -1,5 +1,6 @@
 package org.waltonrobotics.motion;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,10 +26,10 @@ public class BezierCurve extends Path {
 	private final double startVelocity;
 	private final double endVelocity;
 	private final double startLCenter;
-	private final int numberOfSteps;
 	private final LinkedList<PathData> pathData;
 	private double curveLength;
 	private double[] coefficients;
+	private List<Pose> pathPoints;
 
 	/**
 	 * This constructor is used with the splines, but feel free to use it when creating your own
@@ -46,13 +47,14 @@ public class BezierCurve extends Path {
 		boolean isBackwards,
 		PathData startPathData, List<Pose> controlPoints) {
 		super(vCruise, aMax, isBackwards, controlPoints);
-		numberOfSteps = 50;
 		this.startVelocity = startVelocity;
 		this.endVelocity = endVelocity;
 		// The starting average encoder distance should always be 0
 		startLCenter = startPathData.getLCenter();
 		updateCoefficients();
 		pathData = new LinkedList<>();
+		pathPoints = new ArrayList<>();
+		createPoints();
 		getCurveLength();
 		setData(startPathData);
 	}
@@ -118,6 +120,13 @@ public class BezierCurve extends Path {
 		return r;
 	}
 
+	private void createPoints() {
+		for (double i = 0; i <= getPathNumberOfSteps(); i++) {
+			pathPoints.add(getPoint(i / getPathNumberOfSteps()));
+		}
+
+	}
+
 	/**
 	 * Caluclates the length of the curve
 	 */
@@ -125,9 +134,8 @@ public class BezierCurve extends Path {
 		curveLength = 0;
 
 		if (getKeyPoints().size() > 1) {
-			for (double i = 1; i < numberOfSteps; i++) {
-				curveLength += getPoint(i / numberOfSteps) //why call this twice
-					.distance(getPoint((i - 1) / numberOfSteps));
+			for (int i = 1; i < getPathNumberOfSteps(); i++) {
+				curveLength += pathPoints.get(i).distance(pathPoints.get(i - 1));
 			}
 		}
 	}
@@ -232,8 +240,8 @@ public class BezierCurve extends Path {
 	 * Creates the PathData list
 	 */
 	private void setData(PathData data) {
-		for (int i = 1; i <= numberOfSteps; i++) {
-			data = calculateData(data, getPoint((double) i / numberOfSteps));
+		for (int i = 1; i <= getPathNumberOfSteps(); i++) {
+			data = calculateData(data, pathPoints.get(i));
 			pathData.add(data);
 		}
 	}
@@ -331,7 +339,7 @@ public class BezierCurve extends Path {
 			", endVelocity=" + endVelocity +
 			", startLCenter=" + startLCenter +
 			", curveLength=" + curveLength +
-			", numberOfSteps=" + numberOfSteps +
+			", numberOfSteps=" + getPathNumberOfSteps() +
 			", isBackwards=" + isBackwards() +
 			", pathData=" + pathData +
 			", controlPoints=" + getKeyPoints() +
