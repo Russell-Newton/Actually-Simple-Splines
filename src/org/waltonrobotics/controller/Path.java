@@ -11,6 +11,7 @@ import java.util.List;
  */
 public abstract class Path {
 
+	public static int pathNumberOfSteps = 50; // TODO find better name for this variable
 	private static double robotWidth; // WHat if you have multiple robots running the same code? Should we account for that scenario?
 	private final double vCruise;
 	private final double aMax;
@@ -39,6 +40,14 @@ public abstract class Path {
 
 	public Path(double vCruise, double aMax, boolean isBackwards, Pose... keyPoints) {
 		this(vCruise, aMax, isBackwards, Arrays.asList(keyPoints));
+	}
+
+	public static int getPathNumberOfSteps() {
+		return pathNumberOfSteps;
+	}
+
+	public static void setPathNumberOfSteps(int pathNumberOfSteps) {
+		Path.pathNumberOfSteps = pathNumberOfSteps;
 	}
 
 	public static double getRobotWidth() {
