@@ -268,13 +268,19 @@ public class BezierCurve extends Path {
 		}
 
 		// The change in distance of the robot sides
+		// FIXME This is probably wrong dLength should be 0 if there is not angle
+//		double dLength = (previousCenter.sameCoordinates(currentCenter)? 0: previousCenter.distance(currentCenter)) * (isBackwards() ? -1 : 1);
 		double dLength = previousCenter.distance(currentCenter) * (isBackwards() ? -1 : 1);
 		double dlLeft = dLength - ((dAngle * getRobotWidth()) / 2);
 		double dlRight = dLength + ((dAngle * getRobotWidth()) / 2);
 
 		// The time required to get to the next point
-		double dTime = Math.max(Math.abs(dlLeft), Math.abs(dlRight)) / getVCruise();
-
+		double dTime;
+		if (previousCenter.sameCoordinates(currentCenter)) {
+			dTime = ((dAngle * getRobotWidth()) / 2) / getVCruise();
+		} else {
+			dTime = Math.max(Math.abs(dlLeft), Math.abs(dlRight)) / getVCruise();
+		}
 		// The hypothetical velocity to get to that point
 		double velocity = dLength / dTime;
 
@@ -317,8 +323,17 @@ public class BezierCurve extends Path {
 		}
 //		System.out
 //			.println("acc: " + vAccelerating + " dec: " + vDecelerating + " vel: " + velocity + " velAct: " + dLength/dTime);
-		double velocityL = dlLeft / dTime;
-		double velocityR = dlRight / dTime;
+
+		double velocityL;
+		double velocityR;
+
+		if (previousCenter.sameCoordinates(currentCenter)) {
+			velocityL = (dlLeft - dLength) / dTime;
+			velocityR = (dlRight - dLength) / dTime;
+		} else {
+			velocityL = dlLeft / dTime;
+			velocityR = dlRight / dTime;
+		}
 
 		State left = new State(previousLeft.getLength() + dlLeft, velocityL, acceleration);
 		State right = new State(previousRight.getLength() + dlRight, velocityR, acceleration);

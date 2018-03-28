@@ -82,6 +82,11 @@ public class Pose {
 		return new Pose(centerPoint.x + xDisplacement, centerPoint.y + yDisplacement);
 	}
 
+	public final boolean sameCoordinates(Pose other)
+	{
+		return other.getX() == getX() && other.getY() == getY();
+	}
+
 	/**
 	 * Creates an offset Pose by a dX, dY, and dAngle
 	 *
