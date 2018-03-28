@@ -6,6 +6,7 @@ import org.waltonrobotics.controller.Path;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.motion.BezierCurve;
+import org.waltonrobotics.motion.PointTurn;
 import org.waltonrobotics.motion.Spline;
 
 /**
@@ -24,15 +25,17 @@ public class DebugCurves {
 		Path.setRobotWidth(width);
 		points.add(new Pose(-1.59388, 3.12791, 90));
 		points.add(new Pose(0, 1.4478, 90));
-		BezierCurve curve = new BezierCurve(1, 1, 0, 0, isBackwards,
-			points
-		);
-		System.out.println("Bezier Curve:");
-		printPath(curve);
-
-		Spline spline = new Spline(2, 2, 0, 0, 90, 90, isBackwards, points);
-		System.out.println("\n\nSpline:");
-		printPath(spline);
+//		BezierCurve curve = new BezierCurve(1, 1, 0, 0, isBackwards,
+//			points
+//		);
+//		System.out.println("Bezier Curve:");
+//		printPath(curve);
+//
+//		Spline spline = new Spline(2, 2, 0, 0, 90, 90, isBackwards, points);
+//		System.out.println("\n\nSpline:");
+//		printPath(spline);
+		PointTurn turn = new PointTurn(1, 1, 0, 90);
+		printPath(turn);
 	}
 
 	public static void printPath(Path path) {
