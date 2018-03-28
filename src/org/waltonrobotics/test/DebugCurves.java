@@ -18,19 +18,20 @@ public class DebugCurves {
 	// Change these to see their effect
 	private static double width = 0.70485;
 	private static List<Pose> points = new ArrayList<>();
-	private static boolean isBackwards = true;
+	private static boolean isBackwards = false;
 
 	public static void main(String[] args) {
 		Path.setRobotWidth(width);
-		points.add(new Pose(-1.59388, 3.12791, 90));
-		points.add(new Pose(0, 1.4478, 90));
+		points.add(new Pose(0, 0, StrictMath.toRadians(0)));
+		points.add(new Pose(0, 0, StrictMath.toRadians(180)));
 		BezierCurve curve = new BezierCurve(1, 1, 0, 0, isBackwards,
 			points
 		);
 		System.out.println("Bezier Curve:");
 		printPath(curve);
 
-		Spline spline = new Spline(2, 2, 0, 0, 90, 90, isBackwards, points);
+		Spline spline = new Spline(100, 3, 0, 0, StrictMath.toRadians(0),
+			StrictMath.toRadians(270), isBackwards, points);
 		System.out.println("\n\nSpline:");
 		printPath(spline);
 	}
