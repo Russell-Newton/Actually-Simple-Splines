@@ -18,11 +18,14 @@ public class PointTurn extends Path {
 	public PointTurn(double vRotationMax, double aRotationMax, double startAngle, double endAngle) {
 		super(vRotationMax, aRotationMax, false,
 			new Pose(0, 0, startAngle), new Pose(0, 0, endAngle));
-		this.startAngle = Math.toRadians(startAngle);
-		this.endAngle = Math.toRadians(endAngle);
+		this.startAngle = startAngle;
+		this.endAngle = endAngle;
+
 		this.vRotationMax = vRotationMax;
 		this.aRotationMax = aRotationMax;
 		double turnAngle = this.endAngle - this.startAngle;
+		turnAngle = boundAngle(turnAngle);
+
 		turnStep = turnAngle / getPathNumberOfSteps();
 		this.pathData = new LinkedList<>();
 		generateData();

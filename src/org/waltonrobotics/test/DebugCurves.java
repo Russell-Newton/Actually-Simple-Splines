@@ -23,7 +23,7 @@ public class DebugCurves {
 
 	public static void main(String[] args) {
 		Path.setRobotWidth(width);
-		PointTurn pointTurn = new PointTurn(1, 1, 0, 181);
+		PointTurn pointTurn = new PointTurn(1, 1, StrictMath.toRadians(0), StrictMath.toRadians(270));
 		System.out.println("Point Turn:");
 		printPath(pointTurn);
 
