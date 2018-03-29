@@ -94,6 +94,16 @@ public abstract class Path {
 			'}';
 	}
 
+	public static double boundAngle(double angle) {
+		if (angle > Math.PI) {
+			return angle - Math.PI;
+		}
+		if (angle < -Math.PI) {
+			return angle + Math.PI;
+		}
+		return angle;
+	}
+
 	public final double getVCruise() {
 		return vCruise;
 	}
