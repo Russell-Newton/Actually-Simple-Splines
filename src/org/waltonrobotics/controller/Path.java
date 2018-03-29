@@ -58,6 +58,16 @@ public abstract class Path {
 		Path.robotWidth = robotWidth;
 	}
 
+	public static double boundAngle(double angle) {
+		if (angle > Math.PI) {
+			return angle - Math.PI;
+		}
+		if (angle < -Math.PI) {
+			return angle + Math.PI;
+		}
+		return angle;
+	}
+
 	public final boolean isBackwards() {
 		return isBackwards;
 	}
@@ -92,16 +102,6 @@ public abstract class Path {
 			", isFinished=" + isFinished +
 			", robotWidth=" + robotWidth +
 			'}';
-	}
-
-	public static double boundAngle(double angle) {
-		if (angle > Math.PI) {
-			return angle - Math.PI;
-		}
-		if (angle < -Math.PI) {
-			return angle + Math.PI;
-		}
-		return angle;
 	}
 
 	public final double getVCruise() {
