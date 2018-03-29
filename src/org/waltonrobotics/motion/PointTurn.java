@@ -30,7 +30,7 @@ public class PointTurn extends Path {
 
 	private void generateData() {
 		pathData.add(getPathData(new PathData(new Pose(0, 0, startAngle))));
-		for (int i = 2; i <= getPathNumberOfSteps(); i++) {
+		for (int i = 1; i < getPathNumberOfSteps(); i++) {
 			pathData.add(getPathData(pathData.getLast()));
 		}
 	}
