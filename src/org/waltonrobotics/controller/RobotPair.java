@@ -44,7 +44,7 @@ public class RobotPair {
 	}
 
 	@Override
-	public final String toString() {
+	public String toString() {
 		return "RobotPair{" +
 			"left=" + left +
 			", right=" + right +

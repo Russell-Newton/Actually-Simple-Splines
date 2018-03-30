@@ -23,7 +23,7 @@ public abstract class Path {
 	 * @param vCruise - cruise velocity
 	 * @param aMax - max acceleration
 	 */
-	public Path(double vCruise, double aMax, boolean isBackwards, List<Pose> keyPoints) {
+	protected Path(double vCruise, double aMax, boolean isBackwards, List<Pose> keyPoints) {
 		this.isBackwards = isBackwards;
 		this.keyPoints = keyPoints;
 		if (vCruise == 0) {
@@ -60,10 +60,10 @@ public abstract class Path {
 
 	public static double boundAngle(double angle) {
 		if (angle > Math.PI) {
-			return angle - 2 * Math.PI;
+			return angle - (2.0 * Math.PI);
 		}
 		if (angle < -Math.PI) {
-			return angle + 2 * Math.PI;
+			return angle + (2 * Math.PI);
 		}
 		return angle;
 	}
@@ -94,17 +94,18 @@ public abstract class Path {
 	 */
 	public abstract LinkedList<PathData> getPathData();
 
+	public final double getVCruise() {
+		return vCruise;
+	}
+
 	@Override
 	public String toString() {
 		return "Path{" +
 			"vCruise=" + vCruise +
 			", aMax=" + aMax +
+			", isBackwards=" + isBackwards +
+			", keyPoints=" + keyPoints +
 			", isFinished=" + isFinished +
-			", robotWidth=" + robotWidth +
 			'}';
-	}
-
-	public final double getVCruise() {
-		return vCruise;
 	}
 }

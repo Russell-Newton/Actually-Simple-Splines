@@ -68,7 +68,7 @@ public class Spline extends Path {
 
 	public Spline(double vCruise, double aMax, double startVelocity, double endVelocity,
 		double startAngle, double endAngle, boolean isBackwards, List<Pose> knots) {
-		this(vCruise, aMax, startVelocity, endVelocity, startAngle, endAngle, isBackwards, 1, 1,
+		this(vCruise, aMax, startVelocity, endVelocity, startAngle, endAngle, isBackwards, 1.0, 1.0,
 			knots);
 	}
 
@@ -88,7 +88,7 @@ public class Spline extends Path {
 	public Spline(double vCruise, double aMax, double startVelocity, double endVelocity,
 		double startAngle, double endAngle, boolean isBackwards, Pose... knots) {
 		this(vCruise, aMax, startVelocity, endVelocity,
-			startAngle, endAngle, isBackwards, 1, 1, Arrays.asList(knots));
+			startAngle, endAngle, isBackwards, 1.0, 1.0, Arrays.asList(knots));
 	}
 
 	/**
@@ -105,8 +105,8 @@ public class Spline extends Path {
 	public Spline(double vCruise, double aMax, double startVelocity, double endVelocity,
 		boolean isBackwards, Pose... knots) {
 		this(vCruise, aMax, startVelocity, endVelocity,
-			knots.length == 0 ? 0 : knots[0].getAngle(),
-			knots.length == 0 ? 0 : knots[knots.length - 1].getAngle(), isBackwards, 1, 1,
+			(knots.length == 0) ? 0 : knots[0].getAngle(),
+			(knots.length == 0) ? 0 : knots[knots.length - 1].getAngle(), isBackwards, 1, 1,
 			Arrays.asList(knots));
 	}
 
@@ -175,9 +175,9 @@ public class Spline extends Path {
 		points2[degree - 1] = new Pose(
 			0.5 * (knots.get(degree).getX() + points1[degree - 1].getX()),
 			0.5 * (knots.get(degree).getY() + points1[degree - 1].getY()));
-		List<List<Pose>> controlPoints = new ArrayList<>();
+		List<List<Pose>> controlPoints = new ArrayList<>(degree);
 		for (int i = 0; i < degree; i++) {
-			List<Pose> segmentControlPoints = new ArrayList<>();
+			List<Pose> segmentControlPoints = new ArrayList<>(getPathNumberOfSteps());
 			points1[0] = points1[0].rotate(knots.get(0), startAngle, isBackwards(), startScale);
 			points2[degree - 1] = points2[degree - 1]
 				.rotate(knots.get(knots.size() - 1), endAngle, !isBackwards(), endScale);
@@ -189,7 +189,7 @@ public class Spline extends Path {
 	}
 
 	/**
-	 * Stitches the bezier curve path datas to make the single spline
+	 * Stitches the bezier curve path data to make the single spline
 	 *
 	 * @param startPathData - requires the initial pathData
 	 */
@@ -220,15 +220,16 @@ public class Spline extends Path {
 	}
 
 	@Override
-	public final String toString() {
+	public String toString() {
 		return "Spline{" +
-			"pathControlPoints=" + pathControlPoints +
-			", pathData=" + pathData +
-			", startAngle=" + startAngle +
+			"startAngle=" + startAngle +
 			", endAngle=" + endAngle +
-			", isBackwards=" + isBackwards() +
+			", startScale=" + startScale +
+			", endScale=" + endScale +
 			", startVelocity=" + startVelocity +
 			", endVelocity=" + endVelocity +
+			", pathControlPoints=" + pathControlPoints +
+			", pathData=" + pathData +
 			"} " + super.toString();
 	}
 }

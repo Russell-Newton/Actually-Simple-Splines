@@ -27,9 +27,9 @@ public class BezierCurve extends Path {
 	private final double endVelocity;
 	private final double startLCenter;
 	private final LinkedList<PathData> pathData;
+	private final List<Pose> pathPoints;
 	private double curveLength;
 	private double[] coefficients;
-	private List<Pose> pathPoints;
 
 	/**
 	 * This constructor is used with the splines, but feel free to use it when creating your own
@@ -53,7 +53,7 @@ public class BezierCurve extends Path {
 		startLCenter = startPathData.getLCenter();
 		updateCoefficients();
 		pathData = new LinkedList<>();
-		pathPoints = new ArrayList<>();
+		pathPoints = new ArrayList<>(getPathNumberOfSteps());
 		createPoints();
 		getCurveLength();
 		setData(startPathData);
@@ -66,9 +66,9 @@ public class BezierCurve extends Path {
 		boolean isBackwards,
 		List<Pose> controlPoints) {
 		this(vCruise, aMax, v0, v1, isBackwards,
-			(controlPoints.size() == 0) ?
+			(controlPoints.isEmpty()) ?
 				new PathData(new Pose(0, 0), isBackwards) :
-				(controlPoints.size() == 1) ?
+				((controlPoints.size() == 1) ?
 					new PathData(
 						new Pose(
 							controlPoints.get(0).getX(),
@@ -83,7 +83,7 @@ public class BezierCurve extends Path {
 								controlPoints.get(1).getY() - controlPoints.get(0).getY(),
 								controlPoints.get(1).getX() - controlPoints.get(0).getX())
 						)
-						, isBackwards),
+						, isBackwards)),
 			controlPoints);
 	}
 
@@ -112,7 +112,7 @@ public class BezierCurve extends Path {
 	 * @return the factorial of d
 	 */
 	private static double factorial(double d) {
-		double r = (d - Math.floor(d)) + 1;
+		double r = (d - Math.floor(d)) + 1.0;
 		while (d > 1) {
 			r *= d;
 			d -= 1;
@@ -164,7 +164,7 @@ public class BezierCurve extends Path {
 		for (int i = 0; i <= n; i++) {
 			double coefficient = coefficients[i];
 
-			double oneMinusT = StrictMath.pow(1 - percentage, (double) (n - i));
+			double oneMinusT = StrictMath.pow(1 - percentage, (n - i));
 
 			double powerOfT = StrictMath.pow(percentage, (double) i);
 
@@ -317,17 +317,15 @@ public class BezierCurve extends Path {
 	}
 
 	@Override
-	public final String toString() {
+	public String toString() {
 		return "BezierCurve{" +
 			"startVelocity=" + startVelocity +
 			", endVelocity=" + endVelocity +
 			", startLCenter=" + startLCenter +
-			", curveLength=" + curveLength +
-			", numberOfSteps=" + getPathNumberOfSteps() +
-			", isBackwards=" + isBackwards() +
 			", pathData=" + pathData +
-			", controlPoints=" + getKeyPoints() +
+			", curveLength=" + curveLength +
 			", coefficients=" + Arrays.toString(coefficients) +
+			", pathPoints=" + pathPoints +
 			"} " + super.toString();
 	}
 }

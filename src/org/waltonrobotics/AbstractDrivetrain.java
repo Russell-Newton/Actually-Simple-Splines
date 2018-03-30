@@ -154,4 +154,11 @@ public abstract class AbstractDrivetrain extends Subsystem {
 
 	public abstract double getIAng();
 
+	@Override
+	public String toString() {
+		return "AbstractDrivetrain{" +
+			"controller=" + controller +
+			", motionLogger=" + motionLogger +
+			'}';
+	}
 }

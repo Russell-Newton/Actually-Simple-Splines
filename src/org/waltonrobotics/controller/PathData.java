@@ -35,8 +35,8 @@ public class PathData {
 	/**
 	 * Can be used to make a generic PathData without motion and time
 	 */
-	public PathData(Pose centerPose, boolean isBackwords) {
-		this(new State(0, 0, 0), new State(0, 0, 0), centerPose, 0, isBackwords);
+	public PathData(Pose centerPose, boolean isBackwards) {
+		this(new State(0, 0, 0), new State(0, 0, 0), centerPose, 0, isBackwards);
 	}
 
 
@@ -83,16 +83,17 @@ public class PathData {
 	 * @return the average length of the left and right States
 	 */
 	public final double getLCenter() {
-		return (leftState.getLength() + rightState.getLength()) / 2;
+		return (leftState.getLength() + rightState.getLength()) / 2.0;
 	}
 
 	@Override
-	public final String toString() {
+	public String toString() {
 		return "PathData{" +
 			"leftState=" + leftState +
 			", rightState=" + rightState +
 			", centerPose=" + centerPose +
 			", time=" + time +
+			", isBackwards=" + isBackwards +
 			'}';
 	}
 }

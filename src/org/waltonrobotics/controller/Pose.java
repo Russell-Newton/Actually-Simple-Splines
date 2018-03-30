@@ -59,8 +59,8 @@ public class Pose {
 	 */
 	public final double distance(Pose otherPoint) {
 		return Math.sqrt(
-			StrictMath.pow(x - otherPoint.x, 2) + StrictMath
-				.pow(y - otherPoint.y, 2));
+			StrictMath.pow(x - otherPoint.x, 2.0) + StrictMath
+				.pow(y - otherPoint.y, 2.0));
 	}
 
 	/**
@@ -79,7 +79,7 @@ public class Pose {
 	}
 
 	public final boolean sameCoordinates(Pose other) {
-		return other.getX() == getX() && other.getY() == getY();
+		return (other.getX() == getX()) && (other.getY() == getY());
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class Pose {
 	}
 
 	@Override
-	public final String toString() {
+	public String toString() {
 		return "Pose{" +
 			"x=" + x +
 			", y=" + y +

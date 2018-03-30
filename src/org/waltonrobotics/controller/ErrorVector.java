@@ -42,9 +42,8 @@ public class ErrorVector {
 		return angle;
 	}
 
-
 	@Override
-	public final String toString() {
+	public String toString() {
 		return "ErrorVector{" +
 			"lag=" + lag +
 			", crossTrack=" + crossTrack +

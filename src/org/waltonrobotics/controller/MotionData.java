@@ -60,6 +60,10 @@ public class MotionData {
 		return currentMotionState;
 	}
 
+	public int getPathNumber() {
+		return pathNumber;
+	}
+
 	@Override
 	public String toString() {
 		return "MotionData{" +
@@ -70,9 +74,5 @@ public class MotionData {
 			", pathNumber=" + pathNumber +
 			", currentMotionState=" + currentMotionState +
 			'}';
-	}
-
-	public int getPathNumber() {
-		return pathNumber;
 	}
 }

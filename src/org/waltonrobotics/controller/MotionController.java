@@ -1,11 +1,11 @@
 package org.waltonrobotics.controller;
 
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.Deque;
 import java.util.ListIterator;
+import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import org.waltonrobotics.AbstractDrivetrain;
 import org.waltonrobotics.MotionLogger;
@@ -24,12 +24,12 @@ public class MotionController {
 	private final double kS;
 	private final double kL;
 	private final double kAng;
-	private final BlockingDeque<Path> paths = new LinkedBlockingDeque<>();
+	private final Queue<Path> paths = new LinkedBlockingDeque<>();
 	private final int period;
 	private final MotionLogger motionLogger;
 	private final double iAng;
 	private final double iLag;
-	private Timer controller;
+	private final Timer controller;
 	private boolean running;
 	private Path currentPath;
 	private PathData staticPathData;
@@ -44,8 +44,8 @@ public class MotionController {
 	private RobotPair powers;
 	private TimerTask currentTimerTask;
 	private MotionState currentMotionState = MotionState.WAITING;
-	private double intergratedLagError;
-	private double intergratedAngleError;
+	private double integratedLagError;
+	private double integratedAngleError;
 	private int pathNumber;
 
 	/**
@@ -119,11 +119,11 @@ public class MotionController {
 
 				if (currentPath.isFinished()) {
 					System.out.println("Current path is finished");
-					LinkedList<PathData> temp = currentPath.getPathData();
+					Deque<PathData> temp = currentPath.getPathData();
 					currentPath = paths.poll();
 
-					intergratedLagError = 0;
-					intergratedAngleError = 0;
+					integratedLagError = 0;
+					integratedAngleError = 0;
 
 					if (currentPath != null) {
 						System.out.println("Getting new path");
@@ -132,7 +132,7 @@ public class MotionController {
 						//Used to allow smooth transition between motions not making assumption that it finishes perfectly on time
 						pathStartTime = time + pathStartTime;
 
-						pdIterator = this.currentPath.getPathData().listIterator();
+						pdIterator = currentPath.getPathData().listIterator();
 						pdPrevious = targetPathData = pdIterator.next();
 						pdNext = pdIterator.next();
 
@@ -165,8 +165,8 @@ public class MotionController {
 					currentMotionState = MotionState.MOVING;
 					targetPathData = interpolate(wheelPositions);
 
-					intergratedLagError = 0;
-					intergratedAngleError = 0;
+					integratedLagError = 0;
+					integratedAngleError = 0;
 
 					pathNumber += 1;
 				} else {
@@ -193,28 +193,28 @@ public class MotionController {
 				double steerPowerAngle = kAng * errorVector.getAngle();
 				double centerPowerLag = kL * errorVector.getLag();
 
-				centerPower = ((leftPower + rightPower) / 2) + centerPowerLag;
+				centerPower = ((leftPower + rightPower) / 2.0) + centerPowerLag;
 				steerPower = Math.max(-1,
 					Math.min(1, ((rightPower - leftPower) / 2) + steerPowerXTE + steerPowerAngle));
 				centerPower = Math
 					.max(-1 + Math.abs(steerPower),
 						Math.min(1 - Math.abs(steerPower), centerPower));
 			}
-			if (currentMotionState == MotionState.FINISHING || isClose(1)) {
+			if ((currentMotionState == MotionState.FINISHING) || isClose(1)) {
 //          to give the extra oomph when finished the path but there is a little bit more to do//FIXME left, right powers somehow manage to be greater than 1
 
-				if (wheelPositions.getTime() - staticPathData.getTime() >= 2) {
+				if ((wheelPositions.getTime() - staticPathData.getTime()) >= 2) {
 					currentMotionState = MotionState.WAITING;
 				}
 
-				intergratedLagError += iLag * errorVector.getLag();
-				intergratedAngleError += iAng * errorVector.getAngle();
+				integratedLagError += iLag * errorVector.getLag();
+				integratedAngleError += iAng * errorVector.getAngle();
 
-				intergratedAngleError = Math.max(Math.min(0.5, intergratedAngleError), -0.5);
-				intergratedLagError = Math.max(Math.min(0.5, intergratedLagError), -0.5);
+				integratedAngleError = Math.max(Math.min(0.5, integratedAngleError), -0.5);
+				integratedLagError = Math.max(Math.min(0.5, integratedLagError), -0.5);
 
-				steerPower += intergratedAngleError;
-				centerPower += intergratedLagError;
+				steerPower += integratedAngleError;
+				centerPower += integratedLagError;
 
 
 			}
@@ -283,14 +283,14 @@ public class MotionController {
 	/**
 	 * Removes all queued motions
 	 */
-	public synchronized final void clearMotions() {
+	public final synchronized void clearMotions() {
 		paths.clear();
 	}
 
 	/**
 	 * Starts the queue of motions
 	 */
-	public synchronized final void enableScheduler(Pose starting) {
+	public final synchronized void enableScheduler(Pose starting) {
 		if (!running) {
 			System.out.println("Enabling scheduler");
 			System.out.println(starting);
@@ -306,7 +306,7 @@ public class MotionController {
 			targetPathData = staticPathData;
 
 			currentTimerTask = new MotionTask();
-			controller.schedule(currentTimerTask, 0L, (long) period);
+			controller.schedule(currentTimerTask, 0L, period);
 			currentMotionState = MotionState.WAITING;
 			running = true;
 		}
@@ -316,7 +316,7 @@ public class MotionController {
 	 * @return Whether or not the queue has ended
 	 */
 	public final boolean isFinished() {
-		return currentPath == null && currentMotionState == MotionState.FINISHING;
+		return (currentPath == null) && (currentMotionState == MotionState.FINISHING);
 	}
 
 	/**
@@ -329,7 +329,7 @@ public class MotionController {
 	/**
 	 * Pauses the motions,
 	 */
-	public synchronized final void stopScheduler() {
+	public final synchronized void stopScheduler() {
 		if (running) {
 			System.out.println("Disabling scheduler");
 			running = false;
@@ -400,6 +400,13 @@ public class MotionController {
 		errorVector = new ErrorVector(lagError, crossTrackError, angleError);
 	}
 
+	public boolean isClose(double closeTime) {
+		return (currentPath != null) && (targetPathData != null)
+			&& (((currentPath.getPathData().getLast().getTime() + pathStartTime) - targetPathData
+			.getTime())
+			<= closeTime);
+	}
+
 	@Override
 	public String toString() {
 		return "MotionController{" +
@@ -430,19 +437,11 @@ public class MotionController {
 			", powers=" + powers +
 			", currentTimerTask=" + currentTimerTask +
 			", currentMotionState=" + currentMotionState +
-			", intergratedLagError=" + intergratedLagError +
-			", intergratedAngleError=" + intergratedAngleError +
+			", integratedLagError=" + integratedLagError +
+			", integratedAngleError=" + integratedAngleError +
 			", pathNumber=" + pathNumber +
 			'}';
 	}
-
-	public boolean isClose(double closeTime) {
-		return currentPath != null && targetPathData != null
-			&& (currentPath.getPathData().getLast().getTime() + pathStartTime) - targetPathData
-			.getTime()
-			<= closeTime;
-	}
-
 
 	/**
 	 * 1 Runs the calculations with a TimerTask
@@ -464,6 +463,5 @@ public class MotionController {
 					powers, pathNumber, currentMotionState));
 //			}
 		}
-
 	}
 }

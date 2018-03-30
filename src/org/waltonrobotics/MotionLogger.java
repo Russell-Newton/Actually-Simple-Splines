@@ -133,7 +133,7 @@ public class MotionLogger {
 	}
 
 	@Override
-	public final String toString() {
+	public String toString() {
 		return "MotionLogger{" +
 			"motionDataList=" + motionDataList +
 			", filePath='" + filePath + '\'' +
