@@ -201,37 +201,19 @@ public class BezierCurve extends Path {
 				.getY());
 		}
 
-		// TODO use delta angle?
-
-		double angle;
-
-		if (dx == dy && dx == 0) {
-			double angleChange = (getKeyPoints().get(getKeyPoints().size() - 1).getAngle()
-				- getKeyPoints()
-				.get(0).getAngle());
-
-			if (angleChange > Math.PI) {
-				angleChange -= (2 * Math.PI);
-			}
-
-			angle = getKeyPoints().get(0).getAngle() + t * angleChange;
-		} else {
-
-			if (t == 1.0) {
-				dx = getKeyPoints().get(getKeyPoints().size() - 1).getX()
-					- getKeyPoints().get(getKeyPoints().size() - 2).getX();
-				dy = getKeyPoints().get(getKeyPoints().size() - 1).getY()
-					- getKeyPoints().get(getKeyPoints().size() - 2).getY();
-				angle = StrictMath.atan2(dy, dx);
-			} else {
-				angle = StrictMath.atan2(dy, dx);
-			}
-
-			if (isBackwards()) {
-				angle += Math.PI;
-			}
-			angle %= (2 * Math.PI);
+		if (t == 1.0) {
+			dx = getKeyPoints().get(getKeyPoints().size() - 1).getX()
+				- getKeyPoints().get(getKeyPoints().size() - 2).getX();
+			dy = getKeyPoints().get(getKeyPoints().size() - 1).getY()
+				- getKeyPoints().get(getKeyPoints().size() - 2).getY();
 		}
+
+		double angle = StrictMath.atan2(dy, dx);
+
+		if (isBackwards()) {
+			angle += Math.PI;
+		}
+		angle %= (2 * Math.PI);
 
 		return angle;
 	}
@@ -275,12 +257,7 @@ public class BezierCurve extends Path {
 		double dlRight = dLength + ((dAngle * getRobotWidth()) / 2);
 
 		// The time required to get to the next point
-		double dTime;
-		if (previousCenter.sameCoordinates(currentCenter)) {
-			dTime = ((dAngle * getRobotWidth()) / 2) / getVCruise();
-		} else {
-			dTime = Math.max(Math.abs(dlLeft), Math.abs(dlRight)) / getVCruise();
-		}
+		double dTime = Math.max(Math.abs(dlLeft), Math.abs(dlRight)) / getVCruise();
 		// The hypothetical velocity to get to that point
 		double velocity = dLength / dTime;
 
@@ -324,16 +301,8 @@ public class BezierCurve extends Path {
 //		System.out
 //			.println("acc: " + vAccelerating + " dec: " + vDecelerating + " vel: " + velocity + " velAct: " + dLength/dTime);
 
-		double velocityL;
-		double velocityR;
-
-		if (previousCenter.sameCoordinates(currentCenter)) {
-			velocityL = (dlLeft - dLength) / dTime;
-			velocityR = (dlRight - dLength) / dTime;
-		} else {
-			velocityL = dlLeft / dTime;
-			velocityR = dlRight / dTime;
-		}
+		double velocityL = dlLeft / dTime;
+		double velocityR = dlRight / dTime;
 
 		State left = new State(previousLeft.getLength() + dlLeft, velocityL, acceleration);
 		State right = new State(previousRight.getLength() + dlRight, velocityR, acceleration);
