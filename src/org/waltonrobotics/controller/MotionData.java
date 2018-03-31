@@ -15,7 +15,13 @@ public class MotionData {
 	private final MotionState currentMotionState;
 
 	/**
-	 * @param powers (as a RobotPair)
+	 *
+	 * @param actual the actual position of the robot
+	 * @param target the target position of the robot
+	 * @param error the errors at the specific time
+	 * @param powers the posers supplied to the motors
+	 * @param pathNumber the path number the robot is currently going through
+	 * @param currentMotionState the state the robot is at going through the motion
 	 */
 	public MotionData(Pose actual, Pose target, ErrorVector error, RobotPair powers,
 		int pathNumber,
@@ -29,21 +35,22 @@ public class MotionData {
 	}
 
 	/**
-	 * @return actualPose
+	 * @return actualPose actual position of the robot
 	 */
 	public final Pose getActualPose() {
 		return actual;
 	}
 
 	/**
-	 * @return targetPose
+	 * @return targetPose the position the robot should be at
 	 */
 	public final Pose getTargetPose() {
 		return target;
 	}
 
 	/**
-	 * @return error ErrorVector
+	 * @return error the errors at the specific time
+	 * @see ErrorVector
 	 */
 	public final ErrorVector getError() {
 		return error;
@@ -51,15 +58,22 @@ public class MotionData {
 
 	/**
 	 * @return powers and time RobotPair
+	 * @see RobotPair
 	 */
 	public final RobotPair getPowers() {
 		return powers;
 	}
 
+	/**
+	 * @return the state the robot is currently at
+	 */
 	public MotionState getCurrentMotionState() {
 		return currentMotionState;
 	}
 
+	/**
+	 * @return the path number
+	 */
 	public int getPathNumber() {
 		return pathNumber;
 	}

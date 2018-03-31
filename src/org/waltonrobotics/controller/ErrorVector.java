@@ -1,7 +1,7 @@
 package org.waltonrobotics.controller;
 
 /**
- * Holds the cross-track and lag errors
+ * Holds the cross-track, lag and angle errors
  *
  * @author Russell Newton, Walton Robotics
  */
@@ -12,8 +12,9 @@ public class ErrorVector {
 	private final double angle;
 
 	/**
-	 * @param lag
-	 * @param crossTrack
+	 * @param lag how far behind or in front the actual position is fromm the target position
+	 * @param crossTrack how far perpendicularly the robot is from the target position
+	 * @param angle the error between the target angle and the actual angle of the robot
 	 */
 	public ErrorVector(double lag, double crossTrack, double angle) {
 		this.lag = lag;

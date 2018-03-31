@@ -12,9 +12,9 @@ public class RobotPair {
 	private final double time;
 
 	/**
-	 * @param left
-	 * @param right
-	 * @param time
+	 * @param left the left power the robot should give the motor at the given time
+	 * @param right the right power the robot should give the motor at the given time
+	 * @param time the instance in time
 	 */
 	public RobotPair(double left, double right, double time) {
 		this.left = left;

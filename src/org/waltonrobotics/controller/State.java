@@ -12,9 +12,9 @@ public class State {
 	private final double acceleration;
 
 	/**
-	 * @param length
-	 * @param velocity
-	 * @param acceleration
+	 * @param length how far the robot has to go
+	 * @param velocity the velocity the robot should be
+	 * @param acceleration the acceleration the robot should be
 	 */
 	public State(double length, double velocity, double acceleration) {
 		this.length = length;

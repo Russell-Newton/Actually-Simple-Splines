@@ -20,8 +20,10 @@ public abstract class Path {
 	private boolean isFinished;
 
 	/**
-	 * @param vCruise - cruise velocity
-	 * @param aMax - max acceleration
+	 * @param vCruise cruise velocity of the robot, the velocity that the robot should try to reach
+	 * @param aMax the maximum acceleration the robot should achieve
+	 * @param isBackwards if the robot is travelling forwards or backwards
+	 * @param keyPoints the points that define the path
 	 */
 	protected Path(double vCruise, double aMax, boolean isBackwards, List<Pose> keyPoints) {
 		this.isBackwards = isBackwards;
@@ -42,22 +44,41 @@ public abstract class Path {
 		this(vCruise, aMax, isBackwards, Arrays.asList(keyPoints));
 	}
 
+	/**
+	 * @return the number of steps the path should be divided into. Default is 50.
+	 */
 	public static int getPathNumberOfSteps() {
 		return pathNumberOfSteps;
 	}
 
+	/**
+	 * @param pathNumberOfSteps the new number of steps a path should be divided into
+	 */
 	public static void setPathNumberOfSteps(int pathNumberOfSteps) {
 		Path.pathNumberOfSteps = pathNumberOfSteps;
 	}
 
+	/**
+	 * @return The width of the robot from the outside of each wheel
+	 */
 	public static double getRobotWidth() {
 		return robotWidth;
 	}
 
+	/**
+	 * @param robotWidth the new width of the robot
+	 */
 	public static void setRobotWidth(double robotWidth) {
 		Path.robotWidth = robotWidth;
 	}
 
+	/**
+	 * Bounds an angle to be in between -PI and PI. if the angles are more or less then the angle
+	 * will cycle.
+	 *
+	 * @param angle angle to be bounded
+	 * @return the angle bounded
+	 */
 	public static double boundAngle(double angle) {
 		if (angle > Math.PI) {
 			return angle - (2.0 * Math.PI);
@@ -68,14 +89,23 @@ public abstract class Path {
 		return angle;
 	}
 
+	/**
+	 * @return if the robot is travelling backwards or not
+	 */
 	public final boolean isBackwards() {
 		return isBackwards;
 	}
 
+	/**
+	 * @return the key points that define the path
+	 */
 	public final List<Pose> getKeyPoints() {
 		return keyPoints;
 	}
 
+	/**
+	 * @return if the path has been completed
+	 */
 	public final boolean isFinished() {
 		return isFinished;
 	}
@@ -84,6 +114,9 @@ public abstract class Path {
 		isFinished = finished;
 	}
 
+	/**
+	 * @return the maximum acceleration the robot should be at
+	 */
 	public final double getAMax() {
 		return aMax;
 	}
@@ -94,6 +127,9 @@ public abstract class Path {
 	 */
 	public abstract LinkedList<PathData> getPathData();
 
+	/**
+	 * @return the velocity the robot should try to reach
+	 */
 	public final double getVCruise() {
 		return vCruise;
 	}

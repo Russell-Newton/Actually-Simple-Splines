@@ -12,10 +12,9 @@ public class Pose {
 	private final double angle;
 
 	/**
-	 *
-	 * @param x
-	 * @param y
-	 * @param angle
+	 * @param x the x coordinate in space
+	 * @param y the y coordinate in space
+	 * @param angle the angle
 	 */
 	public Pose(double x, double y, double angle) {
 		this.x = x;
@@ -45,7 +44,7 @@ public class Pose {
 	}
 
 	/**
-	 * @return the derivative of the point
+	 * @return the angle of the point
 	 */
 	public final double getAngle() {
 		return angle;
@@ -54,7 +53,7 @@ public class Pose {
 	/**
 	 * Finds the distance between two points
 	 *
-	 * @param otherPoint - the point you want to find the distance from
+	 * @param otherPoint the point you want to find the distance from
 	 * @return the distance from this point to the other point
 	 */
 	public final double distance(Pose otherPoint) {
@@ -66,9 +65,9 @@ public class Pose {
 	/**
 	 * Rotates a point around a central point. Imagine making an arc on a circle
 	 *
-	 * @param centerPoint - the center of the circle
-	 * @param arcAngle - the angle to rotate the point to (degrees)
-	 * @param backwards - whether or not to rotate the point backwards (clockwise)
+	 * @param centerPoint the center of the circle
+	 * @param arcAngle the angle to rotate the point to (degrees)
+	 * @param backwards whether or not to rotate the point backwards (clockwise)
 	 * @return the rotated point
 	 */
 	public final Pose rotate(Pose centerPoint, double arcAngle, boolean backwards, double scale) {
@@ -78,6 +77,13 @@ public class Pose {
 		return new Pose(centerPoint.x + xDisplacement, centerPoint.y + yDisplacement);
 	}
 
+	/**
+	 * Checks if a another point has the same x or y as another.
+	 *
+	 * @param other the point to compare to
+	 * @return true if the other point has the same coordinate as the the point instance, false
+	 * otherwise
+	 */
 	public final boolean sameCoordinates(Pose other) {
 		return (other.getX() == getX()) && (other.getY() == getY());
 	}

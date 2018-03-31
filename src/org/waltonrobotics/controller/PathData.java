@@ -14,10 +14,11 @@ public class PathData {
 	private final boolean isBackwards;
 
 	/**
-	 * @param leftState
-	 * @param rightState
-	 * @param centerPose
-	 * @param time
+	 * @param leftState the left motor state
+	 * @param rightState the right motor state
+	 * @param centerPose the center position of the robot in the x,y and angle space
+	 * @param time the instance in time this was added
+	 * @param isBackwards if the robot was travelling forwards or backwards
 	 */
 	public PathData(State leftState, State rightState, Pose centerPose, double time,
 		boolean isBackwards) {
