@@ -14,12 +14,12 @@ public class Pose {
 	/**
 	 * @param x the x coordinate in space
 	 * @param y the y coordinate in space
-	 * @param angle the angle
+	 * @param angle the angle in degrees
 	 */
 	public Pose(double x, double y, double angle) {
 		this.x = x;
 		this.y = y;
-		this.angle = angle;
+		this.angle = StrictMath.toRadians(angle);
 	}
 
 	/**
@@ -44,10 +44,17 @@ public class Pose {
 	}
 
 	/**
-	 * @return the angle of the point
+	 * @return the angle of the point in radians
 	 */
 	public final double getAngle() {
 		return angle;
+	}
+
+	/**
+	 * @return the angle of the point in degrees
+	 */
+	public final double getDegrees() {
+		return StrictMath.toDegrees(angle);
 	}
 
 	/**

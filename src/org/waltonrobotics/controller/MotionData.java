@@ -15,7 +15,6 @@ public class MotionData {
 	private final MotionState currentMotionState;
 
 	/**
-	 *
 	 * @param actual the actual position of the robot
 	 * @param target the target position of the robot
 	 * @param error the errors at the specific time
