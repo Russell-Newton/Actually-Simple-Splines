@@ -12,11 +12,10 @@ import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.controller.State;
 
 /**
- * This path is a spline that will go through the set knots by stitching together several Bezier
- * curves. By default, it will try to make the shortest path possible, but the start and end angles
- * (degrees) indicate how the robot is facing or how you want it to face. This is not very effective
- * with only 2 knots. If you want a straight line, make a Bezier Curve. <br> <a
- * href=https://www.particleincell.com/2012/bezier-splines>Interactive javascript spline<a/> <br> <a
+ * This path is a spline that will go through the set knots by stitching together several Bezier curves. By default, it
+ * will try to make the shortest path possible, but the start and end angles (degrees) indicate how the robot is facing
+ * or how you want it to face. This is not very effective with only 2 knots. If you want a straight line, make a Bezier
+ * Curve. <br> <a href=https://www.particleincell.com/2012/bezier-splines>Interactive javascript spline<a/> <br> <a
  * href=https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm>Thomas algorithm</a>
  *
  * @author Russell Newton, Walton Robotics
@@ -34,8 +33,7 @@ public class Spline extends Path {
 	private final LinkedList<PathData> pathData;
 
 	/**
-	 * Construct a spline. Note that the x axis is the direction the robot is facing if the start
-	 * angle is 0
+	 * Construct a spline. Note that the x axis is the direction the robot is facing if the start angle is 0
 	 *
 	 * @param vCruise - max velocity
 	 * @param aMax - max acceleration
@@ -73,8 +71,7 @@ public class Spline extends Path {
 	}
 
 	/**
-	 * Construct a spline. Note that the x axis is the direction the robot is facing if the start
-	 * angle is 0
+	 * Construct a spline. Note that the x axis is the direction the robot is facing if the start angle is 0
 	 *
 	 * @param vCruise - max velocity
 	 * @param aMax - max acceleration
@@ -92,8 +89,7 @@ public class Spline extends Path {
 	}
 
 	/**
-	 * Construct a spline. Note that the x axis is the direction the robot is facing if the start
-	 * angle is 0
+	 * Construct a spline. Note that the x axis is the direction the robot is facing if the start angle is 0
 	 *
 	 * @param vCruise - max velocity
 	 * @param aMax - max acceleration
@@ -112,8 +108,8 @@ public class Spline extends Path {
 
 
 	/**
-	 * Creates the control points required to make cubic bezier curves that transition between
-	 * knots. Will make them for the shortest path possible.
+	 * Creates the control points required to make cubic bezier curves that transition between knots. Will make them for
+	 * the shortest path possible.
 	 *
 	 * @return A list of lists that hold the control points for the segments in the spline
 	 */

@@ -88,8 +88,7 @@ public class Pose {
 	 * Checks if a another point has the same x or y as another.
 	 *
 	 * @param other the point to compare to
-	 * @return true if the other point has the same coordinate as the the point instance, false
-	 * otherwise
+	 * @return true if the other point has the same coordinate as the the point instance, false otherwise
 	 */
 	public final boolean sameCoordinates(Pose other) {
 		return (other.getX() == getX()) && (other.getY() == getY());
