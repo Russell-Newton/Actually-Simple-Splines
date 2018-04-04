@@ -150,6 +150,10 @@ public abstract class AbstractDrivetrain extends Subsystem {
 
 	public abstract double getIAng();
 
+	public double getPercentPathDone() {
+		return controller.getPercentDone();
+	}
+
 	@Override
 	public String toString() {
 		return "AbstractDrivetrain{" +

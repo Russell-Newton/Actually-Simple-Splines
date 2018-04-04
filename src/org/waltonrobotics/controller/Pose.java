@@ -19,7 +19,7 @@ public class Pose {
 	public Pose(double x, double y, double angle) {
 		this.x = x;
 		this.y = y;
-		this.angle = StrictMath.toRadians(angle);
+		this.angle = angle;
 	}
 
 	/**

@@ -29,7 +29,7 @@ public class DebugCurves {
 		printPath(pointTurn);
 
 		points.add(new Pose(0, 0, StrictMath.toRadians(0)));
-		points.add(new Pose(0, 0, StrictMath.toRadians(90)));
+		points.add(new Pose(1, 1, StrictMath.toRadians(90)));
 		BezierCurve curve = new BezierCurve(1, 1, 0, 0, isBackwards,
 			points
 		);
