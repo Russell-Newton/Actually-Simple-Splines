@@ -329,10 +329,13 @@ public class MotionController {
 	/**
 	 * @return Percent of the current Path that the robot is at, based off of the time
 	 */
-	public double getPercentDone() {
-		double currentTime = drivetrain.getWheelPositions().getTime() - pathStartTime;
-		double endTime = currentPath.getPathData().getLast().getTime();
-		return currentTime / endTime;
+	public double getPercentDone(Path pathToUse) {
+		if (currentPath.equals(pathToUse)) {
+			double currentTime = drivetrain.getWheelPositions().getTime() - pathStartTime;
+			double endTime = currentPath.getPathData().getLast().getTime();
+			return currentTime / endTime;
+		}
+		return -1;
 	}
 
 	/**
