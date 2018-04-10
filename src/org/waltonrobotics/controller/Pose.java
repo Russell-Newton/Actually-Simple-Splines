@@ -103,6 +103,11 @@ public class Pose {
 		return new Pose(x + dX, y + dY, angle + dAngle);
 	}
 
+	public final Pose offset(double distance) {
+		return new Pose(StrictMath.cos(getAngle()) * distance + getX(), StrictMath.sin(getAngle()) * distance + getY(),
+			getAngle());
+	}
+
 	@Override
 	public String toString() {
 		return "Pose{" +
