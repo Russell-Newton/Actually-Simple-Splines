@@ -23,6 +23,7 @@ public class DebugCurves {
 	private static boolean isBackwards = false;
 
 	public static void main(String[] args) {
+
 		Path.setRobotWidth(width);
 		PointTurn pointTurn = new PointTurn(1.0, 1, new Pose(0, 0, 0), StrictMath.toRadians(270));
 		System.out.println("Point Turn:");
@@ -35,12 +36,12 @@ public class DebugCurves {
 		printPath(curve);
 
 		Spline spline = new Spline(100, 3, 0, 0, StrictMath.toRadians(0), StrictMath.toRadians(270), isBackwards,
-				points);
+			points);
 		System.out.println("\n\nSpline:");
 		printPath(spline);
 
 		Line line = new Line(1, 1, 0, 0, isBackwards, new Pose(0, 0, StrictMath.toRadians(0)),
-				new Pose(1, 1, StrictMath.toRadians(45)));
+			new Pose(1, 1, StrictMath.toRadians(45)));
 		System.out.println("\n\nLine:");
 		printPath(line);
 	}
@@ -50,10 +51,10 @@ public class DebugCurves {
 
 		for (PathData aPathData : pathData) {
 			System.out.println(aPathData.getCenterPose().getX() + " " + aPathData.getCenterPose().getY() + ' '
-					+ Math.toDegrees(aPathData.getCenterPose().getAngle()) + " t: " + aPathData.getTime());
+				+ Math.toDegrees(aPathData.getCenterPose().getAngle()) + " t: " + aPathData.getTime());
 
 			System.out.println(aPathData.getLeftState().getLength() + " " + aPathData.getRightState().getLength() + ' '
-					+ aPathData.getLeftState().getVelocity() + ' ' + aPathData.getRightState().getVelocity());
+				+ aPathData.getLeftState().getVelocity() + ' ' + aPathData.getRightState().getVelocity());
 
 			System.out.println();
 		}

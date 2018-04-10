@@ -60,10 +60,10 @@ public class BezierCurve extends Path {
 	/**
 	 * Use this if you don't need to define a starting PathData
 	 */
-	public BezierCurve(double vCruise, double aMax, double v0, double v1,
+	public BezierCurve(double vCruise, double aMax, double startVelocity, double endVelocity,
 		boolean isBackwards,
 		List<Pose> controlPoints) {
-		this(vCruise, aMax, v0, v1, isBackwards,
+		this(vCruise, aMax, startVelocity, endVelocity, isBackwards,
 			(controlPoints.isEmpty()) ?
 				new PathData(new Pose(0, 0), isBackwards) :
 				((controlPoints.size() == 1) ?
@@ -85,10 +85,10 @@ public class BezierCurve extends Path {
 			controlPoints);
 	}
 
-	public BezierCurve(double vCruise, double aMax, double v0, double v1,
+	public BezierCurve(double vCruise, double aMax, double startVelocity, double endVelocity,
 		boolean isBackwards,
 		Pose... controlPoints) {
-		this(vCruise, aMax, v0, v1, isBackwards, Arrays.asList(controlPoints));
+		this(vCruise, aMax, startVelocity, endVelocity, isBackwards, Arrays.asList(controlPoints));
 	}
 
 	/**

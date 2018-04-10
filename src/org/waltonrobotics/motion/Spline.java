@@ -190,18 +190,18 @@ public class Spline extends Path {
 	 * @param startPathData - requires the initial pathData
 	 */
 	private void stitchPathData(PathData startPathData) {
-		double nextV0;
-		double nextV1;
+		double nextStartVelocity;
+		double nextEndVelocity;
 		PathData nextStartPathData = startPathData;
 		pathData.add(startPathData);
 		ListIterator<List<Pose>> iterator = pathControlPoints.listIterator();
 		while (iterator.hasNext()) {
 			BezierCurve curve;
-			nextV0 = (iterator.nextIndex() == 0) ? startVelocity : getVCruise();
-			nextV1 =
+			nextStartVelocity = (iterator.nextIndex() == 0) ? startVelocity : getVCruise();
+			nextEndVelocity =
 				(iterator.nextIndex() == (pathControlPoints.size() - 1)) ? endVelocity
 					: getVCruise();
-			curve = new BezierCurve(getVCruise(), getAMax(), nextV0, nextV1,
+			curve = new BezierCurve(getVCruise(), getAMax(), nextStartVelocity, nextEndVelocity,
 				isBackwards(),
 				nextStartPathData,
 				iterator.next());
