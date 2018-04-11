@@ -1,6 +1,7 @@
 package org.waltonrobotics;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
+import org.waltonrobotics.command.SimpleMotion;
 import org.waltonrobotics.controller.MotionController;
 import org.waltonrobotics.controller.Path;
 import org.waltonrobotics.controller.Pose;
@@ -22,6 +23,7 @@ public abstract class AbstractDrivetrain extends Subsystem {
 	protected AbstractDrivetrain(MotionLogger motionLogger) {
 		this.motionLogger = motionLogger;
 		controller = new MotionController(this);
+		SimpleMotion.setDrivetrain(this);
 	}
 
 	public MotionLogger getMotionLogger() {
@@ -153,6 +155,23 @@ public abstract class AbstractDrivetrain extends Subsystem {
 	public double getPercentPathDone(Path path) {
 		return controller.getPercentDone(path);
 	}
+
+	/**
+	 * This returns the max velocity the robot can achieve.
+	 * <br>
+	 * This value can also be found using the <a href=https://github.com/NamelessSuperCoder/Motion-Profiller-Log-Display>Motion
+	 * Log Viewer</a> using a motion that is long and straight and has a high max velocity.
+	 * @see
+	 * @return the max acceleration the robot can achieve.
+	 */
+	public abstract double getMaxVelocity();
+
+	/**
+	 * This returns the max acceleration the robot can be achieve
+	 *
+	 * @return the max acceleration the robot can achieve
+	 */
+	public abstract double getMaxAcceleration();
 
 	@Override
 	public String toString() {
