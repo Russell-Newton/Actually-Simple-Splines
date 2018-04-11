@@ -15,8 +15,10 @@ public class SimpleLine extends SimpleMotion {
 		return lineWithDistance(getDrivetrain().getMaxVelocity(), getDrivetrain().getMaxAcceleration(), startPosition,
 			distance);
 	}
+
 	public static SimpleLine lineWithDistance(boolean isBackwards, Pose startPosition, double distance) {
-		return new SimpleLine(getDrivetrain().getMaxVelocity(), getDrivetrain().getMaxAcceleration(), 0, 0, isBackwards, startPosition,
+		return new SimpleLine(getDrivetrain().getMaxVelocity(), getDrivetrain().getMaxAcceleration(), 0, 0, isBackwards,
+			startPosition,
 			startPosition.offset(distance));
 	}
 
