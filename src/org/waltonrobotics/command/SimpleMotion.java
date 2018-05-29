@@ -7,7 +7,8 @@ import org.waltonrobotics.motion.Path;
 public class SimpleMotion extends Command {
 
 	private static AbstractDrivetrain drivetrain;
-	private final Path path;
+	protected Path path;
+
 	public SimpleMotion(Path path) {
 		this.path = path;
 
