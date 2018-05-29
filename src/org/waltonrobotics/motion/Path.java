@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.controller.State;
@@ -108,21 +107,48 @@ public abstract class Path {
 			List<PathData> pathDataList = new LinkedList<>();
 			List<Pose> keyPoints = new LinkedList<>();
 
-			boolean firstLine = true;
+			final double[] pathDataSize = {1};
+			final double[] keyPointSize = {1};
 
-			double maxVelocity;
-			double maxAcceleration;
-			boolean isBackwards;
-			double robotWidth;
+			final double[] maxVelocity = new double[1];
+			final double[] maxAcceleration = new double[1];
+			final boolean[] isBackwards = new boolean[1];
+			final double[] robotWidth = new double[1];
+
+			final int[] i = {0};
 
 			bufferedReader.lines().forEach(line -> {
 				double[] data = Arrays.stream(line.split(",")).mapToDouble(Double::parseDouble).toArray();
 
+				if (i[0] == 1) {
+					pathDataSize[0] = data[data.length - 6];
+					keyPointSize[0] = data[data.length - 5];
+					maxVelocity[0] = data[data.length - 4];
+					maxAcceleration[0] = data[data.length - 3];
+					isBackwards[0] = data[data.length - 2] == 1.0;
+					robotWidth[0] = data[data.length - 1];
+				}
 
+				int index = i[0] - 1;
+
+				if (index < pathDataSize[0]) {
+					pathDataList.add(new PathData(
+						new State(data[0], data[1], data[2]),
+						new State(data[3], data[4], data[5]),
+						new Pose(data[6], data[7], data[8]),
+						data[9]
+					));
+				}
+
+				if (index < keyPointSize[0]) {
+					keyPoints.add(new Pose(data[10], data[11], data[12]));
+				}
+
+				i[0]++;
 			});
 
-			Path.setRobotWidth(robotWidth);
-			Path path = new Path(maxVelocity, maxAcceleration, isBackwards, keyPoints) {
+			Path.setRobotWidth(robotWidth[0]);
+			Path path = new Path(maxVelocity[0], maxAcceleration[0], isBackwards[0], keyPoints) {
 				@Override
 				public void createPath() {
 
@@ -131,6 +157,8 @@ public abstract class Path {
 
 			path.getPathData().clear();
 			path.getPathData().addAll(pathDataList);
+
+			return path;
 		}
 	}
 
@@ -156,17 +184,17 @@ public abstract class Path {
 		return keyPoints;
 	}
 
-	public void setKeyPoints(Collection<Pose> keyPoints) {
-
+	public void setKeyPoints(Pose... keyPoints) {
 		this.keyPoints.clear();
-		this.keyPoints.addAll(keyPoints);
+		Collections.addAll(this.keyPoints, keyPoints);
 
 		createPath();
 	}
 
-	public void setKeyPoints(Pose... keyPoints) {
+	public void setKeyPoints(Collection<Pose> keyPoints) {
+
 		this.keyPoints.clear();
-		Collections.addAll(this.keyPoints, keyPoints);
+		this.keyPoints.addAll(keyPoints);
 
 		createPath();
 	}
@@ -223,9 +251,12 @@ public abstract class Path {
 			stringBuilder.append("Keypoint Y,");
 			stringBuilder.append("Keypoint Angle,");
 
+			stringBuilder.append("Number of Path Data,");
+			stringBuilder.append("Number of Keypoints,");
+
 			stringBuilder.append("Velocity Cruise,");
 			stringBuilder.append("Max Acceleration,");
-			stringBuilder.append("Backwards");
+			stringBuilder.append("Backwards,");
 			stringBuilder.append("Robot width");
 
 			stringBuilder.append('\n');
@@ -285,14 +316,21 @@ public abstract class Path {
 				}
 
 				if (i == 0) {
+					stringBuilder.append(getPathData().size());
+					stringBuilder.append(',');
+					stringBuilder.append(getKeyPoints().size());
+					stringBuilder.append(',');
+
 					stringBuilder.append(getVCruise());
 					stringBuilder.append(',');
 					stringBuilder.append(getAMax());
 					stringBuilder.append(',');
-					stringBuilder.append(isBackwards());
+					stringBuilder.append(isBackwards() ? 1 : 0);
 					stringBuilder.append(',');
 					stringBuilder.append(getRobotWidth());
 				} else {
+					stringBuilder.append(',');
+					stringBuilder.append(',');
 					stringBuilder.append(',');
 					stringBuilder.append(',');
 					stringBuilder.append(',');
