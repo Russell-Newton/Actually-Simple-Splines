@@ -2,13 +2,12 @@ package org.waltonrobotics.command;
 
 import edu.wpi.first.wpilibj.command.Command;
 import org.waltonrobotics.AbstractDrivetrain;
-import org.waltonrobotics.controller.Path;
+import org.waltonrobotics.motion.Path;
 
 public class SimpleMotion extends Command {
 
 	private static AbstractDrivetrain drivetrain;
 	private final Path path;
-
 	public SimpleMotion(Path path) {
 		this.path = path;
 
@@ -21,6 +20,13 @@ public class SimpleMotion extends Command {
 
 	public static void setDrivetrain(AbstractDrivetrain drivetrain) {
 		SimpleMotion.drivetrain = drivetrain;
+	}
+
+	@Override
+	public String toString() {
+		return "SimpleMotion{" +
+			"path=" + path +
+			'}';
 	}
 
 	public Path getPath() {

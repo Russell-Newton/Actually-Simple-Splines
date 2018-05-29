@@ -9,6 +9,7 @@ import java.util.TimerTask;
 import java.util.concurrent.LinkedBlockingDeque;
 import org.waltonrobotics.AbstractDrivetrain;
 import org.waltonrobotics.MotionLogger;
+import org.waltonrobotics.motion.Path;
 
 /**
  * Controls Path motions
@@ -174,8 +175,10 @@ public class MotionController {
 					targetPathData = staticPathData;
 				}
 			}
-			updateActualPosition(wheelPositions);
-			findCurrentError();
+			actualPosition = updateActualPosition(wheelPositions, previousLengths, actualPosition);
+			previousLengths = wheelPositions;
+
+			errorVector = findCurrentError(targetPathData, actualPosition);
 
 			double centerPower = 0;
 			double steerPower = 0;
@@ -227,6 +230,7 @@ public class MotionController {
 			return new RobotPair(centerPower - steerPower, centerPower + steerPower,
 				wheelPositions.getTime());
 		}
+
 		return new RobotPair(0, 0, wheelPositions.getTime());
 	}
 
@@ -290,11 +294,16 @@ public class MotionController {
 	/**
 	 * Starts the queue of motions
 	 */
-	public final synchronized void enableScheduler(Pose starting) {
+	public final synchronized void enableScheduler() {
 		if (!running) {
 			System.out.println("Enabling scheduler");
-			System.out.println(starting);
-			actualPosition = starting;
+			System.out.println(actualPosition);
+//			actualPosition = starting;
+			if (actualPosition == null) {
+				System.out.println("Starting position might not have been set setting actual position to 0,0,0");
+				actualPosition = new Pose(0, 0, 0);
+			}
+
 			previousLengths = drivetrain.getWheelPositions();
 
 			staticPathData = new PathData(
@@ -356,39 +365,40 @@ public class MotionController {
 	/**
 	 * Updates where the robot thinks it is, based off of the encoder lengths
 	 */
-	private void updateActualPosition(RobotPair wheelPositions) {
-		double arcLeft = wheelPositions.getLeft() - previousLengths.getLeft();
-		double arcRight = wheelPositions.getRight() - previousLengths.getRight();
+	public Pose updateActualPosition(RobotPair wheelPositions, RobotPair previousWheelPositions,
+		Pose estimatedActualPosition) {
+		double arcLeft = wheelPositions.getLeft() - previousWheelPositions.getLeft();
+		double arcRight = wheelPositions.getRight() - previousWheelPositions.getRight();
 		double dAngle = (arcRight - arcLeft) / Path.getRobotWidth();
 		double arcCenter = (arcRight + arcLeft) / 2;
 		double dX;
 		double dY;
 		if (Math.abs(dAngle) < 0.01) {
-			dX = arcCenter * StrictMath.cos(actualPosition.getAngle());
-			dY = arcCenter * StrictMath.sin(actualPosition.getAngle());
+			dX = arcCenter * StrictMath.cos(estimatedActualPosition.getAngle());
+			dY = arcCenter * StrictMath.sin(estimatedActualPosition.getAngle());
 		} else {
 			dX = arcCenter * (
-				((StrictMath.sin(dAngle) * StrictMath.cos(actualPosition.getAngle())) / dAngle)
+				((StrictMath.sin(dAngle) * StrictMath.cos(estimatedActualPosition.getAngle())) / dAngle)
 					- (
-					((StrictMath.cos(dAngle) - 1) * StrictMath.sin(actualPosition.getAngle()))
+					((StrictMath.cos(dAngle) - 1) * StrictMath.sin(estimatedActualPosition.getAngle()))
 						/ dAngle));
 			dY = arcCenter * (
-				((StrictMath.sin(dAngle) * StrictMath.sin(actualPosition.getAngle())) / dAngle)
+				((StrictMath.sin(dAngle) * StrictMath.sin(estimatedActualPosition.getAngle())) / dAngle)
 					- (
-					((StrictMath.cos(dAngle) - 1) * StrictMath.cos(actualPosition.getAngle()))
+					((StrictMath.cos(dAngle) - 1) * StrictMath.cos(estimatedActualPosition.getAngle()))
 						/ dAngle));
 		}
 
-		actualPosition = actualPosition.offset(dX, dY, dAngle);
-		previousLengths = wheelPositions;
+		estimatedActualPosition = estimatedActualPosition.offset(dX, dY, dAngle);
+
+		return estimatedActualPosition;
 	}
 
 	/**
 	 * Finds the current lag and cross track ErrorVector
 	 */
-	private void findCurrentError() {
+	private ErrorVector findCurrentError(PathData targetPathData, Pose actualPose) {
 		Pose targetPose = targetPathData.getCenterPose();
-		Pose actualPose = actualPosition;
 		double dX = targetPose.getX() - actualPose.getX();
 		double dY = targetPose.getY() - actualPose.getY();
 		double angle = targetPose.getAngle();
@@ -409,7 +419,7 @@ public class MotionController {
 		} else if (angleError < -Math.PI) {
 			angleError += 2 * Math.PI;
 		}
-		errorVector = new ErrorVector(lagError, crossTrackError, angleError);
+		return new ErrorVector(lagError, crossTrackError, angleError);
 	}
 
 	public boolean isClose(double closeTime) {
@@ -455,6 +465,11 @@ public class MotionController {
 			'}';
 	}
 
+	public void setStartPosition(Pose startingPosition) {
+
+		actualPosition = startingPosition;
+	}
+
 	/**
 	 * 1 Runs the calculations with a TimerTask
 	 *
@@ -464,16 +479,15 @@ public class MotionController {
 
 		@Override
 		public final void run() {
-//			if (currentPath != null) {
 			RobotPair wheelPositions = drivetrain.getWheelPositions();
-//			updateActualPosition(wheelPositions);
-//			findCurrentError();
+
 			powers = calculateSpeeds(wheelPositions);
+
 			drivetrain.setSpeeds(powers.getLeft(), powers.getRight());
+
 			motionLogger.addMotionData(
 				new MotionData(actualPosition, targetPathData.getCenterPose(), errorVector,
 					powers, pathNumber, currentMotionState));
-//			}
 		}
 	}
 }

@@ -2,11 +2,11 @@ package org.waltonrobotics.test;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.waltonrobotics.controller.Path;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.motion.BezierCurve;
 import org.waltonrobotics.motion.Line;
+import org.waltonrobotics.motion.Path;
 import org.waltonrobotics.motion.PointTurn;
 import org.waltonrobotics.motion.Spline;
 
@@ -23,7 +23,64 @@ public class DebugCurves {
 	private static boolean isBackwards = false;
 
 	public static void main(String[] args) {
+		testPaths();
+//		testPathLengthTime();
+	}
 
+	private static void testPathLengthTime() {
+		points.clear();
+		points.add(new Pose(0, 0, StrictMath.toRadians(0)));
+		points.add(new Pose(1, 1, StrictMath.toRadians(90)));
+
+		for (int length = 0; length <= 10; length++) {
+			Path.setPathNumberOfSteps((int) Math.pow(10, length));
+
+			double pathNumber = Path.getPathNumberOfSteps();
+
+			double startTime = System.currentTimeMillis();
+			new PointTurn(1.0, 1, points.get(0), points.get(1).getAngle());
+			System.out.println(pathNumber + ", Pointturn, " + (System.currentTimeMillis() - startTime));
+
+			startTime = System.currentTimeMillis();
+			new BezierCurve(1, 1, 0, 0, isBackwards, points);
+			System.out.println(pathNumber + ", BezierCurve, " + (System.currentTimeMillis() - startTime));
+
+			startTime = System.currentTimeMillis();
+			new Spline(1, 1, 0, 0, isBackwards, points);
+			System.out.println(pathNumber + ", Spline, " + (System.currentTimeMillis() - startTime));
+
+//			new Thread(() -> {
+//				new PointTurn(1.0, 1, points.get(0), points.get(1).getAngle());
+//				System.out.println(pathNumber + ": Pointturn: " + (System.currentTimeMillis() - startTime));
+//			}).run();
+//			new Thread(() -> {
+//				new BezierCurve(1, 1, 0, 0, isBackwards, points);
+//				System.out.println(pathNumber + ": BezierCurve: " + (System.currentTimeMillis() - startTime));
+//			}).run();
+//			new Thread(() -> {
+//				new Spline(1, 1, 0, 0, isBackwards, points);
+//				System.out.println(pathNumber + ": Spline: " + (System.currentTimeMillis() - startTime));
+//			}).run();
+		}
+	}
+
+
+	public static void printPath(Path path) {
+		List<PathData> pathData = path.getPathData();
+
+		for (PathData aPathData : pathData) {
+			System.out.println(aPathData.getCenterPose().getX() + " " + aPathData.getCenterPose().getY() + ' '
+				+ Math.toDegrees(aPathData.getCenterPose().getAngle()) + " t: " + aPathData.getTime());
+
+			System.out.println(aPathData.getLeftState().getLength() + " " + aPathData.getRightState().getLength() + ' '
+				+ aPathData.getLeftState().getVelocity() + ' ' + aPathData.getRightState().getVelocity());
+
+			System.out.println();
+		}
+	}
+
+	public static void testPaths() {
+		points.clear();
 		Path.setRobotWidth(width);
 		PointTurn pointTurn = new PointTurn(1.0, 1, new Pose(0, 0, 0), StrictMath.toRadians(270));
 		System.out.println("Point Turn:");
@@ -46,17 +103,4 @@ public class DebugCurves {
 		printPath(line);
 	}
 
-	public static void printPath(Path path) {
-		List<PathData> pathData = path.getPathData();
-
-		for (PathData aPathData : pathData) {
-			System.out.println(aPathData.getCenterPose().getX() + " " + aPathData.getCenterPose().getY() + ' '
-				+ Math.toDegrees(aPathData.getCenterPose().getAngle()) + " t: " + aPathData.getTime());
-
-			System.out.println(aPathData.getLeftState().getLength() + " " + aPathData.getRightState().getLength() + ' '
-				+ aPathData.getLeftState().getVelocity() + ' ' + aPathData.getRightState().getVelocity());
-
-			System.out.println();
-		}
-	}
 }

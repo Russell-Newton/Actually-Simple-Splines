@@ -1,7 +1,6 @@
 package org.waltonrobotics.motion;
 
 import java.util.LinkedList;
-import org.waltonrobotics.controller.Path;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.controller.State;
@@ -81,6 +80,10 @@ public class PointTurn extends Path {
 	@Override
 	public LinkedList<PathData> getPathData() {
 		return pathData;
+	}
+
+	@Override
+	public void createPath() {
 	}
 
 	@Override

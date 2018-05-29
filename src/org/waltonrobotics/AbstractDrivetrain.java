@@ -3,9 +3,11 @@ package org.waltonrobotics;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import org.waltonrobotics.command.SimpleMotion;
 import org.waltonrobotics.controller.MotionController;
-import org.waltonrobotics.controller.Path;
+import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.controller.RobotPair;
+import org.waltonrobotics.controller.State;
+import org.waltonrobotics.motion.Path;
 
 /**
  * Extend this in your drivetrain, and use the methods inside to set up spline motions
@@ -16,6 +18,11 @@ public abstract class AbstractDrivetrain extends Subsystem {
 
 	private final MotionController controller;
 	private final MotionLogger motionLogger;
+	private Pose actualPosition = new Pose(0, 0, 0);
+	private RobotPair previousLengths;
+	private double actualPositionTime;
+	private PathData currentState;
+	private PathData previousState;
 
 	/**
 	 * Create the static drivetrain after creating the motion logger so you can use the MotionContoller
@@ -24,6 +31,12 @@ public abstract class AbstractDrivetrain extends Subsystem {
 		this.motionLogger = motionLogger;
 		controller = new MotionController(this);
 		SimpleMotion.setDrivetrain(this);
+		previousLengths = getWheelPositions();
+
+		previousState = new PathData(
+			new State(previousLengths.getLeft(), 0, 0),
+			new State(previousLengths.getRight(), 0, 0),
+			actualPosition, previousLengths.getTime());
 	}
 
 	public MotionLogger getMotionLogger() {
@@ -60,7 +73,8 @@ public abstract class AbstractDrivetrain extends Subsystem {
 	 * Starts the MotionController
 	 */
 	public final void startControllerMotion(Pose startPosition) {
-		controller.enableScheduler(startPosition);
+		controller.setStartPosition(startPosition);
+		controller.enableScheduler();
 	}
 
 	/**
@@ -174,11 +188,56 @@ public abstract class AbstractDrivetrain extends Subsystem {
 	 */
 	public abstract double getMaxAcceleration();
 
+	public Pose getActualPosition() {
+		return actualPosition;
+	}
+
+	public void setStartingPosition(Pose startingPosition) {
+		controller.setStartPosition(startingPosition);
+	}
+
 	@Override
 	public String toString() {
 		return "AbstractDrivetrain{" +
 			"controller=" + controller +
 			", motionLogger=" + motionLogger +
+			", actualPosition=" + actualPosition +
+			", previousLengths=" + previousLengths +
+			", actualPositionTime=" + actualPositionTime +
+			", currentState=" + currentState +
+			", previousState=" + previousState +
 			'}';
+	}
+
+	public double getActualPositionTime() {
+		return actualPositionTime;
+	}
+
+	private PathData currentRobotState() {
+		return currentState;
+	}
+
+	@Override
+	public void periodic() {
+		RobotPair wheelPosition = getWheelPositions();
+		actualPosition = controller.updateActualPosition(wheelPosition, previousLengths, actualPosition);
+		actualPositionTime = wheelPosition.getTime();
+
+		double deltaTime = wheelPosition.getTime() - previousState.getTime();
+
+		double lVelocity = (wheelPosition.getLeft() - previousState.getLeftState().getLength()) / deltaTime;
+		double rVelocity = (wheelPosition.getRight() - previousState.getRightState().getLength()) / deltaTime;
+		double lAcceleration = (lVelocity - previousState.getLeftState().getVelocity()) / deltaTime;
+		double rAcceleration = (rVelocity - previousState.getRightState().getVelocity()) / deltaTime;
+
+		currentState = new PathData(
+			new State(wheelPosition.getLeft(), lVelocity, lAcceleration),
+			new State(wheelPosition.getRight(), rVelocity, rAcceleration),
+			actualPosition,
+			actualPositionTime);
+
+		previousState = currentState;
+
+		previousLengths = wheelPosition;
 	}
 }

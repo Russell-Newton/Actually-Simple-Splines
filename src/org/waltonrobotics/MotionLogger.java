@@ -42,7 +42,7 @@ public class MotionLogger {
 	/**
 	 * Call this in autonomousInit() to clear the motionDataList
 	 */
-	public synchronized final void initialize() {
+	public final synchronized void initialize() {
 		motionDataList.clear();
 	}
 

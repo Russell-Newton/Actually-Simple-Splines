@@ -3,10 +3,8 @@ package org.waltonrobotics.motion;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import org.waltonrobotics.controller.Path;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.controller.State;
@@ -29,8 +27,6 @@ public class Spline extends Path {
 	private final double endScale;
 	private final double startVelocity;
 	private final double endVelocity;
-	private final List<List<Pose>> pathControlPoints;
-	private final LinkedList<PathData> pathData;
 
 	/**
 	 * Construct a spline. Note that the x axis is the direction the robot is facing if the start angle is 0
@@ -54,14 +50,8 @@ public class Spline extends Path {
 		endScale = scaleEnd;
 		this.endVelocity = endVelocity;
 		this.startVelocity = startVelocity;
-		pathControlPoints = computeControlPoints(getKeyPoints());
-		PathData startPathData = new PathData(new State(0, startVelocity, 0),
-			new State(0, startVelocity, 0),
-			new Pose(pathControlPoints.get(0).get(0).getX(), pathControlPoints.get(0).get(0).getY(),
-				startAngle),
-			0);
-		pathData = new LinkedList<>();
-		stitchPathData(startPathData);
+
+		createPath();
 	}
 
 	public Spline(double vCruise, double aMax, double startVelocity, double endVelocity,
@@ -100,10 +90,25 @@ public class Spline extends Path {
 	 */
 	public Spline(double vCruise, double aMax, double startVelocity, double endVelocity,
 		boolean isBackwards, Pose... knots) {
+		this(vCruise, aMax, startVelocity, endVelocity, isBackwards, Arrays.asList(knots));
+	}
+
+	/**
+	 * Construct a spline. Note that the x axis is the direction the robot is facing if the start angle is 0
+	 *
+	 * @param vCruise - max velocity
+	 * @param aMax - max acceleration
+	 * @param startVelocity - the starting velocity of the Path
+	 * @param endVelocity - the ending velocity of the Path
+	 * @param isBackwards - if the robot will be moving backwards, make this true
+	 * @param knots - the points you want the robot to drive through
+	 */
+	public Spline(double vCruise, double aMax, double startVelocity, double endVelocity,
+		boolean isBackwards, List<Pose> knots) {
 		this(vCruise, aMax, startVelocity, endVelocity,
-			(knots.length == 0) ? 0 : knots[0].getAngle(),
-			(knots.length == 0) ? 0 : knots[knots.length - 1].getAngle(), isBackwards, 1, 1,
-			Arrays.asList(knots));
+			knots.isEmpty() ? 0 : knots.get(0).getAngle(),
+			knots.isEmpty() ? 0 : knots.get(knots.size() - 1).getAngle(), isBackwards, 1, 1,
+			knots);
 	}
 
 
@@ -155,6 +160,7 @@ public class Spline extends Path {
 			rX[i] -= m * rX[i - 1];
 			rY[i] -= m * rY[i - 1];
 		}
+
 		points1[degree - 1] = new Pose(rX[degree - 1] / b[degree - 1],
 			rY[degree - 1] / b[degree - 1]);
 		for (int i = degree - 2; i >= 0; --i) {
@@ -171,7 +177,9 @@ public class Spline extends Path {
 		points2[degree - 1] = new Pose(
 			0.5 * (knots.get(degree).getX() + points1[degree - 1].getX()),
 			0.5 * (knots.get(degree).getY() + points1[degree - 1].getY()));
+
 		List<List<Pose>> controlPoints = new ArrayList<>(degree);
+
 		for (int i = 0; i < degree; i++) {
 			List<Pose> segmentControlPoints = new ArrayList<>(getPathNumberOfSteps());
 			points1[0] = points1[0].rotate(knots.get(0), startAngle, isBackwards(), startScale);
@@ -189,11 +197,11 @@ public class Spline extends Path {
 	 *
 	 * @param startPathData - requires the initial pathData
 	 */
-	private void stitchPathData(PathData startPathData) {
+	private void stitchPathData(PathData startPathData, List<List<Pose>> pathControlPoints) {
 		double nextStartVelocity;
 		double nextEndVelocity;
 		PathData nextStartPathData = startPathData;
-		pathData.add(startPathData);
+		getPathData().add(startPathData);
 		ListIterator<List<Pose>> iterator = pathControlPoints.listIterator();
 		while (iterator.hasNext()) {
 			BezierCurve curve;
@@ -205,14 +213,22 @@ public class Spline extends Path {
 				isBackwards(),
 				nextStartPathData,
 				iterator.next());
-			pathData.addAll(curve.getPathData());
-			nextStartPathData = pathData.get(pathData.size() - 1);
+			getPathData().addAll(curve.getPathData());
+			nextStartPathData = getPathData().get(getPathData().size() - 1);
 		}
 	}
 
 	@Override
-	public final LinkedList<PathData> getPathData() {
-		return pathData;
+	public void createPath() {
+		List<List<Pose>> pathControlPoints = computeControlPoints(getKeyPoints());
+
+		PathData startPathData = new PathData(new State(0, startVelocity, 0),
+			new State(0, startVelocity, 0),
+			new Pose(pathControlPoints.get(0).get(0).getX(), pathControlPoints.get(0).get(0).getY(),
+				startAngle),
+			0);
+
+		stitchPathData(startPathData, pathControlPoints);
 	}
 
 	@Override
@@ -224,8 +240,6 @@ public class Spline extends Path {
 			", endScale=" + endScale +
 			", startVelocity=" + startVelocity +
 			", endVelocity=" + endVelocity +
-			", pathControlPoints=" + pathControlPoints +
-			", pathData=" + pathData +
 			"} " + super.toString();
 	}
 }

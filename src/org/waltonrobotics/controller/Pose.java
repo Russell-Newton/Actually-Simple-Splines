@@ -104,7 +104,8 @@ public class Pose {
 	}
 
 	public final Pose offset(double distance) {
-		return new Pose(StrictMath.cos(getAngle()) * distance + getX(), StrictMath.sin(getAngle()) * distance + getY(),
+		return new Pose((StrictMath.cos(getAngle()) * distance) + getX(),
+			(StrictMath.sin(getAngle()) * distance) + getY(),
 			getAngle());
 	}
 

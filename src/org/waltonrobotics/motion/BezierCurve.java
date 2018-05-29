@@ -1,10 +1,8 @@
 package org.waltonrobotics.motion;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import org.waltonrobotics.controller.Path;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.controller.State;
@@ -24,9 +22,9 @@ public class BezierCurve extends Path {
 
 	private final double startVelocity;
 	private final double endVelocity;
+	private final PathData startPathData;
 	private final double startLCenter;
-	private final LinkedList<PathData> pathData;
-	private final List<Pose> pathPoints;
+	private List<Pose> pathPoints;
 	private double curveLength;
 	private double[] coefficients;
 
@@ -47,15 +45,13 @@ public class BezierCurve extends Path {
 		super(vCruise, aMax, isBackwards, controlPoints);
 		this.startVelocity = startVelocity;
 		this.endVelocity = endVelocity;
+		this.startPathData = startPathData;
 		// The starting average encoder distance should always be 0
 		startLCenter = startPathData.getLCenter();
-		updateCoefficients();
-		pathData = new LinkedList<>();
-		pathPoints = new ArrayList<>(getPathNumberOfSteps());
-		createPoints();
-		getCurveLength();
-		setData(startPathData);
+
+		createPath();
 	}
+
 
 	/**
 	 * Use this if you don't need to define a starting PathData
@@ -118,35 +114,43 @@ public class BezierCurve extends Path {
 		return r;
 	}
 
-	private void createPoints() {
+	private List<Pose> createPoints() {
+		List<Pose> pathPoints = new LinkedList<>();
+
 		for (double i = 0; i <= getPathNumberOfSteps(); i++) {
 			pathPoints.add(getPoint(i / getPathNumberOfSteps()));
 		}
 
+		return pathPoints;
 	}
 
 	/**
 	 * Caluclates the length of the curve
 	 */
-	private void getCurveLength() {
-		curveLength = 0;
+	private double getCurveLength() {
+		double curveLength = 0;
 
 		if (getKeyPoints().size() > 1) {
 			for (int i = 1; i < getPathNumberOfSteps(); i++) {
 				curveLength += pathPoints.get(i).distance(pathPoints.get(i - 1));
 			}
 		}
+
+		return curveLength;
 	}
 
 	/**
 	 * Updates the coefficients used for calculations
 	 */
-	private void updateCoefficients() {
+	private double[] calculateCoefficients() {
 		int n = getDegree();
-		coefficients = new double[n + 1];
-		for (int i = 0; i < coefficients.length; i++) {
+
+		double[] coefficients = new double[n + 1];
+		for (int i = 0; i < n; i++) {
 			coefficients[i] = findNumberOfCombination(n, i);
 		}
+
+		return coefficients;
 	}
 
 	/**
@@ -222,7 +226,7 @@ public class BezierCurve extends Path {
 	private void setData(PathData data) {
 		for (int i = 1; i <= getPathNumberOfSteps(); i++) {
 			data = calculateData(data, pathPoints.get(i));
-			pathData.add(data);
+			getPathData().add(data);
 		}
 	}
 
@@ -240,12 +244,7 @@ public class BezierCurve extends Path {
 		double acceleration = 0;
 
 		// The change in angle of the robot
-		double dAngle = currentCenter.getAngle() - previousCenter.getAngle();
-		if (dAngle > Math.PI) {
-			dAngle -= 2 * Math.PI;
-		} else if (dAngle < -Math.PI) {
-			dAngle += 2 * Math.PI;
-		}
+		double dAngle = Path.boundAngle(currentCenter.getAngle() - previousCenter.getAngle());
 
 		// The change in distance of the robot sides
 		// FIXME This is probably wrong dLength should be 0 if there is not angle
@@ -310,8 +309,11 @@ public class BezierCurve extends Path {
 	}
 
 	@Override
-	public final LinkedList<PathData> getPathData() {
-		return pathData;
+	public void createPath() {
+		coefficients = calculateCoefficients();
+		pathPoints = createPoints();
+		curveLength = getCurveLength();
+		setData(startPathData);
 	}
 
 	@Override
@@ -319,11 +321,11 @@ public class BezierCurve extends Path {
 		return "BezierCurve{" +
 			"startVelocity=" + startVelocity +
 			", endVelocity=" + endVelocity +
+			", startPathData=" + startPathData +
 			", startLCenter=" + startLCenter +
-			", pathData=" + pathData +
+			", pathPoints=" + pathPoints +
 			", curveLength=" + curveLength +
 			", coefficients=" + Arrays.toString(coefficients) +
-			", pathPoints=" + pathPoints +
 			"} " + super.toString();
 	}
 }
