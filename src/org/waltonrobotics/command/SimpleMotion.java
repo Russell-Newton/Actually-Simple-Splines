@@ -34,18 +34,22 @@ public class SimpleMotion extends Command {
 		return path;
 	}
 
+	@Override
 	protected void initialize() {
 		drivetrain.addControllerMotions(path);
 	}
 
+	@Override
 	protected boolean isFinished() {
 		return path.isFinished();
 	}
 
+	@Override
 	protected void interrupted() {
 		this.end();
 	}
 
+	@Override
 	protected void end() {
 		System.out.println("turn done");
 		drivetrain.setSpeeds(0, 0);
