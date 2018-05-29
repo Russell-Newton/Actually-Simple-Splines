@@ -213,7 +213,7 @@ public abstract class AbstractDrivetrain extends Subsystem {
 		return actualPositionTime;
 	}
 
-	private PathData currentRobotState() {
+	public PathData getCurrentRobotState() {
 		return currentState;
 	}
 
