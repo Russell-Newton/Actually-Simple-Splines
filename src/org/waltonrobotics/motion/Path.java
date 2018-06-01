@@ -101,6 +101,7 @@ public abstract class Path {
 		return angle;
 	}
 
+
 	public static Path loadPath(String filePath) throws IOException {
 		try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath)))) {
 
@@ -150,8 +151,8 @@ public abstract class Path {
 			Path.setRobotWidth(robotWidth[0]);
 			Path path = new Path(maxVelocity[0], maxAcceleration[0], isBackwards[0], keyPoints) {
 				@Override
-				public void createPath() {
-
+				public PathData createPathData(PathData previousPathData, double percentage) {
+					return null;
 				}
 			};
 
@@ -188,7 +189,6 @@ public abstract class Path {
 		this.keyPoints.clear();
 		Collections.addAll(this.keyPoints, keyPoints);
 
-		createPath();
 	}
 
 	public void setKeyPoints(Collection<Pose> keyPoints) {
@@ -196,7 +196,6 @@ public abstract class Path {
 		this.keyPoints.clear();
 		this.keyPoints.addAll(keyPoints);
 
-		createPath();
 	}
 
 	/**
@@ -224,7 +223,8 @@ public abstract class Path {
 		return vCruise;
 	}
 
-	public abstract void createPath();
+	public abstract PathData createPathData(PathData previousPathData,
+		double percentage);
 
 	private void savePath(String fileName) {
 		if (!getPathData().isEmpty() && (fileName != null)) {

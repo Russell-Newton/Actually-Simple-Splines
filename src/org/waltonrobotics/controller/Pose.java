@@ -109,6 +109,10 @@ public class Pose {
 			getAngle());
 	}
 
+	public Pose multiply(double constant) {
+		return new Pose(x * constant, y * constant, angle);
+	}
+
 	@Override
 	public String toString() {
 		return "Pose{" +
@@ -116,5 +120,9 @@ public class Pose {
 			", y=" + y +
 			", angle=" + angle +
 			'}';
+	}
+
+	public Pose add(Pose add) {
+		return offset(add.x, add.y, 0);
 	}
 }

@@ -63,7 +63,9 @@ public final class SavePath extends Path {
 		return this;
 	}
 
+
 	@Override
-	public void createPath() {
+	public PathData createPathData(PathData previousPathData, double percentage) {
+		return null;
 	}
 }

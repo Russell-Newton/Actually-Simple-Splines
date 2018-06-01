@@ -1,5 +1,6 @@
 package org.waltonrobotics.motion;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,8 +25,8 @@ public class BezierCurve extends Path {
 	private final double endVelocity;
 	private final PathData startPathData;
 	private final double startLCenter;
+	public double curveLength;
 	private List<Pose> pathPoints;
-	private double curveLength;
 	private double[] coefficients;
 
 	/**
@@ -51,7 +52,6 @@ public class BezierCurve extends Path {
 
 		createPath();
 	}
-
 
 	/**
 	 * Use this if you don't need to define a starting PathData
@@ -118,6 +118,7 @@ public class BezierCurve extends Path {
 		List<Pose> pathPoints = new LinkedList<>();
 
 		for (double i = 0; i <= getPathNumberOfSteps(); i++) {
+
 			pathPoints.add(getPoint(i / getPathNumberOfSteps()));
 		}
 
@@ -146,7 +147,7 @@ public class BezierCurve extends Path {
 		int n = getDegree();
 
 		double[] coefficients = new double[n + 1];
-		for (int i = 0; i < n; i++) {
+		for (int i = 0; i < coefficients.length; i++) {
 			coefficients[i] = findNumberOfCombination(n, i);
 		}
 
@@ -224,32 +225,42 @@ public class BezierCurve extends Path {
 	 * Creates the PathData list
 	 */
 	private void setData(PathData data) {
+		List<Double> doubles = new ArrayList<>();
+
 		for (int i = 1; i <= getPathNumberOfSteps(); i++) {
+
+			double startTime = System.nanoTime();
+
 			data = calculateData(data, pathPoints.get(i));
+			doubles.add(System.nanoTime() - startTime);
+
 			getPathData().add(data);
 		}
+
+		System.out.println(
+			"Average Calculation Time: " + (doubles.stream().reduce((b1, b2) -> b1 + b2).get() / doubles.size()));
 	}
 
 	/**
-	 * @param currentCenter - The Pose of the PathData to calculate on
+	 * @param nextPosition - The Pose of the PathData to calculate on
 	 * @return a new PathData from the calculations
 	 */
-	private PathData calculateData(PathData previousPathData, Pose currentCenter) {
-		Pose previousCenter = previousPathData.getCenterPose();
-		State previousLeft = previousPathData.getLeftState();
-		State previousRight = previousPathData.getRightState();
-		double previousTime = previousPathData.getTime();
-		double previousLCenter = previousPathData.getLCenter();
+	private PathData calculateData(PathData currentPathData, Pose nextPosition) {
+		Pose previousCenter = currentPathData.getCenterPose();
+		State previousLeft = currentPathData.getLeftState();
+		State previousRight = currentPathData.getRightState();
+		double previousTime = currentPathData.getTime();
+		double previousLCenter = currentPathData.getLCenter();
 		// When cruising, acceleration is 0
 		double acceleration = 0;
 
 		// The change in angle of the robot
-		double dAngle = Path.boundAngle(currentCenter.getAngle() - previousCenter.getAngle());
+		double dAngle = Path.boundAngle(nextPosition.getAngle() - previousCenter.getAngle());
 
 		// The change in distance of the robot sides
 		// FIXME This is probably wrong dLength should be 0 if there is not angle
-//		double dLength = (previousCenter.sameCoordinates(currentCenter)? 0: previousCenter.distance(currentCenter)) * (isBackwards() ? -1 : 1);
-		double dLength = previousCenter.distance(currentCenter) * (isBackwards() ? -1 : 1);
+//		double dLength = (previousCenter.sameCoordinates(nextPosition)? 0: previousCenter.distance(nextPosition)) * (isBackwards() ? -1 : 1);
+		double dLength = previousCenter.distance(nextPosition) * (isBackwards() ? -1 : 1);
 		double dlLeft = dLength - ((dAngle * getRobotWidth()) / 2);
 		double dlRight = dLength + ((dAngle * getRobotWidth()) / 2);
 
@@ -303,17 +314,21 @@ public class BezierCurve extends Path {
 
 		State left = new State(previousLeft.getLength() + dlLeft, velocityL, acceleration);
 		State right = new State(previousRight.getLength() + dlRight, velocityR, acceleration);
-		Pose center = new Pose(currentCenter.getX(), currentCenter.getY(),
+		Pose center = new Pose(nextPosition.getX(), nextPosition.getY(),
 			previousCenter.getAngle() + dAngle);
 		return new PathData(left, right, center, previousTime + dTime);
 	}
 
-	@Override
 	public void createPath() {
 		coefficients = calculateCoefficients();
 		pathPoints = createPoints();
 		curveLength = getCurveLength();
 		setData(startPathData);
+	}
+
+	@Override
+	public PathData createPathData(PathData previousPathData, double percentage) {
+		return null;
 	}
 
 	@Override

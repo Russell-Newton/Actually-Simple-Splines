@@ -5,7 +5,7 @@ import java.util.List;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.motion.BezierCurve;
-import org.waltonrobotics.motion.Line;
+import org.waltonrobotics.motion.DynamicBezierCurve;
 import org.waltonrobotics.motion.Path;
 import org.waltonrobotics.motion.PointTurn;
 import org.waltonrobotics.motion.Spline;
@@ -30,7 +30,7 @@ public class DebugCurves {
 	private static void testPathLengthTime() {
 		points.clear();
 		points.add(new Pose(0, 0, StrictMath.toRadians(0)));
-		points.add(new Pose(1, 1, StrictMath.toRadians(90)));
+		points.add(new Pose(0, 1, StrictMath.toRadians(0)));
 
 		for (int length = 0; length <= 10; length++) {
 			Path.setPathNumberOfSteps((int) Math.pow(10, length));
@@ -82,25 +82,53 @@ public class DebugCurves {
 	public static void testPaths() {
 		points.clear();
 		Path.setRobotWidth(width);
+//		System.out.println("Point Turn:");
 		PointTurn pointTurn = new PointTurn(1.0, 1, new Pose(0, 0, 0), StrictMath.toRadians(270));
-		System.out.println("Point Turn:");
-		printPath(pointTurn);
+//		printPath(pointTurn);
 
-		points.add(new Pose(0, 0, StrictMath.toRadians(0)));
-		points.add(new Pose(1, 1, StrictMath.toRadians(90)));
-		BezierCurve curve = new BezierCurve(1, 1, 0, 0, isBackwards, points);
+		Path.setPathNumberOfSteps(100);
+
+		points.add(new Pose(220, 40, StrictMath.toRadians(0)));
+		points.add(new Pose(220, 260, StrictMath.toRadians(0)));
+		points.add(new Pose(35, 200, StrictMath.toRadians(0)));
+		points.add(new Pose(120, 160, StrictMath.toRadians(0)));
+
+//		points.add(new Pose(35, 40, StrictMath.toRadians(0)));
+//		points.add(new Pose(220, 40, StrictMath.toRadians(0)));
+//		points.add(new Pose(0, 0, StrictMath.toRadians(0)));
+//		points.add(new Pose(.5, 0, StrictMath.toRadians(0)));
+//		points.add(new Pose(1, 0, StrictMath.toRadians(0)));
+//		printPath(curve);
+//
+		System.out.println("Actual Length should be 272.87");
+
+		DynamicBezierCurve dynamicBezierCurve = new DynamicBezierCurve(1, 1, 0, 0, isBackwards, points);
+
+		double t = .5;
+		System.out.println(dynamicBezierCurve.getCurveLength() * t);
+		System.out.println(dynamicBezierCurve.computeArcLength(0, t));
+
+		System.out.println();
+
+		System.out.println(dynamicBezierCurve.time);
+//		System.out.println(points.get(0).distance(points.get(points.size() - 1)));
+		System.out.println("Dynamic Bezier Curve:");
+
+		System.out.println();
 		System.out.println("Bezier Curve:");
-		printPath(curve);
+		BezierCurve curve = new BezierCurve(1, 1, 0, 0, isBackwards, points);
+		System.out.println("Splitting: " + curve.curveLength);
+//		printPath(curve);
 
-		Spline spline = new Spline(100, 3, 0, 0, StrictMath.toRadians(0), StrictMath.toRadians(270), isBackwards,
-			points);
-		System.out.println("\n\nSpline:");
-		printPath(spline);
+//		System.out.println("\n\nSpline:");
+//		Spline spline = new Spline(100, 3, 0, 0, StrictMath.toRadians(0), StrictMath.toRadians(270), isBackwards,
+//			points);
+//		printPath(spline);
 
-		Line line = new Line(1, 1, 0, 0, isBackwards, new Pose(0, 0, StrictMath.toRadians(0)),
-			new Pose(1, 1, StrictMath.toRadians(45)));
-		System.out.println("\n\nLine:");
-		printPath(line);
+//		System.out.println("\n\nLine:");
+//		Line line = new Line(1, 1, 0, 0, isBackwards, new Pose(0, 0, StrictMath.toRadians(0)),
+//			new Pose(1, 1, StrictMath.toRadians(45)));
+//		printPath(line);
 	}
 
 }

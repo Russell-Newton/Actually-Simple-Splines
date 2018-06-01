@@ -83,8 +83,10 @@ public class PointTurn extends Path {
 	}
 
 	@Override
-	public void createPath() {
+	public PathData createPathData(PathData previousPathData, double percentage) {
+		return null;
 	}
+
 
 	@Override
 	public String toString() {
