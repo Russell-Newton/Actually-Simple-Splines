@@ -2,6 +2,7 @@ package org.waltonrobotics.test;
 
 import java.util.ArrayList;
 import java.util.List;
+import javafx.geometry.Point2D;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.motion.BezierCurve;
@@ -86,27 +87,32 @@ public class DebugCurves {
 		PointTurn pointTurn = new PointTurn(1.0, 1, new Pose(0, 0, 0), StrictMath.toRadians(270));
 //		printPath(pointTurn);
 
-		Path.setPathNumberOfSteps(100);
 
 		points.add(new Pose(220, 40, StrictMath.toRadians(0)));
 		points.add(new Pose(220, 260, StrictMath.toRadians(0)));
 		points.add(new Pose(35, 200, StrictMath.toRadians(0)));
 		points.add(new Pose(120, 160, StrictMath.toRadians(0)));
 
-//		points.add(new Pose(35, 40, StrictMath.toRadians(0)));
-//		points.add(new Pose(220, 40, StrictMath.toRadians(0)));
-//		points.add(new Pose(0, 0, StrictMath.toRadians(0)));
-//		points.add(new Pose(.5, 0, StrictMath.toRadians(0)));
-//		points.add(new Pose(1, 0, StrictMath.toRadians(0)));
+		points.add(new Pose(35, 40, StrictMath.toRadians(0)));
+		points.add(new Pose(220, 40, StrictMath.toRadians(0)));
+		points.add(new Pose(0, 0, StrictMath.toRadians(0)));
+		points.add(new Pose(.5, 0, StrictMath.toRadians(0)));
+		points.add(new Pose(1, 1, StrictMath.toRadians(0)));
+		points.add(new Pose(2, 1, StrictMath.toRadians(0)));
+		points.add(new Pose(3.4, 5, StrictMath.toRadians(0)));
+		points.add(new Pose(1, 0, StrictMath.toRadians(0)));
+		points.add(new Pose(0, 1, StrictMath.toRadians(0)));
 //		printPath(curve);
 //
 		System.out.println("Actual Length should be 272.87");
 
 		DynamicBezierCurve dynamicBezierCurve = new DynamicBezierCurve(1, 1, 0, 0, isBackwards, points);
 
-		double t = .5;
-		System.out.println(dynamicBezierCurve.getCurveLength() * t);
-		System.out.println(dynamicBezierCurve.computeArcLength(0, t));
+		for (int i = 0; i <= 100; i++) {
+			Pose pose = dynamicBezierCurve.createPathData(new PathData(new Pose(0, 0)), i / 100.0).getCenterPose();
+
+			System.out.println(new Point2D(pose.getX(), pose.getY()).normalize());
+		}
 
 		System.out.println();
 
@@ -118,6 +124,7 @@ public class DebugCurves {
 		System.out.println("Bezier Curve:");
 		BezierCurve curve = new BezierCurve(1, 1, 0, 0, isBackwards, points);
 		System.out.println("Splitting: " + curve.curveLength);
+		System.out.println(curve.getPathData().getLast().getTime());
 //		printPath(curve);
 
 //		System.out.println("\n\nSpline:");

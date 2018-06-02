@@ -41,8 +41,15 @@ public class DynamicBezierCurve extends Path {
 
 		degree = getKeyPoints().size() - 1;
 		coefficients = calculateCoefficients(degree);
-		curveLength = computeArcLength();
 
+//		long startTime = System.nanoTime();
+		curveLength = computeArcLength(0, 0.5);
+//		System.out.println((System.nanoTime() - startTime));
+//		System.out.println((System.nanoTime() - startTime) / 1000000.0);
+//		System.out.println(curveLength);
+//		startTime = System.nanoTime();
+//		System.out.println(computeArcLengthQuick(0, .5));
+//		System.out.println(System.nanoTime() - startTime);
 		time = computeTime();
 	}
 
@@ -80,6 +87,24 @@ public class DynamicBezierCurve extends Path {
 		return result;
 	}
 
+	public double computeArcLengthSampling(double lower, double upper) {
+		return computeArcLengthSampling(1000, lower, upper);
+	}
+
+	public double computeArcLengthSampling(int numberOfPoints, double lower, double upper) {
+
+		double distance = 0;
+		Pose previous = getPoint(lower);
+		for (int i = 1; i <= numberOfPoints; i++) {
+
+			Pose point = getPoint(((i / (double) numberOfPoints) * upper) + lower);
+			distance += point.distance(previous);
+			previous = point;
+		}
+
+		return distance;
+	}
+
 	private double computeTime() {
 		double accelerationTime = calculateTime(startVelocity, getVCruise(), getAMax());
 		double accelDistance = distance(startVelocity, getAMax(), accelerationTime);
@@ -104,7 +129,7 @@ public class DynamicBezierCurve extends Path {
 	}
 
 	public double computeArcLength() {
-		return computeArcLength(100, 0, 1);
+		return computeArcLength(16, 0, 1);
 	}
 
 	public double computeArcLength(int n) {
@@ -113,11 +138,12 @@ public class DynamicBezierCurve extends Path {
 	}
 
 	public double computeArcLength(double lowerBound, double upperBound) {
-		return computeArcLength(100, lowerBound, upperBound);
+		return computeArcLength(16, lowerBound, upperBound);
 	}
 
 	/**
-	 * Uses the Gauss Legendre integration to approximate the arc length of the Bezier curve
+	 * Uses the Gauss Legendre integration to approximate the arc length of the Bezier curve. This is the fastest
+	 * technique (faster than sampling)
 	 *
 	 * @param n the number of integral strips
 	 * @param lowerBound the lower bound to integrate (inclusive)
@@ -174,9 +200,6 @@ public class DynamicBezierCurve extends Path {
 	@Override
 	public PathData createPathData(PathData previousPathData, double percentage) {
 		Pose centerPoint = getPoint(percentage);
-//		Pose centerPoint = getPoint(percentage);
-
-		System.out.println(Math.hypot(centerPoint.getX(), centerPoint.getY()));
 
 		PathData pathData;
 //		pathData= calculateData(startAverageEncoderLength, previousPathData, centerPoint);
@@ -282,7 +305,6 @@ public class DynamicBezierCurve extends Path {
 		angle %= (2 * Math.PI);
 
 		return new Pose(xCoordinateAtPercentage, yCoordinateAtPercentage, angle);
-//		return new Pose(dx, dy, angle);
 	}
 
 	/**
@@ -306,6 +328,7 @@ public class DynamicBezierCurve extends Path {
 	public void setStartLCenter(double startLCenter) {
 		this.startLCenter = startLCenter;
 	}
+
 
 	/**
 	 * @param nextPosition - The Pose of the PathData to calculate on
