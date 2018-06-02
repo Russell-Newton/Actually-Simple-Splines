@@ -87,7 +87,6 @@ public class DebugCurves {
 		PointTurn pointTurn = new PointTurn(1.0, 1, new Pose(0, 0, 0), StrictMath.toRadians(270));
 //		printPath(pointTurn);
 
-
 		points.add(new Pose(220, 40, StrictMath.toRadians(0)));
 		points.add(new Pose(220, 260, StrictMath.toRadians(0)));
 		points.add(new Pose(35, 200, StrictMath.toRadians(0)));
