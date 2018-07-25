@@ -469,10 +469,42 @@ public class BezierCurve extends Path {
 		double upper;
 		double lower;
 
-		public Key(int n, double upper, double lower) {
+		Key(int n, double upper, double lower) {
 			this.n = n;
 			this.upper = upper;
 			this.lower = lower;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) {
+				return true;
+			}
+			if (o == null || getClass() != o.getClass()) {
+				return false;
+			}
+
+			Key key = (Key) o;
+
+			if (n != key.n) {
+				return false;
+			}
+			if (Double.compare(key.upper, upper) != 0) {
+				return false;
+			}
+			return Double.compare(key.lower, lower) == 0;
+		}
+
+		@Override
+		public int hashCode() {
+			int result;
+			long temp;
+			result = n;
+			temp = Double.doubleToLongBits(upper);
+			result = 31 * result + (int) (temp ^ (temp >>> 32));
+			temp = Double.doubleToLongBits(lower);
+			result = 31 * result + (int) (temp ^ (temp >>> 32));
+			return result;
 		}
 	}
 }
