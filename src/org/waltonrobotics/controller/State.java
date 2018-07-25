@@ -34,6 +34,14 @@ public class State {
 		this.jerk = jerk;
 	}
 
+	public final static State calculateConstants(State previous, double wheelDistance, double deltaTime) {
+		double velocity = (wheelDistance - previous.getLength()) / deltaTime;
+		double acceleration = (velocity - previous.getVelocity()) / deltaTime;
+		double jerk = (acceleration - previous.getAcceleration()) / deltaTime;
+
+		return new State(wheelDistance, velocity, acceleration, jerk);
+	}
+
 	public double getJerk() {
 		return jerk;
 	}
@@ -60,6 +68,7 @@ public class State {
 	}
 
 	@Override
+
 	public String toString() {
 		return "State{" +
 			"length=" + length +
