@@ -2,7 +2,6 @@ package org.waltonrobotics.test;
 
 import java.util.ArrayList;
 import java.util.List;
-import javafx.geometry.Point2D;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.motion.BezierCurve;
