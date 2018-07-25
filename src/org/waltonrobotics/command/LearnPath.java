@@ -1,45 +1,80 @@
 package org.waltonrobotics.command;
 
+import edu.wpi.first.wpilibj.buttons.NetworkButton;
 import edu.wpi.first.wpilibj.command.Command;
 import java.util.LinkedList;
 import java.util.List;
-import org.waltonrobotics.AbstractDrivetrain;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
 
+//TODO test this
 public class LearnPath extends Command {
 
+	private static int index = 0;
 	private final int useLast;
 	private final String fileName;
 	private final List<PathData> moments;
-
-	private double movementTolerance = .1;
+	private final NetworkButton stopButton;
+	private final String buttonName;
+	private final boolean useButtonToStop;
+	private double movementTolerance = .1; // This is in meters
 	private double angleTolerance = 15;
-
 	private double maxVelocity;
 	private double maxAcceleration;
 
-	public LearnPath(AbstractDrivetrain drivetrain, int useLast, String fileName) {
+	public LearnPath(int useLast, String fileName, boolean useButtonToStop) {
+
 		this.useLast = useLast;
-		this.fileName = fileName;
+		this.useButtonToStop = useButtonToStop;
 		moments = new LinkedList<>();
+		this.fileName = fileName;
+
+		index++;
+
+		if (useButtonToStop) {
+			//TODO check if you can just use stopButton.getName() instead of saving value into variable
+			stopButton = new NetworkButton("SmartDashboard",
+				buttonName = String.format("Stop %s %d", getClass().getName(), index)
+			);
+		} else {
+			stopButton = null;
+			buttonName = null;
+		}
 	}
 
-	public LearnPath(AbstractDrivetrain drivetrain, int useLast) {
-		this.useLast = useLast;
-		moments = new LinkedList<>();
-		fileName = null;
+	public LearnPath(int useLast, boolean useButtonToStop) {
+		this(useLast, null, useButtonToStop);
+	}
+
+	public LearnPath(int useLast) {
+		this(useLast, null, true);
+	}
+
+
+	@Override
+	protected void end() {
+		super.end();
+		stopButton.free(); // TODO test if this deletes the button
+		SimpleMotion.getDrivetrain().setSpeeds(0, 0); //Stops the robot from moving
+
+//		NetworkTableInstance.getDefault().getTable("SmartDashboard").delete(buttonName); // try this if it does not work
+//		System.out.println(stopButton.getName());
+//		NetworkTableInstance.getDefault().getTable("SmartDashboard").delete(stopButton.getName());
 	}
 
 	@Override
 	protected void initialize() {
+
 		moments.clear();
+
 	}
 
 	@Override
 	protected void execute() {
+//		Gets the robots current state (velocity , etc..)
 		PathData instance = SimpleMotion.getDrivetrain().getCurrentRobotState();
 
+//		Looks if there is a new max velocity
 		maxVelocity = Math.max(
 			Math.max(
 				Math.abs(instance.getLeftState().getVelocity()),
@@ -47,6 +82,7 @@ public class LearnPath extends Command {
 			),
 			maxVelocity);
 
+//		Looks if there is a new max acceleration
 		maxAcceleration = Math.max(
 			Math.max(
 				Math.abs(instance.getLeftState().getAcceleration()),
@@ -54,6 +90,7 @@ public class LearnPath extends Command {
 			),
 			maxAcceleration);
 
+//		Adds the instance to a list
 		moments.add(instance);
 	}
 
@@ -61,28 +98,36 @@ public class LearnPath extends Command {
 	@Override
 	protected boolean isFinished() {
 
-		if (moments.size() >= useLast) {
+		if (useButtonToStop) {
+			return stopButton.get(); // Pressing the stop button on SmartDashboard will stop the program
+		} else {
+//		Checks how many you last moments you should use to average
+			if (moments.size() >= useLast) {
 
-			double movementChange = 0;
-			double angleChange = 0;
+				double movementChange = 0;
+				double angleChange = 0;
 
-			int size = moments.size();
+				int size = moments.size();
 
-			for (int i = size - (useLast - 1) - 1; i < size; i++) {
-				Pose currentPosition = moments.get(i).getCenterPose();
-				Pose previousPosition = moments.get(i - 1).getCenterPose();
+//			Loops though the last useLast moments of the list
+				for (int i = size - (useLast - 1) - 1; i < size; i++) {
+//				Retrieves the current and last moments
+					Pose currentPosition = moments.get(i).getCenterPose();
+					Pose previousPosition = moments.get(i - 1).getCenterPose();
 
-				double dX = Math.abs(currentPosition.getX() - previousPosition.getX());
-				double dY = Math.abs(currentPosition.getY() - previousPosition.getY());
-				double dAngle = Math.abs(currentPosition.getAngle() - previousPosition.getAngle());
+//				Gets the absolute difference of the xs, ys and angles
+					double dX = Math.abs(currentPosition.getX() - previousPosition.getX());
+					double dY = Math.abs(currentPosition.getY() - previousPosition.getY());
+					double dAngle = Math.abs(currentPosition.getAngle() - previousPosition.getAngle());
 
-				movementChange += dX + dY;
-				angleChange += dAngle;
+					movementChange += Math.hypot(dX, dY);
+					angleChange += dAngle;
+				}
+
+				// If there is less than or equal to a 10 cm change and there is less than or equal to 15 degrees of change
+				return (movementChange <= movementTolerance) &&
+					(angleChange <= StrictMath.toRadians(angleTolerance));
 			}
-
-			// If there is less than or equal to a 10 cm change and there is less than or equal to 15 degrees of change
-			return (movementChange <= movementTolerance) &&
-				(angleChange <= StrictMath.toRadians(angleTolerance));
 		}
 		return false;
 	}
@@ -131,4 +176,6 @@ public class LearnPath extends Command {
 			", moments=" + moments +
 			'}';
 	}
+
+
 }
