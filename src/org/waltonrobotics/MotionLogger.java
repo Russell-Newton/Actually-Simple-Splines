@@ -47,7 +47,8 @@ public class MotionLogger {
 	}
 
 	/**
-	 * Call this in disabledInit() to send the motionDataList to a .csv file.
+	 * Saves data to a .csv file with the name in "yyyy-MM-dd hh-mm-ss" format. Call this in disabledInit() to send the
+	 * motionDataList to a .csv file.
 	 */
 	public synchronized final void writeMotionDataCSV() {
 		if (motionDataList.isEmpty()) {

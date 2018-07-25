@@ -177,7 +177,6 @@ public abstract class AbstractDrivetrain extends Subsystem {
 	 * Log Viewer</a> using a motion that is long and straight and has a high max velocity.
 	 *
 	 * @return the max acceleration the robot can achieve.
-	 * @see
 	 */
 	public abstract double getMaxVelocity();
 
@@ -188,10 +187,18 @@ public abstract class AbstractDrivetrain extends Subsystem {
 	 */
 	public abstract double getMaxAcceleration();
 
+	/**
+	 * Returns the approximate actual location of the robot from the origin (0,0)
+	 *
+	 * @return the approximate location of the robot from (0,0)
+	 */
 	public Pose getActualPosition() {
 		return actualPosition;
 	}
 
+	/**
+	 * Sets the start location of the robot instead of the origin of (0,0)
+	 */
 	public void setStartingPosition(Pose startingPosition) {
 		controller.setStartPosition(startingPosition);
 	}
@@ -209,10 +216,17 @@ public abstract class AbstractDrivetrain extends Subsystem {
 			'}';
 	}
 
+	/**
+	 * Gets the actual position time on the robot
+	 */
 	public double getActualPositionTime() {
 		return actualPositionTime;
 	}
 
+	/**
+	 * Gets the current state of the robot (wheel encoder distances, velocities, accelerations and jerks), its position
+	 * (x, y, angle) and the time it was calculated
+	 */
 	public PathData getCurrentRobotState() {
 		return currentState;
 	}
