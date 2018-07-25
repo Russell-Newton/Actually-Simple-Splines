@@ -1,37 +1,20 @@
 package org.waltonrobotics.motion;
 
+import static org.waltonrobotics.motion.BezierCurve.coefficents;
+import static org.waltonrobotics.motion.BezierCurve.gaussLegendreHashMap;
+
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.controller.State;
+import org.waltonrobotics.motion.BezierCurve.Key;
 import org.waltonrobotics.util.GaussLegendre;
 
 /**
  * Everything about Bezier Curves https://pomax.github.io/bezierinfo/ http://ttuadvancedrobotics.wikidot.com/trajectory-planning-for-point-to-point-motion
  */
 public class DynamicBezierCurve extends DynamicPath {
-
-	private final static HashMap<Integer, int[]> coefficents = new HashMap<>();
-	private static HashMap<Key, GaussLegendre> gaussLegendreHashMap = new HashMap<>();
-
-	static {
-		coefficents.put(0, new int[]{1});
-		coefficents.put(1, new int[]{1, 1});
-		coefficents.put(2, new int[]{1, 2, 1});
-		coefficents.put(3, new int[]{1, 3, 3, 1});
-		coefficents.put(4, new int[]{1, 4, 6, 4, 1});
-		coefficents.put(5, new int[]{1, 5, 10, 10, 5, 1});
-		coefficents.put(6, new int[]{1, 6, 15, 20, 15, 6, 1});
-		coefficents.put(7, new int[]{1, 7, 21, 35, 35, 21, 7, 1});
-		coefficents.put(8, new int[]{1, 8, 28, 56, 70, 56, 28, 8, 1});
-		coefficents.put(9, new int[]{1, 9, 36, 84, 126, 126, 84, 36, 9, 1});
-
-		long start = System.nanoTime();
-		calculateCoefficients(12);
-		System.out.println((System.nanoTime() - start) / 1000000.0);
-	}
 
 	private final double startVelocity;
 	private final double endVelocity;
@@ -125,7 +108,7 @@ public class DynamicBezierCurve extends DynamicPath {
 
 
 	/**
-	 * Updates the coefficients used for calculations
+	 * Calculates the binomial coefficients for the demanded path degree
 	 */
 	private static int[] calculateCoefficients(int degree) {
 		if (coefficents.containsKey(degree)) {
@@ -146,6 +129,15 @@ public class DynamicBezierCurve extends DynamicPath {
 		return computeArcLengthSampling(1000, lower, upper);
 	}
 
+	/**
+	 * Uses sampling (creating multiple points and summing the distance between them) to calculate the length of the
+	 * path
+	 *
+	 * @param numberOfPoints the number of points to create
+	 * @param lower the lower bound [0,1]
+	 * @param upper the upper bound [0, 1]
+	 * @return the path length
+	 */
 	public double computeArcLengthSampling(int numberOfPoints, double lower, double upper) {
 
 		double distance = 0;
@@ -162,6 +154,9 @@ public class DynamicBezierCurve extends DynamicPath {
 		return distance;
 	}
 
+	/**
+	 * Calculates how much time it would take to complete the path given its length acceleration and target velocity
+	 */
 	private double computeTime() {
 		double accelerationTime = calculateTime(startVelocity, getVCruise(), getAMax());
 		double accelDistance = distance(startVelocity, getAMax(), accelerationTime);
@@ -200,11 +195,11 @@ public class DynamicBezierCurve extends DynamicPath {
 
 	/**
 	 * Uses the Gauss Legendre integration to approximate the arc length of the Bezier curve. This is the fastest
-	 * technique (faster than sampling)
+	 * technique (faster than sampling) when having a large path and shows the most accurate results
 	 *
-	 * @param n the number of integral strips
-	 * @param lowerBound the lower bound to integrate (inclusive)
-	 * @param upperBound the lower bound to integrate (inclusive)
+	 * @param n the number of integral strips 2+ more means better accuracy
+	 * @param lowerBound the lower bound to integrate (inclusive) [0,1]
+	 * @param upperBound the upper bound to integrate (inclusive) [0,1]
 	 * @return the arc length of the Bezier curve of t range of [lowerBound, upperBound]
 	 */
 	public double computeArcLength(int n, double lowerBound, double upperBound) {
@@ -264,6 +259,9 @@ public class DynamicBezierCurve extends DynamicPath {
 		return pathData;
 	}
 
+	/**
+	 * Gets the derivative of point at value percentage
+	 */
 	private Pose getDerivative(double percentage) {
 		double dx = 0;
 		double dy = 0;
@@ -446,16 +444,4 @@ public class DynamicBezierCurve extends DynamicPath {
 		return new PathData(left, right, center, previousTime + dTime);
 	}
 
-	private class Key {
-
-		int n;
-		double upper;
-		double lower;
-
-		public Key(int n, double upper, double lower) {
-			this.n = n;
-			this.upper = upper;
-			this.lower = lower;
-		}
-	}
 }

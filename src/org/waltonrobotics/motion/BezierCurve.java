@@ -1,12 +1,13 @@
 package org.waltonrobotics.motion;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.controller.State;
+import org.waltonrobotics.util.GaussLegendre;
 
 /**
  * <p>This Path is a simple curve. The shape of the curve is controlled by the control points.
@@ -21,13 +22,30 @@ import org.waltonrobotics.controller.State;
  */
 public class BezierCurve extends Path {
 
+	public final static HashMap<Integer, int[]> coefficents = new HashMap<>();
+	public static HashMap<Key, GaussLegendre> gaussLegendreHashMap = new HashMap<>();
+
+	static {
+		coefficents.put(0, new int[]{1});
+		coefficents.put(1, new int[]{1, 1});
+		coefficents.put(2, new int[]{1, 2, 1});
+		coefficents.put(3, new int[]{1, 3, 3, 1});
+		coefficents.put(4, new int[]{1, 4, 6, 4, 1});
+		coefficents.put(5, new int[]{1, 5, 10, 10, 5, 1});
+		coefficents.put(6, new int[]{1, 6, 15, 20, 15, 6, 1});
+		coefficents.put(7, new int[]{1, 7, 21, 35, 35, 21, 7, 1});
+		coefficents.put(8, new int[]{1, 8, 28, 56, 70, 56, 28, 8, 1});
+		coefficents.put(9, new int[]{1, 9, 36, 84, 126, 126, 84, 36, 9, 1});
+	}
+
+
 	private final double startVelocity;
 	private final double endVelocity;
 	private final PathData startPathData;
 	private final double startLCenter;
 	public double curveLength;
 	private List<Pose> pathPoints;
-	private double[] coefficients;
+	private int[] coefficients;
 
 	/**
 	 * This constructor is used with the splines, but feel free to use it when creating your own motions
@@ -92,26 +110,58 @@ public class BezierCurve extends Path {
 	 *
 	 * @return nCr
 	 */
-	private static double findNumberOfCombination(double n, double r) {
-		double nFactorial = factorial(n);
-		double rFactorial = factorial(r);
-		double nMinusRFactorial = factorial(n - r);
+	private static long findNumberOfCombination(int n, int r) {
+		int nFactorial = factorial(n);
+		int rFactorial = factorial(r);
+		int nMinusRFactorial = factorial(n - r);
 
 		return nFactorial / (rFactorial * nMinusRFactorial);
 	}
 
 	/**
-	 * Finds the factorial of any integer or double, d
+	 * Finds the factorial of any integer d
 	 *
 	 * @return the factorial of d
 	 */
-	private static double factorial(double d) {
-		double r = (d - Math.floor(d)) + 1.0;
-		while (d > 1) {
-			r *= d;
-			d -= 1;
+	private static int factorial(int d) {
+		if (d >= 13) {
+			throw new ArithmeticException(String
+				.format(
+					"The number %d is too big of a number to factorize as it will cause integer overflow the maximum is 12",
+					d));
 		}
-		return r;
+
+		int result = 1;
+		try {
+
+			for (int i = 1; i <= d; i++) {
+				result = result * i;
+
+			}
+		} catch (ExceptionInInitializerError ignored) {
+
+		}
+
+		return result;
+	}
+
+
+	/**
+	 * Calculates the binomial coefficients for the demanded path degree
+	 */
+	private static int[] calculateCoefficients(int degree) {
+		if (coefficents.containsKey(degree)) {
+			return coefficents.get(degree);
+		}
+
+		int[] coefficients = new int[degree + 1];
+		for (int i = 0; i < coefficients.length; i++) {
+			coefficients[i] = Math.toIntExact(findNumberOfCombination(degree, i));
+		}
+
+		coefficents.put(degree, coefficients);
+
+		return coefficients;
 	}
 
 	private List<Pose> createPoints() {
@@ -140,19 +190,6 @@ public class BezierCurve extends Path {
 		return curveLength;
 	}
 
-	/**
-	 * Updates the coefficients used for calculations
-	 */
-	private double[] calculateCoefficients() {
-		int n = getDegree();
-
-		double[] coefficients = new double[n + 1];
-		for (int i = 0; i < coefficients.length; i++) {
-			coefficients[i] = findNumberOfCombination(n, i);
-		}
-
-		return coefficients;
-	}
 
 	/**
 	 * @param percentage - t
@@ -225,20 +262,12 @@ public class BezierCurve extends Path {
 	 * Creates the PathData list
 	 */
 	private void setData(PathData data) {
-		List<Double> doubles = new ArrayList<>();
 
 		for (int i = 1; i <= getPathNumberOfSteps(); i++) {
-
-			double startTime = System.nanoTime();
-
 			data = calculateData(data, pathPoints.get(i));
-			doubles.add(System.nanoTime() - startTime);
-
 			getPathData().add(data);
 		}
 
-		System.out.println(
-			"Average Calculation Time: " + (doubles.stream().reduce((b1, b2) -> b1 + b2).get() / doubles.size()));
 	}
 
 	/**
@@ -320,12 +349,106 @@ public class BezierCurve extends Path {
 	}
 
 	public void createPath() {
-		coefficients = calculateCoefficients();
+		coefficients = calculateCoefficients(getDegree());
 		pathPoints = createPoints();
 		curveLength = getCurveLength();
 		setData(startPathData);
 	}
 
+	public double computeArcLength() {
+		return computeArcLength(16 /* this number seems to give decent accuracy*/, 0, 1);
+	}
+
+	public double computeArcLength(int n) {
+
+		return computeArcLength(n, 0, 1);
+	}
+
+	public double computeArcLength(double lowerBound, double upperBound) {
+		return computeArcLength(16, lowerBound, upperBound);
+	}
+
+	/**
+	 * Uses the Gauss Legendre integration to approximate the arc length of the Bezier curve. This is the fastest
+	 * technique (faster than sampling) when having a large path and shows the most accurate results
+	 *
+	 * @param n the number of integral strips 2+ more means better accuracy
+	 * @param lowerBound the lower bound to integrate (inclusive) [0,1]
+	 * @param upperBound the upper bound to integrate (inclusive) [0,1]
+	 * @return the arc length of the Bezier curve of t range of [lowerBound, upperBound]
+	 */
+	public double computeArcLength(int n, double lowerBound, double upperBound) {
+
+		GaussLegendre gl;
+
+		Key key = new Key(n, upperBound, lowerBound);
+		if (gaussLegendreHashMap.containsKey(key)) {
+			gl = gaussLegendreHashMap.get(key);
+		} else {
+			gl = new GaussLegendre(n, lowerBound, upperBound);
+			gaussLegendreHashMap.put(key, gl);
+		}
+
+		double[] t = gl.getNodes();
+		double[] C = gl.getWeights();
+
+		double sum = 0;
+
+		for (int i = 0; i < t.length; i++) {
+
+			Pose point = getDerivative(t[i]);
+
+			sum += C[i] * Math.hypot(point.getX(), point.getY());
+		}
+
+		return sum;
+	}
+
+	/**
+	 * Gets the derivative of point at value percentage
+	 */
+	private Pose getDerivative(double percentage) {
+		double dx = 0;
+		double dy = 0;
+
+		if (percentage == 1.0) {
+
+			int last = getKeyPoints().size() - 1;
+
+			dx = getKeyPoints().get(last).getX()
+				- getKeyPoints().get(last - 1).getX();
+			dy = getKeyPoints().get(last).getY()
+				- getKeyPoints().get(last - 1).getY();
+		} else {
+
+			int degree = getDegree();
+
+			int[] coefficients = calculateCoefficients(degree - 1);
+
+			for (int i = 0; i < degree; i++) {
+
+				Pose pointI = getKeyPoints().get(i);
+
+				double multiplier =
+					coefficients[i] * StrictMath.pow(1 - percentage, ((degree - 1) - i)) * StrictMath
+						.pow(percentage, (double) i);
+
+				Pose nextPointI = getKeyPoints().get(i + 1);
+
+				dx += (multiplier = multiplier * (degree)) * (nextPointI.getX() - pointI.getX());
+				dy += multiplier * (nextPointI.getY() - pointI.getY());
+			}
+		}
+
+		double angle = StrictMath.atan2(dy, dx);
+
+		if (isBackwards()) {
+			angle += Math.PI;
+		}
+		angle %= (2 * Math.PI);
+
+		return new Pose(dx, dy, angle);
+	}
 
 	@Override
 	public String toString() {
@@ -338,5 +461,18 @@ public class BezierCurve extends Path {
 			", curveLength=" + curveLength +
 			", coefficients=" + Arrays.toString(coefficients) +
 			"} " + super.toString();
+	}
+
+	public static class Key {
+
+		int n;
+		double upper;
+		double lower;
+
+		public Key(int n, double upper, double lower) {
+			this.n = n;
+			this.upper = upper;
+			this.lower = lower;
+		}
 	}
 }
