@@ -64,7 +64,7 @@ public class Pose {
 	 * @return the distance from this point to the other point
 	 */
 	public final double distance(Pose otherPoint) {
-		return Math.sqrt(
+		return StrictMath.sqrt(
 			StrictMath.pow(x - otherPoint.x, 2.0) + StrictMath
 				.pow(y - otherPoint.y, 2.0));
 	}

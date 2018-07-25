@@ -92,15 +92,15 @@ public class DebugCurves {
 		points.add(new Pose(35, 200, StrictMath.toRadians(0)));
 		points.add(new Pose(120, 160, StrictMath.toRadians(0)));
 
-		points.add(new Pose(35, 40, StrictMath.toRadians(0)));
-		points.add(new Pose(220, 40, StrictMath.toRadians(0)));
-		points.add(new Pose(0, 0, StrictMath.toRadians(0)));
-		points.add(new Pose(.5, 0, StrictMath.toRadians(0)));
-		points.add(new Pose(1, 1, StrictMath.toRadians(0)));
-		points.add(new Pose(2, 1, StrictMath.toRadians(0)));
-		points.add(new Pose(3.4, 5, StrictMath.toRadians(0)));
-		points.add(new Pose(1, 0, StrictMath.toRadians(0)));
-		points.add(new Pose(0, 1, StrictMath.toRadians(0)));
+//		points.add(new Pose(35, 40, StrictMath.toRadians(0)));
+//		points.add(new Pose(220, 40, StrictMath.toRadians(0)));
+//		points.add(new Pose(0, 0, StrictMath.toRadians(0)));
+//		points.add(new Pose(.5, 0, StrictMath.toRadians(0)));
+//		points.add(new Pose(1, 1, StrictMath.toRadians(0)));
+//		points.add(new Pose(2, 1, StrictMath.toRadians(0)));
+//		points.add(new Pose(3.4, 5, StrictMath.toRadians(0)));
+//		points.add(new Pose(1, 0, StrictMath.toRadians(0)));
+//		points.add(new Pose(0, 1, StrictMath.toRadians(0)));
 //		printPath(curve);
 //
 		System.out.println("Actual Length should be 272.87");
@@ -110,7 +110,7 @@ public class DebugCurves {
 		for (int i = 0; i <= 100; i++) {
 			Pose pose = dynamicBezierCurve.createPathData(new PathData(new Pose(0, 0)), i / 100.0).getCenterPose();
 
-			System.out.println(new Point2D(pose.getX(), pose.getY()).normalize());
+//			System.out.println(new Point2D(pose.getX(), pose.getY()).normalize());
 		}
 
 		System.out.println();

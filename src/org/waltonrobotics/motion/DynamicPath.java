@@ -20,7 +20,7 @@ import org.waltonrobotics.controller.State;
  *
  * @author Russell Newton, Walton Robotics
  */
-public abstract class Path {
+public abstract class DynamicPath {
 
 	//FIXME 1000 points per meter?
 	public static int pathNumberOfSteps = 1000; // TODO find better name for this variable. Also before it was 50 but maybe try smart
@@ -38,7 +38,7 @@ public abstract class Path {
 	 * @param isBackwards if the robot is travelling forwards or backwards
 	 * @param keyPoints the points that define the path
 	 */
-	protected Path(double vCruise, double aMax, boolean isBackwards, List<Pose> keyPoints) {
+	protected DynamicPath(double vCruise, double aMax, boolean isBackwards, List<Pose> keyPoints) {
 		this.isBackwards = isBackwards;
 		this.keyPoints = keyPoints;
 		if (vCruise == 0) {
@@ -54,7 +54,7 @@ public abstract class Path {
 		pathData = new LinkedList<>();
 	}
 
-	public Path(double vCruise, double aMax, boolean isBackwards, Pose... keyPoints) {
+	public DynamicPath(double vCruise, double aMax, boolean isBackwards, Pose... keyPoints) {
 		this(vCruise, aMax, isBackwards, Arrays.asList(keyPoints));
 	}
 
@@ -83,7 +83,7 @@ public abstract class Path {
 	 * @param robotWidth the new width of the robot
 	 */
 	public static void setRobotWidth(double robotWidth) {
-		Path.robotWidth = robotWidth;
+		DynamicPath.robotWidth = robotWidth;
 	}
 
 	/**
@@ -102,7 +102,7 @@ public abstract class Path {
 	}
 
 
-	public static Path loadPath(String filePath) throws IOException {
+	public static DynamicPath loadPath(String filePath) throws IOException {
 		try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath)))) {
 
 			List<PathData> pathDataList = new LinkedList<>();
@@ -149,7 +149,11 @@ public abstract class Path {
 			});
 
 			Path.setRobotWidth(robotWidth[0]);
-			Path path = new Path(maxVelocity[0], maxAcceleration[0], isBackwards[0], keyPoints) {
+			DynamicPath path = new DynamicPath(maxVelocity[0], maxAcceleration[0], isBackwards[0], keyPoints) {
+				@Override
+				public PathData createPathData(PathData previousPathData, double percentage) {
+					return null;
+				}
 			};
 
 			path.getPathData().clear();
@@ -219,6 +223,8 @@ public abstract class Path {
 		return vCruise;
 	}
 
+	public abstract PathData createPathData(PathData previousPathData,
+		double percentage);
 
 	private void savePath(String fileName) {
 		if (!getPathData().isEmpty() && (fileName != null)) {

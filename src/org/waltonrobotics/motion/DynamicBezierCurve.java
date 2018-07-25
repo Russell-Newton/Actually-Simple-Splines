@@ -6,19 +6,38 @@ import java.util.List;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.controller.State;
+import org.waltonrobotics.util.GaussLegendre;
 
 /**
- * Everything about Bezier Curves https://pomax.github.io/bezierinfo/
+ * Everything about Bezier Curves https://pomax.github.io/bezierinfo/ http://ttuadvancedrobotics.wikidot.com/trajectory-planning-for-point-to-point-motion
  */
-public class DynamicBezierCurve extends Path {
+public class DynamicBezierCurve extends DynamicPath {
 
-	private final static HashMap<Integer, double[]> coefficents = new HashMap<>();
+	private final static HashMap<Integer, int[]> coefficents = new HashMap<>();
 	private static HashMap<Key, GaussLegendre> gaussLegendreHashMap = new HashMap<>();
+
+	static {
+		coefficents.put(0, new int[]{1});
+		coefficents.put(1, new int[]{1, 1});
+		coefficents.put(2, new int[]{1, 2, 1});
+		coefficents.put(3, new int[]{1, 3, 3, 1});
+		coefficents.put(4, new int[]{1, 4, 6, 4, 1});
+		coefficents.put(5, new int[]{1, 5, 10, 10, 5, 1});
+		coefficents.put(6, new int[]{1, 6, 15, 20, 15, 6, 1});
+		coefficents.put(7, new int[]{1, 7, 21, 35, 35, 21, 7, 1});
+		coefficents.put(8, new int[]{1, 8, 28, 56, 70, 56, 28, 8, 1});
+		coefficents.put(9, new int[]{1, 9, 36, 84, 126, 126, 84, 36, 9, 1});
+
+		long start = System.nanoTime();
+		calculateCoefficients(12);
+		System.out.println((System.nanoTime() - start) / 1000000.0);
+	}
+
 	private final double startVelocity;
 	private final double endVelocity;
 	private final int degree;
 	public double time;
-	private double[] coefficients;
+	private int[] coefficients;
 	private double curveLength;
 	private double startLCenter;
 
@@ -42,14 +61,19 @@ public class DynamicBezierCurve extends Path {
 		degree = getKeyPoints().size() - 1;
 		coefficients = calculateCoefficients(degree);
 
-//		long startTime = System.nanoTime();
-		curveLength = computeArcLength(0, 0.5);
-//		System.out.println((System.nanoTime() - startTime));
-//		System.out.println((System.nanoTime() - startTime) / 1000000.0);
-//		System.out.println(curveLength);
-//		startTime = System.nanoTime();
-//		System.out.println(computeArcLengthQuick(0, .5));
-//		System.out.println(System.nanoTime() - startTime);
+		long startTime = System.nanoTime();
+		computeArcLength(100, 0.001, 0.002);
+		long endTime = System.nanoTime();
+		System.out.println((endTime - startTime));
+		System.out.println((endTime - startTime) / 1000000.0);
+		System.out.println(curveLength);
+		startTime = System.nanoTime();
+		computeArcLengthSampling(10, 0., 0.002);
+//		System.out.println();
+		endTime = System.nanoTime();
+		System.out.println(endTime - startTime);
+		System.out.println((endTime - startTime) / 1000000.0);
+		System.out.println(curveLength);
 		time = computeTime();
 	}
 
@@ -64,7 +88,7 @@ public class DynamicBezierCurve extends Path {
 	 *
 	 * @return nCr
 	 */
-	private static double findNumberOfCombination(int n, int r) {
+	private static long findNumberOfCombination(int n, int r) {
 		int nFactorial = factorial(n);
 		int rFactorial = factorial(r);
 		int nMinusRFactorial = factorial(n - r);
@@ -78,13 +102,44 @@ public class DynamicBezierCurve extends Path {
 	 * @return the factorial of d
 	 */
 	private static int factorial(int d) {
-		int result = 1;
+		if (d >= 13) {
+			throw new ArithmeticException(String
+				.format(
+					"The number %d is too big of a number to factorize as it will cause integer overflow the maximum is 12",
+					d));
+		}
 
-		for (int i = 1; i <= d; i++) {
-			result = result * i;
+		int result = 1;
+		try {
+
+			for (int i = 1; i <= d; i++) {
+				result = result * i;
+
+			}
+		} catch (ExceptionInInitializerError ignored) {
+
 		}
 
 		return result;
+	}
+
+
+	/**
+	 * Updates the coefficients used for calculations
+	 */
+	private static int[] calculateCoefficients(int degree) {
+		if (coefficents.containsKey(degree)) {
+			return coefficents.get(degree);
+		}
+
+		int[] coefficients = new int[degree + 1];
+		for (int i = 0; i < coefficients.length; i++) {
+			coefficients[i] = Math.toIntExact(findNumberOfCombination(degree, i));
+		}
+
+		coefficents.put(degree, coefficients);
+
+		return coefficients;
 	}
 
 	public double computeArcLengthSampling(double lower, double upper) {
@@ -95,9 +150,11 @@ public class DynamicBezierCurve extends Path {
 
 		double distance = 0;
 		Pose previous = getPoint(lower);
+
+		double increment = ((upper - lower) / numberOfPoints);
 		for (int i = 1; i <= numberOfPoints; i++) {
 
-			Pose point = getPoint(((i / (double) numberOfPoints) * upper) + lower);
+			Pose point = getPoint((i * increment) + lower);
 			distance += point.distance(previous);
 			previous = point;
 		}
@@ -221,7 +278,7 @@ public class DynamicBezierCurve extends Path {
 				- getKeyPoints().get(last - 1).getY();
 		} else {
 
-			double[] coefficients = calculateCoefficients(degree - 1);
+			int[] coefficients = calculateCoefficients(degree - 1);
 
 			for (int i = 0; i < degree; i++) {
 
@@ -263,7 +320,7 @@ public class DynamicBezierCurve extends Path {
 		double dx = 0;
 		double dy = 0;
 
-		double[] derivativeCoefficients = calculateCoefficients(degree - 1);
+		int[] derivativeCoefficients = calculateCoefficients(degree - 1);
 
 		for (int i = 0; i <= degree; i++) {
 
@@ -307,28 +364,9 @@ public class DynamicBezierCurve extends Path {
 		return new Pose(xCoordinateAtPercentage, yCoordinateAtPercentage, angle);
 	}
 
-	/**
-	 * Updates the coefficients used for calculations
-	 */
-	private double[] calculateCoefficients(int degree) {
-		if (coefficents.containsKey(degree)) {
-			return coefficents.get(degree);
-		}
-
-		double[] coefficients = new double[degree + 1];
-		for (int i = 0; i < coefficients.length; i++) {
-			coefficients[i] = findNumberOfCombination(degree, i);
-		}
-
-		coefficents.put(degree, coefficients);
-
-		return coefficients;
-	}
-
 	public void setStartLCenter(double startLCenter) {
 		this.startLCenter = startLCenter;
 	}
-
 
 	/**
 	 * @param nextPosition - The Pose of the PathData to calculate on
@@ -420,5 +458,4 @@ public class DynamicBezierCurve extends Path {
 			this.lower = lower;
 		}
 	}
-
 }

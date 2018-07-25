@@ -326,10 +326,6 @@ public class BezierCurve extends Path {
 		setData(startPathData);
 	}
 
-	@Override
-	public PathData createPathData(PathData previousPathData, double percentage) {
-		return null;
-	}
 
 	@Override
 	public String toString() {

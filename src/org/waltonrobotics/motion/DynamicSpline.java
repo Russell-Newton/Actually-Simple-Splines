@@ -8,7 +8,7 @@ import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.controller.State;
 
-public class DynamicSpline extends Path {
+public class DynamicSpline extends DynamicPath {
 
 	private final double startAngle;
 	private final double endAngle;

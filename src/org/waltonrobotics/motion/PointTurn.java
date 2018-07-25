@@ -83,12 +83,6 @@ public class PointTurn extends Path {
 	}
 
 	@Override
-	public PathData createPathData(PathData previousPathData, double percentage) {
-		return null;
-	}
-
-
-	@Override
 	public String toString() {
 		return "PointTurn{" +
 			"startPose=" + startPose +

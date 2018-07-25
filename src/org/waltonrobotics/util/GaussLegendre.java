@@ -1,4 +1,4 @@
-package org.waltonrobotics.motion;
+package org.waltonrobotics.util;
 
 import java.util.Arrays;
 

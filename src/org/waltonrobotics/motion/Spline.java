@@ -261,10 +261,6 @@ public class Spline extends Path {
 		stitchPathData(startPathData, pathControlPoints);
 	}
 
-	@Override
-	public PathData createPathData(PathData previousPathData, double percentage) {
-		return null;
-	}
 
 	@Override
 	public String toString() {
