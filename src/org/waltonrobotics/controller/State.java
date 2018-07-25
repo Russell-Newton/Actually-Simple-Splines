@@ -10,6 +10,7 @@ public class State {
 	private final double length;
 	private final double velocity;
 	private final double acceleration;
+	private final double jerk;
 
 	/**
 	 * @param length how far the robot has to go
@@ -17,9 +18,24 @@ public class State {
 	 * @param acceleration the acceleration the robot should be
 	 */
 	public State(double length, double velocity, double acceleration) {
+		this(length, velocity, acceleration, 0);
+	}
+
+	/**
+	 * @param length how far the robot has to go
+	 * @param velocity the velocity the robot should be
+	 * @param acceleration the acceleration the robot should be
+	 * @param jerk the jerk the robot should be at
+	 */
+	public State(double length, double velocity, double acceleration, double jerk) {
 		this.length = length;
 		this.velocity = velocity;
 		this.acceleration = acceleration;
+		this.jerk = jerk;
+	}
+
+	public double getJerk() {
+		return jerk;
 	}
 
 	/**

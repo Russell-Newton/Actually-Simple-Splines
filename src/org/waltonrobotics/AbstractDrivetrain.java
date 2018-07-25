@@ -227,12 +227,16 @@ public abstract class AbstractDrivetrain extends Subsystem {
 
 		double lVelocity = (wheelPosition.getLeft() - previousState.getLeftState().getLength()) / deltaTime;
 		double rVelocity = (wheelPosition.getRight() - previousState.getRightState().getLength()) / deltaTime;
+
 		double lAcceleration = (lVelocity - previousState.getLeftState().getVelocity()) / deltaTime;
 		double rAcceleration = (rVelocity - previousState.getRightState().getVelocity()) / deltaTime;
 
+		double lJerk = (lAcceleration - previousState.getLeftState().getAcceleration()) / deltaTime;
+		double rJerk = (rAcceleration - previousState.getRightState().getAcceleration()) / deltaTime;
+
 		currentState = new PathData(
-			new State(wheelPosition.getLeft(), lVelocity, lAcceleration),
-			new State(wheelPosition.getRight(), rVelocity, rAcceleration),
+			new State(wheelPosition.getLeft(), lVelocity, lAcceleration, lJerk),
+			new State(wheelPosition.getRight(), rVelocity, rAcceleration, rJerk),
 			actualPosition,
 			actualPositionTime);
 
