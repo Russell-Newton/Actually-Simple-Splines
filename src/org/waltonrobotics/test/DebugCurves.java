@@ -5,7 +5,7 @@ import java.util.List;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.motion.BezierCurve;
-import org.waltonrobotics.motion.DynamicBezierCurve;
+import org.waltonrobotics.dynamicMotion.DynamicBezierCurve;
 import org.waltonrobotics.motion.Path;
 import org.waltonrobotics.motion.PointTurn;
 import org.waltonrobotics.motion.Spline;

@@ -1,4 +1,4 @@
-package org.waltonrobotics.motion;
+package org.waltonrobotics.dynamicMotion;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,6 +7,7 @@ import java.util.ListIterator;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.controller.State;
+import org.waltonrobotics.motion.BezierCurve;
 
 public class DynamicSpline extends DynamicPath {
 

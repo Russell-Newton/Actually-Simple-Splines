@@ -1,4 +1,4 @@
-package org.waltonrobotics.motion;
+package org.waltonrobotics.dynamicMotion;
 
 import static org.waltonrobotics.motion.BezierCurve.coefficents;
 import static org.waltonrobotics.motion.BezierCurve.gaussLegendreHashMap;
@@ -9,6 +9,7 @@ import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.controller.State;
 import org.waltonrobotics.motion.BezierCurve.Key;
+import org.waltonrobotics.motion.Path;
 import org.waltonrobotics.util.GaussLegendre;
 
 /**

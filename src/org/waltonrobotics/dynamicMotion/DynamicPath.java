@@ -1,4 +1,4 @@
-package org.waltonrobotics.motion;
+package org.waltonrobotics.dynamicMotion;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -14,6 +14,7 @@ import java.util.List;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.controller.State;
+import org.waltonrobotics.motion.Path;
 
 /**
  * Extend this if you want to make your own Motion.

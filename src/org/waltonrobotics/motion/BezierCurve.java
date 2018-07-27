@@ -469,7 +469,7 @@ public class BezierCurve extends Path {
 		double upper;
 		double lower;
 
-		Key(int n, double upper, double lower) {
+		public Key(int n, double upper, double lower) {
 			this.n = n;
 			this.upper = upper;
 			this.lower = lower;
