@@ -35,47 +35,27 @@ public class Spline extends Path {
 	 * @param aMax - max acceleration
 	 * @param startVelocity - the starting velocity of the Path
 	 * @param endVelocity - the ending velocity of the Path
-	 * @param startAngle - the angle at the start of the motion (degrees)
-	 * @param endAngle - the angle at the end of the motion (degrees)
 	 * @param isBackwards - if the robot will be moving backwards, make this true
 	 * @param knots - the points you want the robot to drive through
 	 */
 	public Spline(double vCruise, double aMax, double startVelocity, double endVelocity,
-		double startAngle, double endAngle, boolean isBackwards, double scaleStart, double scaleEnd,
+		boolean isBackwards, double scaleStart, double scaleEnd,
 		List<Pose> knots) {
 		super(vCruise, aMax, isBackwards, knots);
-		this.startAngle = startAngle;
-		this.endAngle = endAngle;
+
+		if (knots.isEmpty()) {
+			startAngle = 0;
+			endAngle = 0;
+		} else {
+			this.startAngle = knots.get(0).getAngle();
+			this.endAngle = knots.get(knots.size() - 1).getAngle();
+		}
 		startScale = scaleStart;
 		endScale = scaleEnd;
 		this.endVelocity = endVelocity;
 		this.startVelocity = startVelocity;
 
 		createPath();
-	}
-
-	public Spline(double vCruise, double aMax, double startVelocity, double endVelocity,
-		double startAngle, double endAngle, boolean isBackwards, List<Pose> knots) {
-		this(vCruise, aMax, startVelocity, endVelocity, startAngle, endAngle, isBackwards, 1.0, 1.0,
-			knots);
-	}
-
-	/**
-	 * Construct a spline. Note that the x axis is the direction the robot is facing if the start angle is 0
-	 *
-	 * @param vCruise - max velocity
-	 * @param aMax - max acceleration
-	 * @param startVelocity - the starting velocity of the Path
-	 * @param endVelocity - the ending velocity of the Path
-	 * @param startAngle - the angle at the start of the motion (degrees)
-	 * @param endAngle - the angle at the end of the motion (degrees)
-	 * @param isBackwards - if the robot will be moving backwards, make this true
-	 * @param knots - the points you want the robot to drive through
-	 */
-	public Spline(double vCruise, double aMax, double startVelocity, double endVelocity,
-		double startAngle, double endAngle, boolean isBackwards, Pose... knots) {
-		this(vCruise, aMax, startVelocity, endVelocity,
-			startAngle, endAngle, isBackwards, 1.0, 1.0, Arrays.asList(knots));
 	}
 
 	/**
@@ -90,25 +70,8 @@ public class Spline extends Path {
 	 */
 	public Spline(double vCruise, double aMax, double startVelocity, double endVelocity,
 		boolean isBackwards, Pose... knots) {
-		this(vCruise, aMax, startVelocity, endVelocity, isBackwards, Arrays.asList(knots));
-	}
-
-	/**
-	 * Construct a spline. Note that the x axis is the direction the robot is facing if the start angle is 0
-	 *
-	 * @param vCruise - max velocity
-	 * @param aMax - max acceleration
-	 * @param startVelocity - the starting velocity of the Path
-	 * @param endVelocity - the ending velocity of the Path
-	 * @param isBackwards - if the robot will be moving backwards, make this true
-	 * @param knots - the points you want the robot to drive through
-	 */
-	public Spline(double vCruise, double aMax, double startVelocity, double endVelocity,
-		boolean isBackwards, List<Pose> knots) {
 		this(vCruise, aMax, startVelocity, endVelocity,
-			knots.isEmpty() ? 0 : knots.get(0).getAngle(),
-			knots.isEmpty() ? 0 : knots.get(knots.size() - 1).getAngle(), isBackwards, 1, 1,
-			knots);
+			isBackwards, 1.0, 1.0, Arrays.asList(knots));
 	}
 
 
