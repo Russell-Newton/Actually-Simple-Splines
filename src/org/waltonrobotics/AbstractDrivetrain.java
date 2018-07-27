@@ -1,6 +1,10 @@
 package org.waltonrobotics;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Properties;
 import org.waltonrobotics.command.SimpleMotion;
 import org.waltonrobotics.controller.MotionController;
 import org.waltonrobotics.controller.PathData;
@@ -12,10 +16,14 @@ import org.waltonrobotics.motion.Path;
 /**
  * Extend this in your drivetrain, and use the methods inside to set up spline motions
  *
- * @author Russell Newton, Walton Robotics
+ * @author Russell Newton, Marius Juston, Walton Robotics
  */
 public abstract class AbstractDrivetrain extends Subsystem {
+//TODO use the java.util.Properties class to save and load the drivetrain constants to a file
 
+
+	private static final File CONFIG_FILE = new File("config.DRIVETRAIN_PROPERTIES");
+	private static final Properties DRIVETRAIN_PROPERTIES = new Properties();
 	private final MotionController controller;
 	private final MotionLogger motionLogger;
 	private Pose actualPosition = new Pose(0, 0, 0);
@@ -37,6 +45,13 @@ public abstract class AbstractDrivetrain extends Subsystem {
 			new State(previousLengths.getLeft(), 0, 0),
 			new State(previousLengths.getRight(), 0, 0),
 			actualPosition, previousLengths.getTime());
+	}
+
+	/**
+	 * Drivetrain properties are saved here
+	 */
+	public static Properties getDrivetrainProperties() {
+		return DRIVETRAIN_PROPERTIES;
 	}
 
 	public MotionLogger getMotionLogger() {
@@ -263,5 +278,31 @@ public abstract class AbstractDrivetrain extends Subsystem {
 
 		previousState = currentState;
 		previousLengths = wheelPosition;
+	}
+
+	//	TODO figure out how to load the properties (might need to restructure AbstractDrivetrain)
+
+	/**
+	 * Saves the drivetrain properties to a config.properties file
+	 */
+	public final void saveProperties() {
+		DRIVETRAIN_PROPERTIES.setProperty("robotWidth", String.valueOf(getRobotWidth()));
+		DRIVETRAIN_PROPERTIES.setProperty("kV", String.valueOf(getKV()));
+		DRIVETRAIN_PROPERTIES.setProperty("kAcc", String.valueOf(getKAcc()));
+		DRIVETRAIN_PROPERTIES.setProperty("kK", String.valueOf(getKK()));
+		DRIVETRAIN_PROPERTIES.setProperty("kS", String.valueOf(getKS()));
+		DRIVETRAIN_PROPERTIES.setProperty("kAng", String.valueOf(getKAng()));
+		DRIVETRAIN_PROPERTIES.setProperty("kL", String.valueOf(getKL()));
+		DRIVETRAIN_PROPERTIES.setProperty("iLag", String.valueOf(getILag()));
+		DRIVETRAIN_PROPERTIES.setProperty("iAng", String.valueOf(getIAng()));
+		DRIVETRAIN_PROPERTIES.setProperty("maxVelocity", String.valueOf(getMaxVelocity()));
+		DRIVETRAIN_PROPERTIES.setProperty("maxAcceleration", String.valueOf(getMaxAcceleration()));
+
+		try
+			(FileWriter writer = new FileWriter(CONFIG_FILE)) {
+			DRIVETRAIN_PROPERTIES.store(writer, "drive train settings");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
