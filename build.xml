@@ -5,7 +5,8 @@
       overwrite="true" tofile="${user.home}/wpilib/user/java/lib/2974Splines.jar"/>
     <copy file="${artifact.output.path}/2974Splines.jar"
       overwrite="true" tofile="${user.home}/Documents/GitHub/PowerUp/PowerUp/lib/2974Splines.jar"/>
-
+    <copy file="${artifact.output.path}/2974Splines.jar"
+      overwrite="true" tofile="${user.home}/Documents/GitHub/Path Planning/motionLibrary/2974Splines.jar"/>
   </target>
 </project>
 
