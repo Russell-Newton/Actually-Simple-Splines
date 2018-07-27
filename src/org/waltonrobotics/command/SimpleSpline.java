@@ -9,30 +9,26 @@ import org.waltonrobotics.motion.Spline;
  */
 public class SimpleSpline extends SimpleMotion {
 
-	public SimpleSpline(double maxVelocity, double maxAcceleration, double startAngle,
-		double endAngle, Pose... knots) {
-		this(maxVelocity, maxAcceleration, startAngle, endAngle, false, knots);
+	public SimpleSpline(double maxVelocity, double maxAcceleration, Pose... knots) {
+		this(maxVelocity, maxAcceleration, false, knots);
 	}
 
-	public SimpleSpline(double maxVelocity, double maxAcceleration, double startAngle,
-		double endAngle, boolean isBackwards, double startScale, double endScale, double startVelocity,
+	public SimpleSpline(double maxVelocity, double maxAcceleration, boolean isBackwards, double startScale,
+		double endScale, double startVelocity,
 		double endVelocity, Pose... knots) {
 		super(new Spline(
 			maxVelocity,
 			maxAcceleration,
 			startVelocity,
 			endVelocity,
-			startAngle,
-			endAngle,
 			isBackwards,
 			startScale,
 			endScale,
 			Arrays.asList(knots)));
 	}
 
-	public SimpleSpline(double maxVelocity, double maxAcceleration, double startAngle,
-		double endAngle, boolean isBackwards, Pose... knots) {
-		this(maxVelocity, maxAcceleration, startAngle, endAngle, isBackwards, 1,
+	public SimpleSpline(double maxVelocity, double maxAcceleration, boolean isBackwards, Pose... knots) {
+		this(maxVelocity, maxAcceleration, isBackwards, 1,
 			1, 0, 0, knots);
 	}
 
@@ -51,23 +47,20 @@ public class SimpleSpline extends SimpleMotion {
 	 */
 	public static SimpleSpline pathFromPosesWithAngle(double maxVelocity, double maxAcceleration,
 		boolean isBackwards, Pose... knots) {
-		return new SimpleSpline(maxVelocity, maxAcceleration, knots[0].getAngle(),
-			knots[knots.length - 1].getAngle(), isBackwards, knots);
+		return new SimpleSpline(maxVelocity, maxAcceleration, isBackwards, knots);
 	}
 
 
 	public static SimpleSpline pathFromPosesWithAngle(double maxVelocity, double maxAcceleration,
 		double startVelocity, double endVelocity, boolean isBackwards, Pose... knots) {
-		return new SimpleSpline(maxVelocity, maxAcceleration, knots[0].getAngle(),
-			knots[knots.length - 1].getAngle(), isBackwards, 1, 1, startVelocity, endVelocity, knots);
+		return new SimpleSpline(maxVelocity, maxAcceleration, isBackwards, 1, 1, startVelocity, endVelocity, knots);
 	}
 
 
 	public static SimpleSpline pathFromPosesWithAngleAndScale(double maxVelocity,
 		double maxAcceleration,
 		boolean isBackwards, double startScale, double endScale, Pose... knots) {
-		return new SimpleSpline(maxVelocity, maxAcceleration, knots[0].getAngle(),
-			knots[knots.length - 1].getAngle(), isBackwards, startScale, endScale, 0, 0, knots);
+		return new SimpleSpline(maxVelocity, maxAcceleration, isBackwards, startScale, endScale, 0, 0, knots);
 	}
 
 	public static SimpleSpline pathFromPosesWithAngleAndScale(

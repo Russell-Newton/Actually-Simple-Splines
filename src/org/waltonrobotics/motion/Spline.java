@@ -74,6 +74,22 @@ public class Spline extends Path {
 			isBackwards, 1.0, 1.0, Arrays.asList(knots));
 	}
 
+	/**
+	 * Construct a spline. Note that the x axis is the direction the robot is facing if the start angle is 0
+	 *
+	 * @param vCruise - max velocity
+	 * @param aMax - max acceleration
+	 * @param startVelocity - the starting velocity of the Path
+	 * @param endVelocity - the ending velocity of the Path
+	 * @param isBackwards - if the robot will be moving backwards, make this true
+	 * @param knots - the points you want the robot to drive through
+	 */
+	public Spline(double vCruise, double aMax, double startVelocity, double endVelocity,
+		boolean isBackwards, List<Pose> knots) {
+		this(vCruise, aMax, startVelocity, endVelocity,
+			isBackwards, 1.0, 1.0, knots);
+	}
+
 
 	/**
 	 * Creates the control points required to make cubic bezier curves that transition between knots. Will make them for
