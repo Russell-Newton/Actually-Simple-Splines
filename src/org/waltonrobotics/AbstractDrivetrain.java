@@ -22,7 +22,7 @@ public abstract class AbstractDrivetrain extends Subsystem {
 //TODO use the java.util.Properties class to save and load the drivetrain constants to a file
 
 
-	private static final File CONFIG_FILE = new File("config.DRIVETRAIN_PROPERTIES");
+	private static final File CONFIG_FILE = new File("config.properties");
 	private static final Properties DRIVETRAIN_PROPERTIES = new Properties();
 	private final MotionController controller;
 	private final MotionLogger motionLogger;
