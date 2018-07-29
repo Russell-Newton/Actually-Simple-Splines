@@ -27,6 +27,7 @@ public class Spline extends Path {
 	private final double endScale;
 	private final double startVelocity;
 	private final double endVelocity;
+	private List<BezierCurve> definingBezierCurves = new ArrayList<>();
 
 	/**
 	 * Construct a spline. Note that the x axis is the direction the robot is facing if the start angle is 0
@@ -74,6 +75,7 @@ public class Spline extends Path {
 			isBackwards, 1.0, 1.0, Arrays.asList(knots));
 	}
 
+
 	/**
 	 * Construct a spline. Note that the x axis is the direction the robot is facing if the start angle is 0
 	 *
@@ -89,7 +91,6 @@ public class Spline extends Path {
 		this(vCruise, aMax, startVelocity, endVelocity,
 			isBackwards, 1.0, 1.0, knots);
 	}
-
 
 	/**
 	 * Creates the control points required to make cubic bezier curves that transition between knots. Will make them for
@@ -216,6 +217,7 @@ public class Spline extends Path {
 				nextStartPathData,
 				iterator.next());
 
+//			System.out.println(curve.getKeyPoints().size());
 			bezierCurves.add(curve);
 			nextStartPathData = curve.getPathData().getLast();
 		}
@@ -226,7 +228,7 @@ public class Spline extends Path {
 	public void createPath() {
 		List<List<Pose>> pathControlPoints = computeControlPoints(getKeyPoints());
 
-		System.out.println(pathControlPoints.size());
+//		System.out.println(pathControlPoints.size());
 
 		PathData startPathData = new PathData(new State(0, startVelocity, 0),
 			new State(0, startVelocity, 0),
@@ -234,12 +236,15 @@ public class Spline extends Path {
 				startAngle),
 			0);
 
-		List<BezierCurve> bezierCurves = createBezierCurves(startPathData, pathControlPoints);
-		System.out.println(bezierCurves.size());
+		definingBezierCurves = createBezierCurves(startPathData, pathControlPoints);
+//		System.out.println(bezierCurves.size());
 
 		stitchPathData(startPathData, pathControlPoints);
 	}
 
+	public List<BezierCurve> getDefiningBezierCurves() {
+		return definingBezierCurves;
+	}
 
 	@Override
 	public String toString() {
