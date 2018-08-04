@@ -229,33 +229,9 @@ public class BezierCurve extends Path {
 	 * @return angle at point
 	 */
 	private double getAngle(double t) {
-		int n = getDegree();
-		double dx = 0;
-		double dy = 0;
-		for (int i = 0; i < n; i++) {
-			double coefficient =
-				findNumberOfCombination(n, i) * StrictMath.pow(t, i) * StrictMath.pow(1 - t, n - i);
-			dx += coefficient * (n + 1) * (getKeyPoints().get(i + 1).getX() - getKeyPoints().get(i)
-				.getX());
-			dy += coefficient * (n + 1) * (getKeyPoints().get(i + 1).getY() - getKeyPoints().get(i)
-				.getY());
-		}
+		Pose getDerivative = getDerivative(t);
 
-		if (t == 1.0) {
-			dx = getKeyPoints().get(getKeyPoints().size() - 1).getX()
-				- getKeyPoints().get(getKeyPoints().size() - 2).getX();
-			dy = getKeyPoints().get(getKeyPoints().size() - 1).getY()
-				- getKeyPoints().get(getKeyPoints().size() - 2).getY();
-		}
-
-		double angle = StrictMath.atan2(dy, dx);
-
-		if (isBackwards()) {
-			angle += Math.PI;
-		}
-		angle %= (2 * Math.PI);
-
-		return angle;
+		return getDerivative.getAngle();
 	}
 
 	/**
