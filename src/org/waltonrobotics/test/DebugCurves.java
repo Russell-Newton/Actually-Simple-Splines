@@ -23,14 +23,14 @@ public class DebugCurves {
 	private static boolean isBackwards = false;
 
 	public static void main(String[] args) {
-		testPaths();
-//		testPathLengthTime();
+//		testPaths();
+		testPathLengthTime();
 	}
 
 	private static void testPathLengthTime() {
 		points.clear();
 		points.add(new Pose(0, 0, StrictMath.toRadians(0)));
-		points.add(new Pose(0, 1, StrictMath.toRadians(0)));
+		points.add(new Pose(0, 1, StrictMath.toRadians(10)));
 
 		for (int length = 0; length <= 10; length++) {
 			Path.setPathNumberOfSteps((int) Math.pow(10, length));
@@ -48,6 +48,8 @@ public class DebugCurves {
 			startTime = System.currentTimeMillis();
 			new Spline(1, 1, 0, 0, isBackwards, points);
 			System.out.println(pathNumber + ", Spline, " + (System.currentTimeMillis() - startTime));
+
+			System.out.println(new Spline(1, 1, 0, 0, isBackwards, points).getPathData().getLast());
 
 //			new Thread(() -> {
 //				new PointTurn(1.0, 1, points.get(0), points.get(1).getAngle());
@@ -69,6 +71,8 @@ public class DebugCurves {
 		List<PathData> pathData = path.getPathData();
 
 		for (PathData aPathData : pathData) {
+			System.out.println(pathData);
+
 			System.out.println(aPathData.getCenterPose().getX() + " " + aPathData.getCenterPose().getY() + ' '
 				+ Math.toDegrees(aPathData.getCenterPose().getAngle()) + " t: " + aPathData.getTime());
 
