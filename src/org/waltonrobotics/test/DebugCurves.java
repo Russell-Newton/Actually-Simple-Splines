@@ -23,8 +23,8 @@ public class DebugCurves {
 	private static boolean isBackwards = false;
 
 	public static void main(String[] args) {
-//		testPaths();
-		testPathLengthTime();
+		testPaths();
+//		testPathLengthTime();
 	}
 
 	private static void testPathLengthTime() {
@@ -124,9 +124,17 @@ public class DebugCurves {
 
 		System.out.println();
 		System.out.println("Bezier Curve:");
-		BezierCurve curve = new BezierCurve(1, 1, 0, 0, isBackwards, points);
-		System.out.println("Splitting: " + curve.curveLength);
+//		BezierCurve curve = new BezierCurve(1, 1, 0, 0, isBackwards, points);
+		PointTurn curve = new PointTurn(1, 1, points.get(0), .2);
+//		System.out.println("Splitting: " + curve.curveLength);
 		System.out.println(curve.getPathData().getLast().getTime());
+
+		String curveString = curve.convertToString();
+		System.out.println(curveString);
+
+		Path path = Path.loadingPathFromString(curveString);
+		System.out.println(path);
+
 //		printPath(curve);
 
 //		System.out.println("\n\nSpline:");
