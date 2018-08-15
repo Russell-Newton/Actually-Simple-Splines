@@ -247,6 +247,36 @@ public class Spline extends Path {
 	}
 
 	@Override
+	public String convertToString() {
+
+		String className = getClass().getName();
+
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(className);
+		stringBuilder.append(' ');
+		stringBuilder.append(getVCruise());
+		stringBuilder.append(' ');
+		stringBuilder.append(getAMax());
+		stringBuilder.append(' ');
+		stringBuilder.append(startVelocity);
+		stringBuilder.append(' ');
+		stringBuilder.append(endVelocity);
+		stringBuilder.append(' ');
+		stringBuilder.append(isBackwards());
+		stringBuilder.append(' ');
+		stringBuilder.append(endScale);
+		stringBuilder.append(' ');
+		stringBuilder.append(startScale);
+
+		stringBuilder.append(' ');
+
+		addKeyPoints(stringBuilder);
+		return stringBuilder.toString();
+
+
+	}
+
+	@Override
 	public String toString() {
 		return "Spline{" +
 			"startAngle=" + startAngle +

@@ -6,6 +6,9 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,6 +34,7 @@ public abstract class Path {
 	protected double vCruise;
 	protected double aMax;
 	private boolean isFinished;
+
 
 	/**
 	 * @param vCruise cruise velocity of the robot, the velocity that the robot should try to reach
@@ -86,6 +90,7 @@ public abstract class Path {
 		Path.robotWidth = robotWidth;
 	}
 
+
 	/**
 	 * Bounds an angle to be in between -PI and PI. if the angles are more or less then the angle will cycle.
 	 *
@@ -100,7 +105,6 @@ public abstract class Path {
 		}
 		return angle;
 	}
-
 
 	public static Path loadPath(String filePath) throws IOException {
 		try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath)))) {
@@ -159,6 +163,108 @@ public abstract class Path {
 		}
 	}
 
+	public static Path loadingPathFromString(String pathAsString) {
+		String[] data = pathAsString.split("\\s");
+
+		int i = 0;
+
+		String className = data[i++];
+
+		List<Class<?>> classTypes = new ArrayList<>();
+		List<Object> typesValues = new ArrayList<>();
+
+		for (; i < data.length; i++) {
+			String parameter = data[i];
+
+			if (parameter.equals("PF")) {
+				i++;
+				break;
+			}
+
+			try {
+				Double integer = Double.parseDouble(parameter);
+
+				classTypes.add(Double.TYPE);
+				typesValues.add(integer);
+			} catch (NumberFormatException e1) {
+				try {
+					String[] parameters = parameter.split(",");
+
+					if (parameters.length == 3) {
+						double x = Double.parseDouble(parameters[0]);
+						double y = Double.parseDouble(parameters[1]);
+						double angle = Double.parseDouble(parameters[2]);
+
+						classTypes.add(Pose.class);
+						typesValues.add(new Pose(x, y, angle));
+					} else {
+						Boolean integer = Boolean.parseBoolean(parameter);
+
+						classTypes.add(Boolean.TYPE);
+						typesValues.add(integer);
+
+					}
+				} catch (NumberFormatException ignored) {
+
+				}
+			}
+		}
+
+		if (i != data.length) {
+			List<Pose> poseList = new LinkedList<>();
+
+			for (; i < data.length; i += 3) {
+				double x = Double.parseDouble(data[i]);
+				double y = Double.parseDouble(data[i + 1]);
+				double angle = Double.parseDouble(data[i + 2]);
+
+				poseList.add(new Pose(x, y, angle));
+			}
+
+			classTypes.add(List.class);
+			typesValues.add(poseList);
+		}
+
+		System.out.println(classTypes);
+
+		Path path = null;
+
+		try {
+			Class<?> clazz = Class.forName(className);
+
+			System.out.println(Arrays.toString(clazz.getConstructors()));
+
+			Constructor<?> ctor = clazz.getConstructor(classTypes.toArray(new Class<?>[0]));
+			path = (Path) ctor.newInstance(typesValues.toArray());
+
+		} catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException e) {
+			e.printStackTrace();
+
+			System.out.println("You might need to override the convertToString method for the " + className
+				+ " class as you might be missing some values in the constructor");
+		}
+
+		return path;
+	}
+
+	protected void addKeyPoints(StringBuilder stringBuilder) {
+		stringBuilder.append("PF"); // Parameters finished now moving to key points
+		stringBuilder.append(' ');
+
+		for (Pose keyPoints : getKeyPoints()) {
+			double x = keyPoints.getX();
+			double y = keyPoints.getY();
+			double angle = keyPoints.getAngle();
+
+			stringBuilder.append(x);
+			stringBuilder.append(' ');
+			stringBuilder.append(y);
+			stringBuilder.append(' ');
+			stringBuilder.append(angle);
+			stringBuilder.append(' ');
+		}
+	}
+
 	/**
 	 * @return the path data for the whole path
 	 * @see PathData
@@ -181,16 +287,16 @@ public abstract class Path {
 		return keyPoints;
 	}
 
+	public void setKeyPoints(Pose... keyPoints) {
+		this.keyPoints.clear();
+		Collections.addAll(this.keyPoints, keyPoints);
+
+	}
+
 	public void setKeyPoints(Collection<Pose> keyPoints) {
 
 		this.keyPoints.clear();
 		this.keyPoints.addAll(keyPoints);
-
-	}
-
-	public void setKeyPoints(Pose... keyPoints) {
-		this.keyPoints.clear();
-		Collections.addAll(this.keyPoints, keyPoints);
 
 	}
 
@@ -218,7 +324,6 @@ public abstract class Path {
 	public final double getVCruise() {
 		return vCruise;
 	}
-
 
 	private void savePath(String fileName) {
 		if (!getPathData().isEmpty() && (fileName != null)) {
@@ -339,6 +444,37 @@ public abstract class Path {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public String convertToString() {
+			/*
+		double vCruise,
+		double aMax,
+		double startVelocity,
+		double endVelocity,
+		boolean isBackwards,
+		List<Pose> controlPoints
+		 */
+
+		StringBuilder stringBuilder = new StringBuilder();
+
+		addDefaultParameters(stringBuilder);
+		addKeyPoints(stringBuilder);
+
+		return stringBuilder.toString();
+	}
+
+	public void addDefaultParameters(StringBuilder stringBuilder) {
+		String className = getClass().getName();
+
+		stringBuilder.append(className);
+		stringBuilder.append(' ');
+		stringBuilder.append(getVCruise());
+		stringBuilder.append(' ');
+		stringBuilder.append(getAMax());
+		stringBuilder.append(' ');
+		stringBuilder.append(isBackwards());
+		stringBuilder.append(' ');
 	}
 
 	@Override

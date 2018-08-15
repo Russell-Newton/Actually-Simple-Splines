@@ -426,6 +426,38 @@ public class BezierCurve extends Path {
 		return new Pose(dx, dy, angle);
 	}
 
+
+	public String convertToString() {
+			/*
+		double vCruise,
+		double aMax,
+		double startVelocity,
+		double endVelocity,
+		boolean isBackwards,
+		List<Pose> controlPoints
+		 */
+
+		String className = getClass().getName();
+
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(className);
+		stringBuilder.append(' ');
+		stringBuilder.append(getVCruise());
+		stringBuilder.append(' ');
+		stringBuilder.append(getAMax());
+		stringBuilder.append(' ');
+		stringBuilder.append(startVelocity);
+		stringBuilder.append(' ');
+		stringBuilder.append(endVelocity);
+		stringBuilder.append(' ');
+		stringBuilder.append(isBackwards());
+		stringBuilder.append(' ');
+
+		addKeyPoints(stringBuilder);
+		return stringBuilder.toString();
+	}
+
+
 	@Override
 	public String toString() {
 		return "BezierCurve{" +
@@ -437,6 +469,14 @@ public class BezierCurve extends Path {
 			", curveLength=" + curveLength +
 			", coefficients=" + Arrays.toString(coefficients) +
 			"} " + super.toString();
+	}
+
+	public double getStartVelocity() {
+		return startVelocity;
+	}
+
+	public double getEndVelocity() {
+		return endVelocity;
 	}
 
 	public static class Key {

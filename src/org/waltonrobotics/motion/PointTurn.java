@@ -82,6 +82,38 @@ public class PointTurn extends Path {
 		return pathData;
 	}
 
+	public String convertToString() {
+			/*
+		double vCruise,
+		double aMax,
+		double startVelocity,
+		double endVelocity,
+		boolean isBackwards,
+		List<Pose> controlPoints
+		 */
+
+		StringBuilder stringBuilder = new StringBuilder();
+		String className = getClass().getName();
+
+		stringBuilder.append(className);
+		stringBuilder.append(' ');
+		stringBuilder.append(getVCruise());
+		stringBuilder.append(' ');
+		stringBuilder.append(getAMax());
+		stringBuilder.append(' ');
+
+		double x = getKeyPoints().get(0).getX();
+		double y = getKeyPoints().get(0).getY();
+		double angle = getKeyPoints().get(0).getAngle();
+
+		stringBuilder.append(String.format("%f,%f,%f", x, y, angle));
+		stringBuilder.append(' ');
+
+		stringBuilder.append(endAngle);
+
+		return stringBuilder.toString();
+	}
+
 	@Override
 	public String toString() {
 		return "PointTurn{" +
