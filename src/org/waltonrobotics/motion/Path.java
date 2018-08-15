@@ -163,7 +163,8 @@ public abstract class Path {
 		}
 	}
 
-	public static Path loadingPathFromString(String pathAsString) {
+	public static Path loadingPathFromString(String pathAsString)
+		throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
 		String[] data = pathAsString.split("\\s");
 
 		int i = 0;
@@ -181,33 +182,10 @@ public abstract class Path {
 				break;
 			}
 
-			try {
-				Double integer = Double.parseDouble(parameter);
+			ClassValuePair variable = loadParameter(parameter);
 
-				classTypes.add(Double.TYPE);
-				typesValues.add(integer);
-			} catch (NumberFormatException e1) {
-				try {
-					String[] parameters = parameter.split(",");
-
-					if (parameters.length == 3) {
-						double x = Double.parseDouble(parameters[0]);
-						double y = Double.parseDouble(parameters[1]);
-						double angle = Double.parseDouble(parameters[2]);
-
-						classTypes.add(Pose.class);
-						typesValues.add(new Pose(x, y, angle));
-					} else {
-						Boolean integer = Boolean.parseBoolean(parameter);
-
-						classTypes.add(Boolean.TYPE);
-						typesValues.add(integer);
-
-					}
-				} catch (NumberFormatException ignored) {
-
-				}
-			}
+			classTypes.add(variable.getClassType());
+			typesValues.add(variable.getValue());
 		}
 
 		if (i != data.length) {
@@ -229,22 +207,47 @@ public abstract class Path {
 
 		Path path = null;
 
-		try {
-			Class<?> clazz = Class.forName(className);
+		Class<?> clazz = Class.forName(className);
 
-			System.out.println(Arrays.toString(clazz.getConstructors()));
-
-			Constructor<?> ctor = clazz.getConstructor(classTypes.toArray(new Class<?>[0]));
-			path = (Path) ctor.newInstance(typesValues.toArray());
-
-		} catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException e) {
-			e.printStackTrace();
-
-			System.out.println("You might need to override the convertToString method for the " + className
-				+ " class as you might be missing some values in the constructor");
-		}
+		Constructor<?> ctor = clazz.getConstructor(classTypes.toArray(new Class<?>[0]));
+		path = (Path) ctor.newInstance(typesValues.toArray());
 
 		return path;
+	}
+
+	private static ClassValuePair loadParameter(String parameter) {
+
+		ClassValuePair classObjectEntry = new ClassValuePair(String.class, parameter);
+
+		try {
+			Double integer = Double.parseDouble(parameter);
+
+			classObjectEntry.setValue(integer);
+			classObjectEntry.setClassType(Double.TYPE);
+		} catch (NumberFormatException e1) {
+			try {
+				String[] parameters = parameter.split(",");
+
+				if (parameters.length == 3) {
+					double x = Double.parseDouble(parameters[0]);
+					double y = Double.parseDouble(parameters[1]);
+					double angle = Double.parseDouble(parameters[2]);
+
+					classObjectEntry.setClassType(Pose.class);
+					classObjectEntry.setValue(new Pose(x, y, angle));
+				} else {
+					Boolean integer = Boolean.parseBoolean(parameter);
+
+					classObjectEntry.setClassType(Boolean.TYPE);
+					classObjectEntry.setValue(integer);
+
+				}
+			} catch (NumberFormatException ignored) {
+
+			}
+		}
+
+		return classObjectEntry;
 	}
 
 	protected void addKeyPoints(StringBuilder stringBuilder) {
@@ -287,16 +290,16 @@ public abstract class Path {
 		return keyPoints;
 	}
 
-	public void setKeyPoints(Pose... keyPoints) {
-		this.keyPoints.clear();
-		Collections.addAll(this.keyPoints, keyPoints);
-
-	}
-
 	public void setKeyPoints(Collection<Pose> keyPoints) {
 
 		this.keyPoints.clear();
 		this.keyPoints.addAll(keyPoints);
+
+	}
+
+	public void setKeyPoints(Pose... keyPoints) {
+		this.keyPoints.clear();
+		Collections.addAll(this.keyPoints, keyPoints);
 
 	}
 
@@ -487,5 +490,32 @@ public abstract class Path {
 			", pathData=" + pathData +
 			", isFinished=" + isFinished +
 			'}';
+	}
+
+	private static class ClassValuePair {
+
+		private Class<?> classType;
+		private Object value;
+
+		public ClassValuePair(Class<?> classType, Object value) {
+			this.classType = classType;
+			this.value = value;
+		}
+
+		public Class<?> getClassType() {
+			return classType;
+		}
+
+		public void setClassType(Class<?> classType) {
+			this.classType = classType;
+		}
+
+		public Object getValue() {
+			return value;
+		}
+
+		public void setValue(Object value) {
+			this.value = value;
+		}
 	}
 }
