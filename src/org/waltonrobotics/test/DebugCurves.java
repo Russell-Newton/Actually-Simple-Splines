@@ -1,5 +1,6 @@
 package org.waltonrobotics.test;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import org.waltonrobotics.controller.PathData;
@@ -132,7 +133,12 @@ public class DebugCurves {
 		String curveString = curve.convertToString();
 		System.out.println(curveString);
 
-		Path path = Path.loadingPathFromString(curveString);
+		Path path = null;
+		try {
+			path = Path.loadingPathFromString(curveString);
+		} catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+			e.printStackTrace();
+		}
 		System.out.println(path);
 
 //		printPath(curve);
