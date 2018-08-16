@@ -1,58 +1,62 @@
 package org.waltonrobotics.command;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.motion.Path;
 import org.waltonrobotics.motion.SavePath;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
 //TODO test this
 public final class RunningSavedPath extends SimpleMotion {
 
-	private RunningSavedPath(double maxVelocity, double maxAcceleration, double inverseScale, List<PathData> movement) {
-		super(SavePath.createPathData(maxVelocity, maxAcceleration, movement).scaleTime(inverseScale));
-	}
+    private RunningSavedPath(double maxVelocity, double maxAcceleration, double inverseScale,
+                             List<PathData> movement) {
+        super(SavePath.createPathData(maxVelocity, maxAcceleration, movement).scaleTime(inverseScale));
+    }
 
-	private RunningSavedPath(Path savedPath) {
-		super(savedPath);
-	}
+    private RunningSavedPath(Path savedPath) {
+        super(savedPath);
+    }
 
-	private RunningSavedPath(double maxVelocity, double maxAcceleration, List<PathData> movement) {
-		this(maxVelocity, maxAcceleration, 1, movement);
-	}
+    private RunningSavedPath(double maxVelocity, double maxAcceleration, List<PathData> movement) {
+        this(maxVelocity, maxAcceleration, 1, movement);
+    }
 
-	private RunningSavedPath(double maxVelocity, double maxAcceleration, double inverseScale, PathData... movement) {
-		this(maxVelocity, maxAcceleration, inverseScale, Arrays.asList(movement));
-	}
+    private RunningSavedPath(double maxVelocity, double maxAcceleration, double inverseScale,
+                             PathData... movement) {
+        this(maxVelocity, maxAcceleration, inverseScale, Arrays.asList(movement));
+    }
 
-	private RunningSavedPath(double maxVelocity, double maxAcceleration, PathData... movement) {
-		this(maxVelocity, maxAcceleration, 1, Arrays.asList(movement));
-	}
+    private RunningSavedPath(double maxVelocity, double maxAcceleration, PathData... movement) {
+        this(maxVelocity, maxAcceleration, 1, Arrays.asList(movement));
+    }
 
-	public static RunningSavedPath loadSavedPath(String filePath) throws IOException {
-		return loadSavedPath(filePath, 1);
-	}
+    public static RunningSavedPath loadSavedPath(String filePath) throws IOException {
+        return loadSavedPath(filePath, 1);
+    }
 
-	public static RunningSavedPath loadSavedPath(String filePath, double speedIncrease) throws IOException {
-		SavePath path = SavePath.createPathData(Path.loadPath(filePath));
+    public static RunningSavedPath loadSavedPath(String filePath, double speedIncrease)
+            throws IOException {
+        SavePath path = SavePath.createPathData(Path.loadPath(filePath));
 
-		path = path.scaleTime(speedIncrease);
+        path = path.scaleTime(speedIncrease);
 
-		return new RunningSavedPath(path);
-	}
+        return new RunningSavedPath(path);
+    }
 
-	public static RunningSavedPath loadSavedPath(LearnPath learnedPath) {
-		return loadSavedPath(learnedPath, 1);
-	}
+    public static RunningSavedPath loadSavedPath(LearnPath learnedPath) {
+        return loadSavedPath(learnedPath, 1);
+    }
 
-	public static RunningSavedPath loadSavedPath(LearnPath learnedPath, double speedIncrease) {
-		return new RunningSavedPath(
-			learnedPath.getMaxVelocity(),
-			learnedPath.getMaxAcceleration(),
-			speedIncrease, learnedPath.getMoments()
-		);
-	}
+    public static RunningSavedPath loadSavedPath(LearnPath learnedPath, double speedIncrease) {
+        return new RunningSavedPath(
+                learnedPath.getMaxVelocity(),
+                learnedPath.getMaxAcceleration(),
+                speedIncrease, learnedPath.getMoments()
+        );
+    }
 
 
 }
