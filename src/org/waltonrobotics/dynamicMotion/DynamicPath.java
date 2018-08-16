@@ -188,16 +188,16 @@ public abstract class DynamicPath {
     return keyPoints;
   }
 
+  public void setKeyPoints(Pose... keyPoints) {
+    this.keyPoints.clear();
+    Collections.addAll(this.keyPoints, keyPoints);
+
+  }
+
   public void setKeyPoints(Collection<Pose> keyPoints) {
 
     this.keyPoints.clear();
     this.keyPoints.addAll(keyPoints);
-
-  }
-
-  public void setKeyPoints(Pose... keyPoints) {
-    this.keyPoints.clear();
-    Collections.addAll(this.keyPoints, keyPoints);
 
   }
 
