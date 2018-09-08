@@ -27,6 +27,7 @@ public class Spline extends Path {
   private final double endScale;
   private final double startVelocity;
   private final double endVelocity;
+  private final double curveLength;
   private List<BezierCurve> definingBezierCurves = new ArrayList<>();
 
   /**
@@ -57,6 +58,7 @@ public class Spline extends Path {
     this.startVelocity = startVelocity;
 
     createPath();
+    curveLength = getDefiningBezierCurves().stream().mapToDouble(BezierCurve::getCurveLength).sum();
   }
 
   /**
@@ -75,7 +77,6 @@ public class Spline extends Path {
         isBackwards, 1.0, 1.0, Arrays.asList(knots));
   }
 
-
   /**
    * Construct a spline. Note that the x axis is the direction the robot is facing if the start angle is 0
    *
@@ -90,6 +91,10 @@ public class Spline extends Path {
       boolean isBackwards, List<Pose> knots) {
     this(vCruise, aMax, startVelocity, endVelocity,
         isBackwards, 1.0, 1.0, knots);
+  }
+
+  public double getCurveLength() {
+    return curveLength;
   }
 
   /**
@@ -277,6 +282,29 @@ public class Spline extends Path {
 
 
   }
+
+  public Pose getPoint(double percentage) {
+//    TODO make this work and get the correct point from the inner bezier curves given the percent t
+
+    System.out.println(percentage);
+    int numberOfCurves = getDefiningBezierCurves().size();
+
+    int currentlyOn = (int) (percentage * (numberOfCurves - 1));
+//    System.out.println(currentlyOn);
+
+//    double percentageInCurve = 1- (percentage * numberOfCurves);
+    double percentageInCurve = percentage * (numberOfCurves - currentlyOn);
+//    System.out.println(percentageInCurve);
+
+    double percent = 1.0 / numberOfCurves;
+//    System.out.println(percent);
+
+    double percentagePerBezierCurve = percentageInCurve / percent;
+//    System.out.println(percentagePerBezierCurve);
+
+    return getDefiningBezierCurves().get(currentlyOn).getPoint(percentagePerBezierCurve);
+  }
+
 
   @Override
   public String toString() {
