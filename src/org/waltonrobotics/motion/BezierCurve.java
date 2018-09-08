@@ -45,7 +45,6 @@ public class BezierCurve extends Path {
   private final double startLCenter;
   public double curveLength;
   private List<Pose> pathPoints;
-  private int[] coefficients;
 
   /**
    * This constructor is used with the splines, but feel free to use it when creating your own motions
@@ -132,14 +131,8 @@ public class BezierCurve extends Path {
     }
 
     int result = 1;
-    try {
-
-      for (int i = 1; i <= d; i++) {
-        result = result * i;
-
-      }
-    } catch (ExceptionInInitializerError ignored) {
-
+    for (int i = 1; i <= d; i++) {
+      result = result * i;
     }
 
     return result;
@@ -149,7 +142,7 @@ public class BezierCurve extends Path {
   /**
    * Calculates the binomial coefficients for the demanded path degree
    */
-  private static int[] calculateCoefficients(int degree) {
+  public static int[] calculateCoefficients(int degree) {
     if (coefficents.containsKey(degree)) {
       return coefficents.get(degree);
     }
@@ -164,7 +157,7 @@ public class BezierCurve extends Path {
     return coefficients;
   }
 
-  private List<Pose> createPoints() {
+  public List<Pose> createPoints() {
     List<Pose> pathPoints = new LinkedList<>();
 
     for (double i = 0; i <= getPathNumberOfSteps(); i++) {
@@ -178,7 +171,7 @@ public class BezierCurve extends Path {
   /**
    * Caluclates the length of the curve
    */
-  private double getCurveLength() {
+  public double getCurveLength() {
     double curveLength = 0;
 
     if (getKeyPoints().size() > 1) {
@@ -195,11 +188,12 @@ public class BezierCurve extends Path {
    * @param percentage - t
    * @return the Pose that is at percentage t along the curve
    */
-  private Pose getPoint(double percentage) {
+  public Pose getPoint(double percentage) {
     double xCoordinateAtPercentage = 0;
     double yCoordinateAtPercentage = 0;
 
     int n = getDegree();
+    int[] coefficients = calculateCoefficients(n);
 
     for (int i = 0; i <= n; i++) {
       double coefficient = coefficients[i];
@@ -220,7 +214,7 @@ public class BezierCurve extends Path {
   /**
    * @return the degree of the curve
    */
-  private int getDegree() {
+  public int getDegree() {
     return getKeyPoints().size() - 1;
   }
 
@@ -228,7 +222,7 @@ public class BezierCurve extends Path {
    * @param t - percent along curve
    * @return angle at point
    */
-  private double getAngle(double t) {
+  public double getAngle(double t) {
     Pose getDerivative = getDerivative(t);
 
     return getDerivative.getAngle();
@@ -325,7 +319,6 @@ public class BezierCurve extends Path {
   }
 
   public void createPath() {
-    coefficients = calculateCoefficients(getDegree());
     pathPoints = createPoints();
     curveLength = getCurveLength();
     setData(startPathData);
@@ -383,7 +376,7 @@ public class BezierCurve extends Path {
   /**
    * Gets the derivative of point at value percentage
    */
-  private Pose getDerivative(double percentage) {
+  public Pose getDerivative(double percentage) {
     double dx = 0;
     double dy = 0;
 
@@ -467,7 +460,6 @@ public class BezierCurve extends Path {
         ", startLCenter=" + startLCenter +
         ", pathPoints=" + pathPoints +
         ", curveLength=" + curveLength +
-        ", coefficients=" + Arrays.toString(coefficients) +
         "} " + super.toString();
   }
 
