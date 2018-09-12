@@ -1,15 +1,13 @@
 package org.waltonrobotics.dynamicMotion;
 
-import static org.waltonrobotics.motion.BezierCurve.coefficents;
 import static org.waltonrobotics.motion.BezierCurve.gaussLegendreHashMap;
+import static org.waltonrobotics.util.Helper.calculateCoefficients;
 
 import java.util.Arrays;
 import java.util.List;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
-import org.waltonrobotics.controller.State;
 import org.waltonrobotics.motion.BezierCurve.Key;
-import org.waltonrobotics.motion.Path;
 import org.waltonrobotics.util.GaussLegendre;
 
 /**
@@ -44,86 +42,29 @@ public class DynamicBezierCurve extends DynamicPath {
 
     degree = getKeyPoints().size() - 1;
     coefficients = calculateCoefficients(degree);
-
-    long startTime = System.nanoTime();
-    computeArcLength(100, 0.001, 0.002);
-    long endTime = System.nanoTime();
-    System.out.println((endTime - startTime));
-    System.out.println((endTime - startTime) / 1000000.0);
-    System.out.println(curveLength);
-    startTime = System.nanoTime();
-    computeArcLengthSampling(10, 0., 0.002);
-//		System.out.println();
-    endTime = System.nanoTime();
-    System.out.println(endTime - startTime);
-    System.out.println((endTime - startTime) / 1000000.0);
-    System.out.println(curveLength);
+//    curveLength = computeArcLength();
+    curveLength = computeArcLength();
     time = computeTime();
+
+//    long startTime = System.nanoTime();
+//    computeArcLength(100, 0.001, 0.002);
+//    long endTime = System.nanoTime();
+//    System.out.println((endTime - startTime));
+//    System.out.println((endTime - startTime) / 1000000.0);
+//    System.out.println(curveLength);
+//    startTime = System.nanoTime();
+//    computeArcLengthSampling(10, 0., 0.002);
+////		System.out.println();
+//    endTime = System.nanoTime();
+//    System.out.println(endTime - startTime);
+//    System.out.println((endTime - startTime) / 1000000.0);
+//    System.out.println(curveLength);
   }
 
   public DynamicBezierCurve(double vCruise, double aMax, double startVelocity, double endVelocity,
       boolean isBackwards,
       Pose... controlPoints) {
     this(vCruise, aMax, startVelocity, endVelocity, isBackwards, Arrays.asList(controlPoints));
-  }
-
-  /**
-   * Uses the formula to find the value of nCr
-   *
-   * @return nCr
-   */
-  private static long findNumberOfCombination(int n, int r) {
-    int nFactorial = factorial(n);
-    int rFactorial = factorial(r);
-    int nMinusRFactorial = factorial(n - r);
-
-    return nFactorial / (rFactorial * nMinusRFactorial);
-  }
-
-  /**
-   * Finds the factorial of any integer or double, d
-   *
-   * @return the factorial of d
-   */
-  private static int factorial(int d) {
-    if (d >= 13) {
-      throw new ArithmeticException(String
-          .format(
-              "The number %d is too big of a number to factorize as it will cause integer overflow the maximum is 12",
-              d));
-    }
-
-    int result = 1;
-    try {
-
-      for (int i = 1; i <= d; i++) {
-        result = result * i;
-
-      }
-    } catch (ExceptionInInitializerError ignored) {
-
-    }
-
-    return result;
-  }
-
-
-  /**
-   * Calculates the binomial coefficients for the demanded path degree
-   */
-  private static int[] calculateCoefficients(int degree) {
-    if (coefficents.containsKey(degree)) {
-      return coefficents.get(degree);
-    }
-
-    int[] coefficients = new int[degree + 1];
-    for (int i = 0; i < coefficients.length; i++) {
-      coefficients[i] = Math.toIntExact(findNumberOfCombination(degree, i));
-    }
-
-    coefficents.put(degree, coefficients);
-
-    return coefficients;
   }
 
   public double computeArcLengthSampling(double lower, double upper) {
@@ -160,6 +101,7 @@ public class DynamicBezierCurve extends DynamicPath {
   private double computeTime() {
     double accelerationTime = calculateTime(startVelocity, getVCruise(), getAMax());
     double accelDistance = distance(startVelocity, getAMax(), accelerationTime);
+
     double decelerationTime = calculateTime(getVCruise(), endVelocity, -getAMax());
     double decelDistance = distance(getVCruise(), -getAMax(), accelerationTime);
 
@@ -203,7 +145,6 @@ public class DynamicBezierCurve extends DynamicPath {
    * @return the arc length of the Bezier curve of t range of [lowerBound, upperBound]
    */
   public double computeArcLength(int n, double lowerBound, double upperBound) {
-
     GaussLegendre gl;
 
     Key key = new Key(n, upperBound, lowerBound);
@@ -222,7 +163,6 @@ public class DynamicBezierCurve extends DynamicPath {
     for (int i = 0; i < t.length; i++) {
 
       Pose point = getDerivative(t[i]);
-
       sum += C[i] * Math.hypot(point.getX(), point.getY());
     }
 
@@ -367,81 +307,39 @@ public class DynamicBezierCurve extends DynamicPath {
   }
 
   /**
-   * @param nextPosition - The Pose of the PathData to calculate on
    * @return a new PathData from the calculations
    */
-  private PathData calculateData(PathData currentPathData, Pose nextPosition) {
-    Pose previousCenter = currentPathData.getCenterPose();
-    State previousLeft = currentPathData.getLeftState();
-    State previousRight = currentPathData.getRightState();
-    double previousTime = currentPathData.getTime();
-    double previousLCenter = currentPathData.getLCenter();
-    // When cruising, acceleration is 0
-    double acceleration = 0;
-
-    // The change in angle of the robot
-    double dAngle = Path.boundAngle(nextPosition.getAngle() - previousCenter.getAngle());
-
-    // The change in distance of the robot sides
-    // FIXME This is probably wrong dLength should be 0 if there is not angle
-//		double dLength = (previousCenter.sameCoordinates(nextPosition)? 0: previousCenter.distance(nextPosition)) * (isBackwards() ? -1 : 1);
-    double dLength = previousCenter.distance(nextPosition) * (isBackwards() ? -1 : 1);
-    double dlLeft = dLength - ((dAngle * getRobotWidth()) / 2);
-    double dlRight = dLength + ((dAngle * getRobotWidth()) / 2);
-
-    // The time required to get to the next point
-    double dTime = Math.max(Math.abs(dlLeft), Math.abs(dlRight)) / getVCruise();
-    // The hypothetical velocity to get to that point
-    double velocity = dLength / dTime;
-
-    // The average encoder distance to the next point
-    double lCenter = (previousLCenter + (0.5 * dLength)) - startLCenter;
-    double vAccelerating;
-    double vDecelerating;
-
-    if (isBackwards()) {
-      vAccelerating = -Math
-          .sqrt(StrictMath.pow(startVelocity, 2) + (getAMax() * Math.abs(lCenter)));
-      vDecelerating = -Math
-          .sqrt(
-              StrictMath.pow(endVelocity, 2) + (getAMax() * Math
-                  .abs(curveLength - Math.abs(lCenter))));
-      if ((vAccelerating > velocity) && (vAccelerating > vDecelerating)) {
-        acceleration = -getAMax();
-        dTime = dLength / vAccelerating;
-      }
-      if ((vDecelerating > velocity) && (vDecelerating > vAccelerating)) {
-        acceleration = getAMax();
-        dTime = dLength / vDecelerating;
-      }
-    } else {
-      vAccelerating = Math
-          .sqrt(StrictMath.pow(startVelocity, 2) + (getAMax() * Math.abs(lCenter)));
-      vDecelerating = Math
-          .sqrt(
-              StrictMath.pow(endVelocity, 2) + (getAMax() * Math
-                  .abs(curveLength - Math.abs(lCenter))));
-
-      if ((vAccelerating < velocity) && (vAccelerating < vDecelerating)) {
-        acceleration = getAMax();
-        dTime = dLength / vAccelerating;
-      }
-      if ((vDecelerating < velocity) && (vDecelerating < vAccelerating)) {
-        acceleration = -getAMax();
-        dTime = dLength / vDecelerating;
-      }
-    }
-//		System.out
-//			.println("acc: " + vAccelerating + " dec: " + vDecelerating + " vel: " + velocity + " velAct: " + dLength/dTime);
-
-    double velocityL = dlLeft / dTime;
-    double velocityR = dlRight / dTime;
-
-    State left = new State(previousLeft.getLength() + dlLeft, velocityL, acceleration);
-    State right = new State(previousRight.getLength() + dlRight, velocityR, acceleration);
-    Pose center = new Pose(nextPosition.getX(), nextPosition.getY(),
-        previousCenter.getAngle() + dAngle);
-    return new PathData(left, right, center, previousTime + dTime);
+  public PathData calculateData(double percentage) {
+    double distanceAtPercentage = computeArcLength(0, percentage);
+    System.out.println(distanceAtPercentage);
+    double timeAtPercentage = computeTimeToPosition(distanceAtPercentage);
+    System.out.println(timeAtPercentage);
+    return null;
   }
 
+  private double calculateTimeConstantAcceleration(double startVelocity, double acceleration, double distance) {
+    return (-startVelocity + Math.sqrt((startVelocity * startVelocity) - (2 * acceleration * distance))) / acceleration;
+  }
+
+  private double computeTimeToPosition(double distanceAtPercentage) {
+    double accelerationTime = calculateTime(startVelocity, getVCruise(), getAMax());
+    double accelDistance = distance(startVelocity, getAMax(), accelerationTime);
+
+    if (distanceAtPercentage <= accelDistance) {
+      return calculateTimeConstantAcceleration(startVelocity, getAMax(), distanceAtPercentage);
+    }
+//    else {
+//      double decelerationTime = calculateTime(getVCruise(), endVelocity, -getAMax());
+//      double decelDistance = distance(getVCruise(), -getAMax(), accelerationTime);
+//
+//      if (accelDistance + decelDistance > curveLength) {
+//        return calculateTime(startVelocity, endVelocity, getAMax());
+//      } else {
+//        double cruiseTime = (curveLength - (accelDistance + decelDistance)) / getVCruise();
+//
+//        return accelerationTime + cruiseTime + decelerationTime;
+//      }
+//    }
+    return 0;
+  }
 }
