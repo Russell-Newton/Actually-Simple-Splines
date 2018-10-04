@@ -26,6 +26,10 @@ public abstract class AbstractDrivetrain extends Subsystem {
 		SimpleMotion.setDrivetrain(this);
 	}
 
+	protected AbstractDrivetrain() {
+		this(new MotionLogger(""));
+	}
+
 	public MotionLogger getMotionLogger() {
 		return motionLogger;
 	}
