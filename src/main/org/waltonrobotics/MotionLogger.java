@@ -22,7 +22,7 @@ public class MotionLogger {
   private final String filePath;
 
   /**
-   * Call this in robotInit() before making the drivetrain
+   * Create this in robotInit() before making the drivetrain
    *
    * @param filePath - Where do you want to save the logs? To save to the roboRIO, use base directory "/home/lvuser/".
    * To save to a thumb drive, use winSCP or similar program to find the right filepath
@@ -30,6 +30,15 @@ public class MotionLogger {
   public MotionLogger(String filePath) {
     motionDataList = new LinkedList<>();
     this.filePath = filePath;
+  }
+
+  /**
+   * Create this in robotInit() before making the drivetrain
+   *
+   * Uses the default "/home/lvuser/" location on the roboRIO to save the logs
+   */
+  public MotionLogger() {
+    this("/home/lvuser/");
   }
 
   /**
