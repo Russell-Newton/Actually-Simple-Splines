@@ -7,6 +7,8 @@ package org.waltonrobotics.controller;
  */
 public class Pose {
 
+  public static final Pose ZERO = new Pose();
+
   private final double x;
   private final double y;
   private final double angle;
@@ -28,6 +30,14 @@ public class Pose {
   public Pose(double x, double y) {
     this(x, y, 0);
   }
+
+  /**
+   * Creates a Pose at 0,0 facing 0 degrees
+   */
+  public Pose() {
+    this(0, 0, 0);
+  }
+
 
   /**
    * @return the x value of the point
