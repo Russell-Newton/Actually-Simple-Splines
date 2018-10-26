@@ -52,6 +52,8 @@ public final class Config {
     public static final int RIGHT_JOYSTICK_PORT = 1;
     public static final int GAMEPAD_PORT = 2;
 
+    public static final double THROTTLE_THRESHOLD = .3;
+
     private Input() {
     }
   }

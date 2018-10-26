@@ -1,5 +1,6 @@
 package frc.team2974.robot.command.teleop;
 
+import static frc.team2974.robot.Config.Input.THROTTLE_THRESHOLD;
 import static frc.team2974.robot.OI.leftJoystick;
 import static frc.team2974.robot.OI.rightJoystick;
 import static frc.team2974.robot.Robot.drivetrain;
@@ -11,26 +12,27 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class DriveCommand extends Command {
 
+
   public DriveCommand() {
     requires(drivetrain);
   }
 
   public double getLeftThrottle() {
-    if (Math.abs(leftJoystick.getY()) < 0.3) {
+    if (Math.abs(leftJoystick.getY()) < THROTTLE_THRESHOLD) {
       return 0;
     }
     return leftJoystick.getY();
   }
 
   public double getRightThrottle() {
-    if (Math.abs(rightJoystick.getY()) < 0.3) {
+    if (Math.abs(rightJoystick.getY()) < THROTTLE_THRESHOLD) {
       return 0;
     }
     return rightJoystick.getY();
   }
 
   public double getTurn() {
-    if (Math.abs(rightJoystick.getX()) < 0.1) {
+    if (Math.abs(rightJoystick.getX()) < THROTTLE_THRESHOLD) {
       return 0;
     }
     return rightJoystick.getX();
