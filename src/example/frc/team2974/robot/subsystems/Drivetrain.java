@@ -11,7 +11,6 @@ import frc.team2974.robot.Config.MotionConstants;
 import frc.team2974.robot.Config.Path;
 import frc.team2974.robot.command.teleop.DriveCommand;
 import org.waltonrobotics.AbstractDrivetrain;
-import org.waltonrobotics.MotionLogger;
 import org.waltonrobotics.controller.RobotPair;
 
 /**
@@ -19,8 +18,7 @@ import org.waltonrobotics.controller.RobotPair;
  */
 public class Drivetrain extends AbstractDrivetrain {
 
-  public Drivetrain(MotionLogger motionLogger) {
-    super(motionLogger);
+  public Drivetrain() {
     motorRight.setInverted(true);
 
     setEncoderDistancePerPulse();
@@ -64,6 +62,7 @@ public class Drivetrain extends AbstractDrivetrain {
   public void setSpeeds(double leftPower, double rightPower) {
     motorRight.set(-rightPower);
     motorLeft.set(-leftPower);
+
   }
 
   @Override
