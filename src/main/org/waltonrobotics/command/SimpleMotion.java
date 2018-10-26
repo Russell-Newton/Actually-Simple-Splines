@@ -36,6 +36,7 @@ public class SimpleMotion extends Command {
 
   @Override
   protected void initialize() {
+    System.out.println("Adding motion to the controller");
     drivetrain.addControllerMotions(path);
   }
 
@@ -51,7 +52,7 @@ public class SimpleMotion extends Command {
 
   @Override
   protected void end() {
-    System.out.println("turn done");
+    System.out.println("Motion Done");
     drivetrain.setSpeeds(0, 0);
   }
 }
