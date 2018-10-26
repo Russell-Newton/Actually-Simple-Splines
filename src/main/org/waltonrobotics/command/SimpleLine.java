@@ -19,6 +19,13 @@ public class SimpleLine extends SimpleMotion {
         distance);
   }
 
+
+  public static SimpleLine lineWithDistance(double distance) {
+    return lineWithDistance(getDrivetrain().getMaxVelocity(), getDrivetrain().getMaxAcceleration(),
+        getDrivetrain().getActualPosition(),
+        distance);
+  }
+
   public static SimpleLine lineWithDistance(boolean isBackwards, Pose startPosition,
       double distance) {
     return new SimpleLine(getDrivetrain().getMaxVelocity(), getDrivetrain().getMaxAcceleration(), 0,
@@ -27,10 +34,24 @@ public class SimpleLine extends SimpleMotion {
         startPosition.offset(distance));
   }
 
+  public static SimpleLine lineWithDistance(boolean isBackwards,
+      double distance) {
+    return new SimpleLine(getDrivetrain().getMaxVelocity(), getDrivetrain().getMaxAcceleration(), 0,
+        0, isBackwards,
+        getDrivetrain().getActualPosition(),
+        getDrivetrain().getActualPosition().offset(distance));
+  }
+
   public static SimpleLine lineWithDistance(double maxVelocity, double maxAcceleration,
       Pose startPosition,
       double distance) {
     return lineWithDistance(maxVelocity, maxAcceleration, false, startPosition, distance);
+  }
+
+
+  public static SimpleLine lineWithDistance(double maxVelocity, double maxAcceleration,
+      double distance) {
+    return lineWithDistance(maxVelocity, maxAcceleration, false, getDrivetrain().getActualPosition(), distance);
   }
 
   public static SimpleLine lineWithDistance(double maxVelocity, double maxAcceleration,
@@ -39,5 +60,13 @@ public class SimpleLine extends SimpleMotion {
       double distance) {
     return new SimpleLine(maxVelocity, maxAcceleration, 0, 0, isBackwards, startPosition,
         startPosition.offset(distance));
+  }
+
+  public static SimpleLine lineWithDistance(double maxVelocity, double maxAcceleration,
+      boolean isBackwards,
+
+      double distance) {
+    return new SimpleLine(maxVelocity, maxAcceleration, 0, 0, isBackwards, getDrivetrain().getActualPosition(),
+        getDrivetrain().getActualPosition().offset(distance));
   }
 }
