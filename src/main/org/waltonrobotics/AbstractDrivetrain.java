@@ -33,7 +33,6 @@ public abstract class AbstractDrivetrain extends Subsystem {
   private PathData previousState;
 
 
-
   /**
    * Create the static drivetrain after creating the motion logger so you can use the MotionContoller
    */
@@ -48,7 +47,13 @@ public abstract class AbstractDrivetrain extends Subsystem {
         new State(previousLengths.getRight(), 0, 0),
         actualPosition, previousLengths.getTime());
 
+    currentState = previousState;
+
     setEncoderDistancePerPulse();
+  }
+
+  public AbstractDrivetrain() {
+    this(new MotionLogger());
   }
 
   /**
@@ -93,6 +98,14 @@ public abstract class AbstractDrivetrain extends Subsystem {
    */
   public final void startControllerMotion(Pose startPosition) {
     controller.setStartPosition(startPosition);
+    controller.enableScheduler();
+  }
+
+  /**
+   * Starts the MotionController
+   */
+  public final void startControllerMotion() {
+    controller.setStartPosition(getActualPosition());
     controller.enableScheduler();
   }
 
