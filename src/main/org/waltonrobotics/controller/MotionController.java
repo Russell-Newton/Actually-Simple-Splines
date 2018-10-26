@@ -19,17 +19,9 @@ import org.waltonrobotics.motion.Path;
 public class MotionController {
 
   private final AbstractDrivetrain drivetrain;
-  private final double kV;
-  private final double kK;
-  private final double kAcc;
-  private final double kS;
-  private final double kL;
-  private final double kAng;
   private final Queue<Path> paths = new LinkedBlockingDeque<>();
   private final int period;
   private final MotionLogger motionLogger;
-  private final double iAng;
-  private final double iLag;
   private final Timer controller;
   private boolean running;
   private Path currentPath;
@@ -69,14 +61,6 @@ public class MotionController {
         new State(wheelPositions.getRight(), 0, 0), new Pose(0, 0, 0), 0, true);
 
     this.drivetrain = drivetrain;
-    kV = drivetrain.getKV();
-    kK = drivetrain.getKK();
-    kAcc = drivetrain.getKAcc();
-    kS = drivetrain.getKS();
-    kL = drivetrain.getKL();
-    kAng = drivetrain.getKAng();
-    iLag = drivetrain.getILag();
-    iAng = drivetrain.getIAng();
 
     pathNumber = 0;
   }
@@ -185,16 +169,16 @@ public class MotionController {
       if (currentMotionState == MotionState.MOVING) {
         // feed forward
 
-        leftPower += ((kV * targetPathData.getLeftState().getVelocity())
-            + (kK * Math.signum(targetPathData.getLeftState().getVelocity())))
-            + (kAcc * targetPathData.getLeftState().getAcceleration());
-        rightPower += ((kV * targetPathData.getRightState().getVelocity())
-            + (kK * Math.signum(targetPathData.getRightState().getVelocity())))
-            + (kAcc * targetPathData.getRightState().getAcceleration());
+        leftPower += ((drivetrain.getKV() * targetPathData.getLeftState().getVelocity())
+            + (drivetrain.getKK() * Math.signum(targetPathData.getLeftState().getVelocity())))
+            + (drivetrain.getKAcc() * targetPathData.getLeftState().getAcceleration());
+        rightPower += ((drivetrain.getKV() * targetPathData.getRightState().getVelocity())
+            + (drivetrain.getKK() * Math.signum(targetPathData.getRightState().getVelocity())))
+            + (drivetrain.getKAcc() * targetPathData.getRightState().getAcceleration());
         // feed back
-        double steerPowerXTE = kS * errorVector.getXTrack();
-        double steerPowerAngle = kAng * errorVector.getAngle();
-        double centerPowerLag = kL * errorVector.getLag();
+        double steerPowerXTE = drivetrain.getKS() * errorVector.getXTrack();
+        double steerPowerAngle = drivetrain.getKAng() * errorVector.getAngle();
+        double centerPowerLag = drivetrain.getKL() * errorVector.getLag();
 
         centerPower = ((leftPower + rightPower) / 2.0) + centerPowerLag;
         steerPower = Math.max(-1,
@@ -210,8 +194,8 @@ public class MotionController {
           currentMotionState = MotionState.WAITING;
         }
 
-        integratedLagError += iLag * errorVector.getLag();
-        integratedAngleError += iAng * errorVector.getAngle();
+        integratedLagError += drivetrain.getILag() * errorVector.getLag();
+        integratedAngleError += drivetrain.getIAng() * errorVector.getAngle();
 
         integratedAngleError = Math.max(Math.min(0.5, integratedAngleError), -0.5);
         integratedLagError = Math.max(Math.min(0.5, integratedLagError), -0.5);
@@ -434,17 +418,9 @@ public class MotionController {
   public String toString() {
     return "MotionController{" +
         "drivetrain=" + drivetrain +
-        ", kV=" + kV +
-        ", kK=" + kK +
-        ", kAcc=" + kAcc +
-        ", kS=" + kS +
-        ", kL=" + kL +
-        ", kAng=" + kAng +
         ", paths=" + paths +
         ", period=" + period +
         ", motionLogger=" + motionLogger +
-        ", iAng=" + iAng +
-        ", iLag=" + iLag +
         ", controller=" + controller +
         ", running=" + running +
         ", currentPath=" + currentPath +
