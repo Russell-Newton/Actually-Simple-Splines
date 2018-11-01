@@ -18,6 +18,7 @@ public class DynamicBezierCurve extends DynamicPath {
   private final double startVelocity;
   private final double endVelocity;
   private final int degree;
+  private final PathData startPathData;
   public double time;
   private int[] coefficients;
   private double curveLength;
@@ -34,7 +35,7 @@ public class DynamicBezierCurve extends DynamicPath {
    * @param controlPoints - the control points that define the curve
    */
   public DynamicBezierCurve(double vCruise, double aMax, double startVelocity, double endVelocity,
-      boolean isBackwards, List<Pose> controlPoints) {
+      boolean isBackwards, PathData startPathData, List<Pose> controlPoints) {
     super(vCruise, aMax, isBackwards, controlPoints);
     this.startVelocity = startVelocity;
     this.endVelocity = endVelocity;
@@ -45,6 +46,10 @@ public class DynamicBezierCurve extends DynamicPath {
 //    curveLength = computeArcLength();
     curveLength = computeArcLength();
     time = computeTime();
+
+    this.startPathData = startPathData;
+    // The starting average encoder distance should always be 0
+    startLCenter = startPathData.getLCenter();
 
 //    long startTime = System.nanoTime();
 //    computeArcLength(100, 0.001, 0.002);
@@ -63,9 +68,38 @@ public class DynamicBezierCurve extends DynamicPath {
 
   public DynamicBezierCurve(double vCruise, double aMax, double startVelocity, double endVelocity,
       boolean isBackwards,
-      Pose... controlPoints) {
-    this(vCruise, aMax, startVelocity, endVelocity, isBackwards, Arrays.asList(controlPoints));
+      List<Pose> controlPoints) {
+    this(vCruise, aMax, startVelocity, endVelocity, isBackwards,
+
+        (controlPoints.isEmpty()) ?
+            new PathData(new Pose(0, 0), isBackwards) :
+            ((controlPoints.size() == 1) ?
+                new PathData(
+                    new Pose(
+                        controlPoints.get(0).getX(),
+                        controlPoints.get(0).getY(),
+                        controlPoints.get(0).getAngle())
+                    , isBackwards) :
+                new PathData(
+                    new Pose(
+                        controlPoints.get(0).getX(),
+                        controlPoints.get(0).getY(),
+                        StrictMath.atan2(
+                            controlPoints.get(1).getY() - controlPoints.get(0).getY(),
+                            controlPoints.get(1).getX() - controlPoints.get(0).getX())
+                    )
+                    , isBackwards)),
+
+        controlPoints);
   }
+
+  public DynamicBezierCurve(double vCruise, double aMax, double startVelocity, double endVelocity,
+      boolean isBackwards,
+      Pose... controlPoints) {
+    this(vCruise, aMax, startVelocity, endVelocity, isBackwards,
+        Arrays.asList(controlPoints));
+  }
+
 
   public double computeArcLengthSampling(double lower, double upper) {
     return computeArcLengthSampling(1000, lower, upper);
@@ -302,9 +336,6 @@ public class DynamicBezierCurve extends DynamicPath {
     return new Pose(xCoordinateAtPercentage, yCoordinateAtPercentage, angle);
   }
 
-  public void setStartLCenter(double startLCenter) {
-    this.startLCenter = startLCenter;
-  }
 
   /**
    * @return a new PathData from the calculations
@@ -341,5 +372,9 @@ public class DynamicBezierCurve extends DynamicPath {
 //      }
 //    }
     return 0;
+  }
+
+  public void getPathData(double v) {
+
   }
 }
