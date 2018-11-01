@@ -17,6 +17,7 @@ public class DynamicSpline extends DynamicPath {
   private final double endScale;
   private final double startVelocity;
   private final double endVelocity;
+  private List<DynamicBezierCurve> bezierCurves;
 
   /**
    * Construct a spline. Note that the x axis is the direction the robot is facing if the start angle is 0
@@ -44,8 +45,15 @@ public class DynamicSpline extends DynamicPath {
     createPath();
   }
 
-  @Override
-  public PathData createPathData(PathData previousPathData, double percentage) {
+  public PathData createPathData(double percentage) {
+    return getPathData(percentage);
+  }
+
+  private PathData getPathData(double percentage) {
+    DynamicBezierCurve dynamicBezierCurve = bezierCurves.get((int) percentage);
+
+    dynamicBezierCurve.getPathData(percentage - ((int) percentage));
+
     return null;
   }
 
@@ -155,14 +163,14 @@ public class DynamicSpline extends DynamicPath {
     }
   }
 
-  private List<BezierCurve> createBezierCurves(PathData startPathData,
+  private List<DynamicBezierCurve> createBezierCurves(PathData startPathData,
       List<List<Pose>> pathControlPoints) {
     double nextStartVelocity;
     double nextEndVelocity;
     PathData nextStartPathData = startPathData;
     ListIterator<List<Pose>> iterator = pathControlPoints.listIterator();
 
-    List<BezierCurve> bezierCurves = new ArrayList<>();
+    List<DynamicBezierCurve> bezierCurves = new ArrayList<>();
 
     while (iterator.hasNext()) {
       nextStartVelocity = (iterator.nextIndex() == 0) ? startVelocity : getVCruise();
@@ -170,7 +178,7 @@ public class DynamicSpline extends DynamicPath {
           (iterator.nextIndex() == (pathControlPoints.size() - 1)) ? endVelocity
               : getVCruise();
 
-      BezierCurve curve = new BezierCurve(getVCruise(), getAMax(), nextStartVelocity,
+      DynamicBezierCurve curve = new DynamicBezierCurve(getVCruise(), getAMax(), nextStartVelocity,
           nextEndVelocity,
           isBackwards(),
           nextStartPathData,
@@ -194,12 +202,17 @@ public class DynamicSpline extends DynamicPath {
             startAngle),
         0);
 
-    List<BezierCurve> bezierCurves = createBezierCurves(startPathData, pathControlPoints);
+    bezierCurves = createBezierCurves(startPathData, pathControlPoints);
     System.out.println(bezierCurves.size());
 
     stitchPathData(startPathData, pathControlPoints);
   }
 
+
+  @Override
+  public PathData createPathData(PathData previousPathData, double percentage) {
+    return createPathData(percentage);
+  }
 
   @Override
   public String toString() {
