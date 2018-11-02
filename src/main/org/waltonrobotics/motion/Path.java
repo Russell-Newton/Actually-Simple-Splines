@@ -331,7 +331,7 @@ public abstract class Path {
     return vCruise;
   }
 
-  private void savePath(String fileName) {
+  public void savePath(String fileName) {
     if (!getPathData().isEmpty() && (fileName != null)) {
 
       double maxSize = Math.max(Math.max(getPathData().size(), getKeyPoints().size()), 1);
