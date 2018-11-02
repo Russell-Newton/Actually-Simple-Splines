@@ -1,9 +1,10 @@
-package org.waltonrobotics.command;
+package org.waltonrobotics.command.autolearning;
 
 import edu.wpi.first.wpilibj.buttons.NetworkButton;
 import edu.wpi.first.wpilibj.command.Command;
 import java.util.LinkedList;
 import java.util.List;
+import org.waltonrobotics.command.SimpleMotion;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
 

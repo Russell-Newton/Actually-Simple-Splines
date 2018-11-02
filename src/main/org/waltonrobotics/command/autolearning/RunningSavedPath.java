@@ -1,8 +1,9 @@
-package org.waltonrobotics.command;
+package org.waltonrobotics.command.autolearning;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import org.waltonrobotics.command.SimpleMotion;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.motion.Path;
 import org.waltonrobotics.motion.SavePath;

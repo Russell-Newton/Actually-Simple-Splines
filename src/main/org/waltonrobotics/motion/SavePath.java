@@ -3,7 +3,7 @@ package org.waltonrobotics.motion;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.waltonrobotics.command.LearnPath;
+import org.waltonrobotics.command.autolearning.LearnPath;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.State;
 
