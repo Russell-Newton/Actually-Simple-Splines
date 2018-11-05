@@ -286,23 +286,46 @@ public class Spline extends Path {
   public Pose getPoint(double percentage) {
 //    TODO make this work and get the correct point from the inner bezier curves given the percent t
 
-    System.out.println(percentage);
-    int numberOfCurves = getDefiningBezierCurves().size();
+//    System.out.println(percentage);
+//    int numberOfCurves = getDefiningBezierCurves().size();
+//
+//    int currentlyOn = (int) (percentage * (numberOfCurves - 1));
+////    System.out.println(currentlyOn);
+//
+////    double percentageInCurve = 1- (percentage * numberOfCurves);
+//    double percentageInCurve = percentage * (numberOfCurves - currentlyOn);
+////    System.out.println(percentageInCurve);
+//
+//    double percent = 1.0 / numberOfCurves;
+////    System.out.println(percent);
+//
+//    double percentagePerBezierCurve = percentageInCurve / percent;
+////    System.out.println(percentagePerBezierCurve);
+//
+//    return getDefiningBezierCurves().get(currentlyOn).getPoint(percentagePerBezierCurve);
 
-    int currentlyOn = (int) (percentage * (numberOfCurves - 1));
-//    System.out.println(currentlyOn);
+    if (percentage != 1.0) {
+      int value = (int) (percentage * getDefiningBezierCurves().size());
+      BezierCurve bezierCurve = getDefiningBezierCurves()
+          .get(value);
 
-//    double percentageInCurve = 1- (percentage * numberOfCurves);
-    double percentageInCurve = percentage * (numberOfCurves - currentlyOn);
-//    System.out.println(percentageInCurve);
+      return bezierCurve
+          .getPoint(((percentage * getDefiningBezierCurves().size()) - value));
+    }
+    return definingBezierCurves.get(definingBezierCurves.size() - 1).getPoint(1.0);
+  }
 
-    double percent = 1.0 / numberOfCurves;
-//    System.out.println(percent);
 
-    double percentagePerBezierCurve = percentageInCurve / percent;
-//    System.out.println(percentagePerBezierCurve);
+  public Pose getDerivative(double percentage) {
+    if (percentage != 1.0) {
+      int value = (int) (percentage * getDefiningBezierCurves().size());
+      BezierCurve bezierCurve = getDefiningBezierCurves()
+          .get(value);
 
-    return getDefiningBezierCurves().get(currentlyOn).getPoint(percentagePerBezierCurve);
+      return bezierCurve
+          .getDerivative(((percentage * getDefiningBezierCurves().size()) - value));
+    }
+    return definingBezierCurves.get(definingBezierCurves.size() - 1).getDerivative(1.0);
   }
 
 

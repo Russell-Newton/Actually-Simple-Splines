@@ -4,6 +4,7 @@ import static org.waltonrobotics.motion.BezierCurve.gaussLegendreHashMap;
 import static org.waltonrobotics.util.Helper.calculateCoefficients;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
@@ -236,7 +237,7 @@ public class DynamicBezierCurve extends DynamicPath {
   /**
    * Gets the derivative of point at value percentage
    */
-  private Pose getDerivative(double percentage) {
+  public Pose getDerivative(double percentage) {
     double dx = 0;
     double dy = 0;
 
@@ -277,7 +278,7 @@ public class DynamicBezierCurve extends DynamicPath {
     return new Pose(dx, dy, angle);
   }
 
-  private Pose getPoint(double percentage) {
+  public Pose getPoint(double percentage) {
     return getPoint(degree, percentage);
   }
 
@@ -374,7 +375,10 @@ public class DynamicBezierCurve extends DynamicPath {
     return 0;
   }
 
-  public void getPathData(double v) {
-
+  public LinkedList<PathData> getPathData(double v) {
+    LinkedList<PathData> pathData = new LinkedList<>();
+    pathData.add(new PathData(getPoint(0)));
+    pathData.add(new PathData(getPoint(1)));
+    return pathData;
   }
 }

@@ -1,6 +1,7 @@
 package org.waltonrobotics.dynamicMotion;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
@@ -17,6 +18,7 @@ public class DynamicSpline extends DynamicPath {
   private final double endScale;
   private final double startVelocity;
   private final double endVelocity;
+  private final double curveLength;
   private List<DynamicBezierCurve> bezierCurves;
 
   /**
@@ -26,23 +28,34 @@ public class DynamicSpline extends DynamicPath {
    * @param aMax - max acceleration
    * @param startVelocity - the starting velocity of the Path
    * @param endVelocity - the ending velocity of the Path
-   * @param startAngle - the angle at the start of the motion (degrees)
-   * @param endAngle - the angle at the end of the motion (degrees)
    * @param isBackwards - if the robot will be moving backwards, make this true
    * @param knots - the points you want the robot to drive through
    */
-  public DynamicSpline(double vCruise, double aMax, double startVelocity, double endVelocity,
-      double startAngle, double endAngle, boolean isBackwards, double scaleStart, double scaleEnd,
+  public DynamicSpline(double vCruise, double aMax, double startVelocity, double endVelocity, boolean isBackwards,
+      double scaleStart, double scaleEnd,
       List<Pose> knots) {
     super(vCruise, aMax, isBackwards, knots);
-    this.startAngle = startAngle;
-    this.endAngle = endAngle;
+    this.startAngle = knots.get(0).getAngle();
+    this.endAngle = knots.get(knots.size() - 1).getAngle();
     startScale = scaleStart;
     endScale = scaleEnd;
     this.endVelocity = endVelocity;
     this.startVelocity = startVelocity;
 
     createPath();
+    curveLength = bezierCurves.stream().mapToDouble(DynamicBezierCurve::getCurveLength).sum();
+  }
+
+  public DynamicSpline(double vCruise, double aMax, double startVelocity, double endVelocity,
+      boolean isBackwards, Pose... knots) {
+    this(vCruise, aMax, startVelocity, endVelocity,
+        isBackwards, 1.0, 1.0, Arrays.asList(knots));
+  }
+
+  public DynamicSpline(double vCruise, double aMax, double startVelocity, double endVelocity,
+      boolean isBackwards, List<Pose> knots) {
+    this(vCruise, aMax, startVelocity, endVelocity,
+        isBackwards, 1.0, 1.0, knots);
   }
 
   public PathData createPathData(double percentage) {
@@ -55,6 +68,31 @@ public class DynamicSpline extends DynamicPath {
     dynamicBezierCurve.getPathData(percentage - ((int) percentage));
 
     return null;
+  }
+
+  public Pose getPoint(double percentage) {
+    if (percentage != 1.0) {
+      int value = (int) (percentage * bezierCurves.size());
+      DynamicBezierCurve dynamicBezierCurve = bezierCurves
+          .get(value);
+
+      return dynamicBezierCurve
+          .getPoint(((percentage * bezierCurves.size()) - value));
+    }
+    return bezierCurves.get(bezierCurves.size() - 1).getPoint(1.0);
+
+  }
+
+  public Pose getDerivative(double percentage) {
+    if (percentage != 1.0) {
+      int value = (int) (percentage * bezierCurves.size());
+      DynamicBezierCurve dynamicBezierCurve = bezierCurves
+          .get(value);
+
+      return dynamicBezierCurve
+          .getDerivative(((percentage * bezierCurves.size()) - value));
+    }
+    return bezierCurves.get(bezierCurves.size() - 1).getDerivative(1.0);
   }
 
   /**
@@ -185,7 +223,7 @@ public class DynamicSpline extends DynamicPath {
           iterator.next());
 
       bezierCurves.add(curve);
-      nextStartPathData = curve.getPathData().getLast();
+      nextStartPathData = curve.getPathData(1.0).getLast();
     }
 
     return bezierCurves;
@@ -208,6 +246,9 @@ public class DynamicSpline extends DynamicPath {
     stitchPathData(startPathData, pathControlPoints);
   }
 
+  public double getCurveLength() {
+    return curveLength;
+  }
 
   @Override
   public PathData createPathData(PathData previousPathData, double percentage) {
