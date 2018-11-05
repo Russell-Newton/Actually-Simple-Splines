@@ -144,6 +144,7 @@ public class BezierCurve extends Path {
       yCoordinateAtPercentage += (coefficient * oneMinusT * powerOfT * pointI.getY());
     }
 
+//    System.out.println(xCoordinateAtPercentage + "\t" + yCoordinateAtPercentage);
     return new Pose(xCoordinateAtPercentage, yCoordinateAtPercentage, getAngle(percentage));
   }
 
@@ -160,6 +161,8 @@ public class BezierCurve extends Path {
    */
   public double getAngle(double t) {
     Pose getDerivative = getDerivative(t);
+
+//    System.out.println(Math.hypot(getDerivative.getX(), getDerivative.getY()) + "\t" + getDerivative.getAngle());
 
     return getDerivative.getAngle();
   }

@@ -125,6 +125,8 @@ public class Pose {
 
   @Override
   public String toString() {
+
+//    return String.format("Pose{x=%.3f, y=%.3f, angle=%f}", x,y,angle);
     return "Pose{" +
         "x=" + x +
         ", y=" + y +
