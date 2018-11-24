@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="5728b0d4-e13e-4e1a-b65d-a7d973cec610" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Example.main.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Example.test.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Actually Simple Splines (For Library).iml" beforeDir="false" afterPath="$PROJECT_DIR$/../Actually Simple Splines (For Library).iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/AbstractDrivetrain.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/MotionLogger.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/command/SimpleLine.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/command/SimpleMotion.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/command/SimpleSpline.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/command/SimpleTurn.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/command/autolearning/LearnPath.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/command/autolearning/PathLearner.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/command/autolearning/PathRunner.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/command/autolearning/RunningSavedPath.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/controller/ErrorVector.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/controller/MotionController$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/controller/MotionController$MotionTask.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/controller/MotionController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/controller/MotionData.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/controller/MotionState.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/controller/PathData.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/controller/Pose.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/controller/RobotPair.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/controller/State.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/dynamicMotion/DynamicBezierCurve.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/dynamicMotion/DynamicPath$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/dynamicMotion/DynamicPath.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/dynamicMotion/DynamicSpline.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/motion/BezierCurve$Key.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/motion/BezierCurve.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/motion/Line.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/motion/Path$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/motion/Path$ClassValuePair.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/motion/Path.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/motion/PointTurn.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/motion/SavePath.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/motion/Spline.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/test/DebugCurves.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/test/Tester.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/util/GaussLegendre.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bin/org/waltonrobotics/util/Helper.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../out/artifacts/Actually_Simple_Splines__For_Library__jar/2974Splines.jar" beforeDir="false" afterPath="$PROJECT_DIR$/../out/artifacts/Actually_Simple_Splines__For_Library__jar/2974Splines.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/example/frc/team2974/robot/Config.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/frc/team2974/robot/Config.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/example/frc/team2974/robot/Gamepad.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/frc/team2974/robot/Gamepad.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/example/frc/team2974/robot/OI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/frc/team2974/robot/OI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/example/frc/team2974/robot/Robot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/frc/team2974/robot/Robot.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/example/frc/team2974/robot/RobotMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/frc/team2974/robot/RobotMap.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/example/frc/team2974/robot/command/teleop/DriveCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/frc/team2974/robot/command/teleop/DriveCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/example/frc/team2974/robot/subsystems/Drivetrain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/frc/team2974/robot/subsystems/Drivetrain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/example/frc/team2974/robot/util/ButtonMultiple.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/frc/team2974/robot/util/ButtonMultiple.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/example/frc/team2974/robot/util/ButtonOnce.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/frc/team2974/robot/util/ButtonOnce.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/example/frc/team2974/robot/util/ElevatorLogger.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/frc/team2974/robot/util/ElevatorLogger.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/example/frc/team2974/robot/util/POVButton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/frc/team2974/robot/util/POVButton.java" afterDir="false" />
+    </list>
+    <ignored path="$PROJECT_DIR$/.gradle/" />
+    <ignored path="$PROJECT_DIR$/build/" />
+    <ignored path="$PROJECT_DIR$/out/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+    <option name="REVERSE_PATCH" value="false" />
+  </component>
+  <component name="DebuggerManager">
+    <breakpoint_any converted="true">
+      <breakpoint>
+        <option name="NOTIFY_CAUGHT" value="true" />
+        <option name="NOTIFY_UNCAUGHT" value="true" />
+        <option name="ENABLED" value="false" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="false" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint>
+        <option name="NOTIFY_CAUGHT" value="true" />
+        <option name="NOTIFY_UNCAUGHT" value="true" />
+        <option name="ENABLED" value="false" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="false" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+    </breakpoint_any>
+    <breakpoint_rules converted="true" />
+    <ui_properties converted="true" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="Example" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/build.gradle">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="204">
+              <caret line="33" column="157" selection-start-line="33" selection-start-column="157" selection-end-line="33" selection-end-column="157" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/frc/team2974/robot/OI.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="127">
+              <caret line="12" column="19" selection-start-line="12" selection-start-column="19" selection-end-line="12" selection-end-column="19" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/frc/team2974/robot/Robot.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="170">
+              <caret line="18" column="31" selection-start-line="18" selection-start-column="31" selection-end-line="18" selection-end-column="31" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/build.gradle" />
+      </list>
+    </option>
+  </component>
+  <component name="ModuleEditorState">
+    <option name="LAST_EDITED_MODULE_NAME" />
+    <option name="LAST_EDITED_TAB_NAME" />
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="949" />
+    <option name="width" value="980" />
+    <option name="height" value="1091" />
+  </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state />
+    </entry>
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectReloadState">
+    <option name="STATE" value="0" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="Example" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Example" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+            </path>
+            <path>
+              <item name="Example" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Example" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Example" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Example" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+            </path>
+            <path>
+              <item name="Example" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Example" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="GoToClass.includeLibraries" value="false" />
+    <property name="GoToClass.toSaveIncludeLibraries" value="false" />
+    <property name="GoToFile.includeJavaFiles" value="false" />
+    <property name="MemberChooser.copyJavadoc" value="false" />
+    <property name="MemberChooser.showClasses" value="true" />
+    <property name="MemberChooser.sorted" value="false" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1543101910308" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\mariu\Documents\GitHub\Actually-Simple-Splines\Example\src\main" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
+      <Host>localhost</Host>
+      <Port>5050</Port>
+    </configuration>
+    <configuration default="true" type="Applet">
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <method v="2">
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <option name="VM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <method v="2">
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="Remote">
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" value="javadebug" />
+      <option name="HOST" value="localhost" />
+      <option name="PORT" value="5005" />
+      <option name="AUTO_RESTART" value="false" />
+      <method v="2">
+        <option name="BuildArtifacts" enabled="false" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="5728b0d4-e13e-4e1a-b65d-a7d973cec610" name="Default Changelist" comment="" />
+      <created>1543101678838</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1543101678838</updated>
+      <workItem from="1543101679923" duration="266000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="266000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-7" y="-7" width="1295" height="735" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Designer" />
+      <window_info id="Image Layers" />
+      <window_info id="Capture Tool" />
+      <window_info id="UI Designer" />
+      <window_info id="Favorites" side_tool="true" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24939272" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="Build" visible="true" weight="0.32504147" />
+      <window_info anchor="bottom" id="Terminal" />
+      <window_info anchor="bottom" id="Docker" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info anchor="bottom" id="Database Changes" />
+      <window_info anchor="bottom" id="Version Control" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="right" id="Maven" />
+      <window_info anchor="right" id="Palette" />
+      <window_info anchor="right" id="Capture Analysis" />
+      <window_info anchor="right" id="Gradle" visible="true" weight="0.32955465" />
+      <window_info anchor="right" id="Database" />
+      <window_info anchor="right" id="Palette&#9;" />
+      <window_info anchor="right" id="Theme Preview" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="OFFER_MOVE_TO_ANOTHER_CHANGELIST_ON_PARTIAL_COMMIT" value="true" />
+    <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/main/java/frc/team2974/robot/OI.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="127">
+          <caret line="12" column="19" selection-start-line="12" selection-start-column="19" selection-end-line="12" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="33" column="157" selection-start-line="33" selection-start-column="157" selection-end-line="33" selection-end-column="157" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/frc/team2974/robot/Robot.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="18" column="31" selection-start-line="18" selection-start-column="31" selection-end-line="18" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
