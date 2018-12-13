@@ -9,7 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.AbstractList;
 import java.util.Date;
 import java.util.LinkedList;
-
 import org.waltonrobotics.controller.ErrorVector;
 import org.waltonrobotics.controller.MotionData;
 
@@ -144,8 +143,8 @@ public class MotionLogger {
 
   public AbstractList<ErrorVector> getErrorVectorList(int pathNumber) {
     AbstractList<ErrorVector> errorVectors = new LinkedList<>();
-    for(MotionData data : motionDataList) {
-      if(data.getPathNumber() == pathNumber) {
+    for (MotionData data : motionDataList) {
+      if (data.getPathNumber() == pathNumber) {
         errorVectors.add(data.getError());
       }
     }
