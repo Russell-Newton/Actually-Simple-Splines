@@ -9,6 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.AbstractList;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.waltonrobotics.controller.ErrorVector;
 import org.waltonrobotics.controller.MotionData;
 
@@ -149,6 +151,10 @@ public class MotionLogger {
       }
     }
     return errorVectors;
+  }
+
+  public List<ErrorVector> getErrorVectorList() {
+    return motionDataList.stream().map(MotionData::getError).collect(Collectors.toList());
   }
 
   @Override

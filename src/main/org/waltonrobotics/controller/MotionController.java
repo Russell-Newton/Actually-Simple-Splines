@@ -1,8 +1,8 @@
 package org.waltonrobotics.controller;
 
-import java.util.AbstractList;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Queue;
 import java.util.Timer;
@@ -452,7 +452,7 @@ public class MotionController {
     actualPosition = startingPosition;
   }
 
-  public AbstractList<ErrorVector> getErrorVectorList() {
+  public List<ErrorVector> getErrorVectorList() {
     return motionLogger.getErrorVectorList();
   }
 
