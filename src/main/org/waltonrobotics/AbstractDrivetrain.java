@@ -1,10 +1,7 @@
 package org.waltonrobotics;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Properties;
+import frc.team2974.robot.subsystems.Drivetrain;
 import org.waltonrobotics.command.SimpleMotion;
 import org.waltonrobotics.controller.MotionController;
 import org.waltonrobotics.controller.PathData;
@@ -12,6 +9,7 @@ import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.controller.RobotPair;
 import org.waltonrobotics.controller.State;
 import org.waltonrobotics.motion.Path;
+import org.waltonrobotics.util.DrivetrainProperties;
 
 /**
  * Extend this in your drivetrain, and use the methods inside to set up spline motions
@@ -22,8 +20,6 @@ public abstract class AbstractDrivetrain extends Subsystem {
 //TODO use the java.util.Properties class to save and load the drivetrain constants to a file
 
 
-  private static final File CONFIG_FILE = new File("config.properties");
-  private static final Properties DRIVETRAIN_PROPERTIES = new Properties();
   private final MotionController controller;
   private final MotionLogger motionLogger;
   private Pose actualPosition = new Pose(0, 0, 0);
@@ -31,6 +27,7 @@ public abstract class AbstractDrivetrain extends Subsystem {
   private double actualPositionTime;
   private PathData currentState;
   private PathData previousState;
+  private DrivetrainProperties drivetrainProperties;
 
 
   /**
@@ -54,13 +51,6 @@ public abstract class AbstractDrivetrain extends Subsystem {
 
   public AbstractDrivetrain() {
     this(new MotionLogger());
-  }
-
-  /**
-   * Drivetrain properties are saved here
-   */
-  public static Properties getDrivetrainProperties() {
-    return DRIVETRAIN_PROPERTIES;
   }
 
   public MotionLogger getMotionLogger() {
@@ -153,7 +143,9 @@ public abstract class AbstractDrivetrain extends Subsystem {
    *
    * @return KV
    */
-  public abstract double getKV();
+  public double getKV() {
+    return Integer.parseInt(drivetrainProperties.getProperty("kV"));
+  };
 
   /**
    * The acceleration constant. This adds to the feed forward by giving a slight boost while accelerating or
@@ -161,14 +153,18 @@ public abstract class AbstractDrivetrain extends Subsystem {
    *
    * @return KAcc
    */
-  public abstract double getKAcc();
+  public double getKAcc() {
+    return Integer.parseInt(drivetrainProperties.getProperty("kAcc"));
+  };
 
   /**
    * This constant gives a slight boost to the motors. Make this a very small number greater than 0 if anything.
    *
    * @return KK
    */
-  public abstract double getKK();
+  public double getKK() {
+    return Integer.parseInt(drivetrainProperties.getProperty("kK"));
+  };
 
   /**
    * This is the constant for steering control. Using the MotionLogger, KS is correct when the cross track error
@@ -176,7 +172,9 @@ public abstract class AbstractDrivetrain extends Subsystem {
    *
    * @return KS
    */
-  public abstract double getKS();
+  public double getKS() {
+    return Integer.parseInt(drivetrainProperties.getProperty("kS"));
+  };
 
   /**
    * This is the constant for angle control. Using the MotionLogger, KT is correct when the angle and cross track errors
@@ -184,19 +182,27 @@ public abstract class AbstractDrivetrain extends Subsystem {
    *
    * @return KAng
    */
-  public abstract double getKAng();
+  public double getKAng() {
+    return Integer.parseInt(drivetrainProperties.getProperty("kAng"));
+  };
 
   /**
    * This is the lag constant. Using the MotionLogger, KL is correct when the lag error is (close to) 0.
    *
    * @return KL
    */
-  public abstract double getKL();
+  public double getKL() {
+    return Integer.parseInt(drivetrainProperties.getProperty("kL"));
+  };
 
   //TODO do documentation for theses variables
-  public abstract double getILag();
+  public double getILag() {
+    return Integer.parseInt(drivetrainProperties.getProperty("iLag"));
+  };
 
-  public abstract double getIAng();
+  public double getIAng() {
+    return Integer.parseInt(drivetrainProperties.getProperty("iAng"));
+  };
 
   public double getPercentPathDone(Path path) {
     return controller.getPercentDone(path);
@@ -263,6 +269,14 @@ public abstract class AbstractDrivetrain extends Subsystem {
     return currentState;
   }
 
+  public DrivetrainProperties getDrivetrainProperties() {
+    return drivetrainProperties;
+  }
+
+  public int getPathNumber() {
+    return controller.getPathNumber();
+  }
+
   @Override
   public void periodic() {
 //		Gets the current predicted actual position
@@ -297,31 +311,5 @@ public abstract class AbstractDrivetrain extends Subsystem {
 
     previousState = currentState;
     previousLengths = wheelPosition;
-  }
-
-  //	TODO figure out how to load the properties (might need to restructure AbstractDrivetrain)
-
-  /**
-   * Saves the drivetrain properties to a config.properties file
-   */
-  public final void saveProperties() {
-    DRIVETRAIN_PROPERTIES.setProperty("robotWidth", String.valueOf(getRobotWidth()));
-    DRIVETRAIN_PROPERTIES.setProperty("kV", String.valueOf(getKV()));
-    DRIVETRAIN_PROPERTIES.setProperty("kAcc", String.valueOf(getKAcc()));
-    DRIVETRAIN_PROPERTIES.setProperty("kK", String.valueOf(getKK()));
-    DRIVETRAIN_PROPERTIES.setProperty("kS", String.valueOf(getKS()));
-    DRIVETRAIN_PROPERTIES.setProperty("kAng", String.valueOf(getKAng()));
-    DRIVETRAIN_PROPERTIES.setProperty("kL", String.valueOf(getKL()));
-    DRIVETRAIN_PROPERTIES.setProperty("iLag", String.valueOf(getILag()));
-    DRIVETRAIN_PROPERTIES.setProperty("iAng", String.valueOf(getIAng()));
-    DRIVETRAIN_PROPERTIES.setProperty("maxVelocity", String.valueOf(getMaxVelocity()));
-    DRIVETRAIN_PROPERTIES.setProperty("maxAcceleration", String.valueOf(getMaxAcceleration()));
-
-    try
-        (FileWriter writer = new FileWriter(CONFIG_FILE)) {
-      DRIVETRAIN_PROPERTIES.store(writer, "drive train settings");
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
   }
 }
