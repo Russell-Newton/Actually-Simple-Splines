@@ -1,7 +1,6 @@
 package org.waltonrobotics;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
-import frc.team2974.robot.subsystems.Drivetrain;
 import org.waltonrobotics.command.SimpleMotion;
 import org.waltonrobotics.controller.MotionController;
 import org.waltonrobotics.controller.PathData;
@@ -145,7 +144,7 @@ public abstract class AbstractDrivetrain extends Subsystem {
    */
   public double getKV() {
     return Integer.parseInt(drivetrainProperties.getProperty("kV"));
-  };
+  }
 
   /**
    * The acceleration constant. This adds to the feed forward by giving a slight boost while accelerating or
@@ -155,7 +154,7 @@ public abstract class AbstractDrivetrain extends Subsystem {
    */
   public double getKAcc() {
     return Integer.parseInt(drivetrainProperties.getProperty("kAcc"));
-  };
+  }
 
   /**
    * This constant gives a slight boost to the motors. Make this a very small number greater than 0 if anything.
@@ -164,7 +163,7 @@ public abstract class AbstractDrivetrain extends Subsystem {
    */
   public double getKK() {
     return Integer.parseInt(drivetrainProperties.getProperty("kK"));
-  };
+  }
 
   /**
    * This is the constant for steering control. Using the MotionLogger, KS is correct when the cross track error
@@ -174,7 +173,7 @@ public abstract class AbstractDrivetrain extends Subsystem {
    */
   public double getKS() {
     return Integer.parseInt(drivetrainProperties.getProperty("kS"));
-  };
+  }
 
   /**
    * This is the constant for angle control. Using the MotionLogger, KT is correct when the angle and cross track errors
@@ -184,7 +183,7 @@ public abstract class AbstractDrivetrain extends Subsystem {
    */
   public double getKAng() {
     return Integer.parseInt(drivetrainProperties.getProperty("kAng"));
-  };
+  }
 
   /**
    * This is the lag constant. Using the MotionLogger, KL is correct when the lag error is (close to) 0.
@@ -193,16 +192,16 @@ public abstract class AbstractDrivetrain extends Subsystem {
    */
   public double getKL() {
     return Integer.parseInt(drivetrainProperties.getProperty("kL"));
-  };
+  }
 
   //TODO do documentation for theses variables
   public double getILag() {
     return Integer.parseInt(drivetrainProperties.getProperty("iLag"));
-  };
+  }
 
   public double getIAng() {
     return Integer.parseInt(drivetrainProperties.getProperty("iAng"));
-  };
+  }
 
   public double getPercentPathDone(Path path) {
     return controller.getPercentDone(path);
