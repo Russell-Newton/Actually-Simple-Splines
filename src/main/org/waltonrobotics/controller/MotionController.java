@@ -228,6 +228,14 @@ public class MotionController {
     return new RobotPair(0, 0, wheelPositions.getTime());
   }
 
+  private void trimHistory(PathData pathData) {
+    for (PathData pathData1 : history) {
+      if (pathData1.getTime() < pathData.getTime()) {
+        history.remove(pathData1);
+      }
+    }
+  }
+
   private PathData findClosestPointInHistory(double pointTime) {
     PathData previousPathData = history.get(0);
 
