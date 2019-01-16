@@ -228,6 +228,20 @@ public class MotionController {
     return new RobotPair(0, 0, wheelPositions.getTime());
   }
 
+  private PathData findClosestPointInHistory(double pointTime) {
+    PathData previousPathData = history.get(0);
+
+    for (int i = history.size() - 1; i >= 1; i--) {
+      previousPathData = history.get(i - 1);
+
+      if (previousPathData.getTime() >= pointTime && history.get(i).getTime() < pointTime) {
+        break;
+      }
+    }
+
+    return previousPathData;
+  }
+
   /**
    * Finds the target x, y, angle, velocityLeft, and velocityRight
    *
