@@ -1,6 +1,9 @@
 package org.waltonrobotics;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.function.Supplier;
 import org.waltonrobotics.command.SimpleMotion;
 import org.waltonrobotics.controller.MotionController;
 import org.waltonrobotics.controller.PathData;
@@ -46,6 +49,45 @@ public abstract class AbstractDrivetrain extends Subsystem {
     currentState = previousState;
 
     setEncoderDistancePerPulse();
+
+    Timer timer = new Timer();
+
+    timer.schedule(new TimerTask() {
+      @Override
+      public void run() {
+//		Gets the current predicted actual position
+        RobotPair wheelPosition = getWheelPositions();
+        actualPosition = controller.updateActualPosition(wheelPosition, previousLengths, actualPosition);
+        actualPositionTime = wheelPosition.getTime();
+
+//		Found change in time between the different periodic calls
+        double deltaTime = wheelPosition.getTime() - previousState.getTime();
+
+////		Velocity is the change of distance over time
+//		double lVelocity = (wheelPosition.getLeft() - previousState.getLeftState().getLength()) / deltaTime;
+//		double rVelocity = (wheelPosition.getRight() - previousState.getRightState().getLength()) / deltaTime;
+//
+////		Acceleration is the change of velocity over time
+//		double lAcceleration = (lVelocity - previousState.getLeftState().getVelocity()) / deltaTime;
+//		double rAcceleration = (rVelocity - previousState.getRightState().getVelocity()) / deltaTime;
+//
+////		Jerk is the change of acceleration over time
+//		double lJerk = (lAcceleration - previousState.getLeftState().getAcceleration()) / deltaTime;
+//		double rJerk = (rAcceleration - previousState.getRightState().getAcceleration()) / deltaTime;
+
+        currentState = new PathData(
+            State.calculateConstants(previousState.getLeftState(), wheelPosition.getLeft(), deltaTime),
+            State
+                .calculateConstants(previousState.getRightState(), wheelPosition.getRight(), deltaTime),
+//			new State(wheelPosition.getLeft(), lVelocity, lAcceleration, lJerk),
+//			new State(wheelPosition.getRight(), rVelocity, rAcceleration, rJerk),
+            actualPosition,
+            actualPositionTime);
+
+        previousState = currentState;
+        previousLengths = wheelPosition;
+      }
+    }, 0, period);
   }
 
   public AbstractDrivetrain() {
@@ -274,41 +316,5 @@ public abstract class AbstractDrivetrain extends Subsystem {
 
   public int getPathNumber() {
     return controller.getPathNumber();
-  }
-
-  @Override
-  public void periodic() {
-//		Gets the current predicted actual position
-    RobotPair wheelPosition = getWheelPositions();
-    actualPosition = controller
-        .updateActualPosition(wheelPosition, previousLengths, actualPosition);
-    actualPositionTime = wheelPosition.getTime();
-
-//		Found change in time between the different periodic calls
-    double deltaTime = wheelPosition.getTime() - previousState.getTime();
-
-////		Velocity is the change of distance over time
-//		double lVelocity = (wheelPosition.getLeft() - previousState.getLeftState().getLength()) / deltaTime;
-//		double rVelocity = (wheelPosition.getRight() - previousState.getRightState().getLength()) / deltaTime;
-//
-////		Acceleration is the change of velocity over time
-//		double lAcceleration = (lVelocity - previousState.getLeftState().getVelocity()) / deltaTime;
-//		double rAcceleration = (rVelocity - previousState.getRightState().getVelocity()) / deltaTime;
-//
-////		Jerk is the change of acceleration over time
-//		double lJerk = (lAcceleration - previousState.getLeftState().getAcceleration()) / deltaTime;
-//		double rJerk = (rAcceleration - previousState.getRightState().getAcceleration()) / deltaTime;
-
-    currentState = new PathData(
-        State.calculateConstants(previousState.getLeftState(), wheelPosition.getLeft(), deltaTime),
-        State
-            .calculateConstants(previousState.getRightState(), wheelPosition.getRight(), deltaTime),
-//			new State(wheelPosition.getLeft(), lVelocity, lAcceleration, lJerk),
-//			new State(wheelPosition.getRight(), rVelocity, rAcceleration, rJerk),
-        actualPosition,
-        actualPositionTime);
-
-    previousState = currentState;
-    previousLengths = wheelPosition;
   }
 }
