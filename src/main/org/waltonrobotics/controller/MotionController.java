@@ -11,6 +11,7 @@ import java.util.TimerTask;
 import java.util.concurrent.LinkedBlockingDeque;
 import org.waltonrobotics.AbstractDrivetrain;
 import org.waltonrobotics.MotionLogger;
+import org.waltonrobotics.command.SimpleMotion;
 import org.waltonrobotics.motion.Path;
 
 /**
@@ -129,6 +130,7 @@ public class MotionController {
             pdNext = pdIterator.next();
 
             targetPathData = interpolate(wheelPositions);
+
             currentMotionState = MotionState.MOVING;
             pathNumber += 1;
           } else {
@@ -166,6 +168,7 @@ public class MotionController {
           targetPathData = staticPathData;
         }
       }
+
       actualPosition = updateActualPosition(wheelPositions, previousLengths, actualPosition);
 
       history.add(new PathData(actualPosition, wheelPositions.getTime()));
@@ -173,6 +176,19 @@ public class MotionController {
       previousLengths = wheelPositions;
 
       errorVector = findCurrentError(targetPathData, actualPosition);
+
+      if (SimpleMotion.getDrivetrain().isUsingCamera()) {
+
+        PathData robotToCameraPosition = SimpleMotion.getDrivetrain().getRobotToCameraPosition();
+        PathData pathData = findClosestPointInHistory(wheelPositions.getTime());
+        trimHistory(pathData);
+        ErrorVector errorVector = findCurrentError(pathData, robotToCameraPosition.getCenterPose());
+
+        this.errorVector = new ErrorVector(errorVector.getLag() + this.errorVector.getLag(),
+            errorVector.getXTrack() + this.errorVector.getXTrack(),
+            errorVector.getAngle() + this.errorVector.getAngle()
+        );
+      }
 
       double centerPower = 0;
       double steerPower = 0;
