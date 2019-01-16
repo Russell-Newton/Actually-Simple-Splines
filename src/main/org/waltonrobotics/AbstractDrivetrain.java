@@ -24,6 +24,9 @@ public abstract class AbstractDrivetrain extends Subsystem {
 
   private final MotionController controller;
   private final MotionLogger motionLogger;
+  private final Supplier<PathData> robotToCameraPosition;
+  private final Supplier<Boolean> usingCamera;
+  private final long period = 5;
   private Pose actualPosition = new Pose(0, 0, 0);
   private RobotPair previousLengths;
   private double actualPositionTime;
@@ -35,8 +38,11 @@ public abstract class AbstractDrivetrain extends Subsystem {
   /**
    * Create the static drivetrain after creating the motion logger so you can use the MotionContoller
    */
-  protected AbstractDrivetrain(MotionLogger motionLogger) {
+  protected AbstractDrivetrain(MotionLogger motionLogger, Supplier<Boolean> usingCamera,
+      Supplier<PathData> robotToCameraPosition) {
+    this.usingCamera = usingCamera;
     this.motionLogger = motionLogger;
+    this.robotToCameraPosition = robotToCameraPosition;
     controller = new MotionController(this);
     SimpleMotion.setDrivetrain(this);
     previousLengths = getWheelPositions();
@@ -90,8 +96,16 @@ public abstract class AbstractDrivetrain extends Subsystem {
     }, 0, period);
   }
 
-  public AbstractDrivetrain() {
-    this(new MotionLogger());
+  public AbstractDrivetrain(Supplier<Boolean> usingCamera, Supplier<PathData> robotToCameraPosition) {
+    this(new MotionLogger(), usingCamera, robotToCameraPosition);
+  }
+
+  public PathData getRobotToCameraPosition() {
+    return robotToCameraPosition.get();
+  }
+
+  public boolean isUsingCamera() {
+    return usingCamera.get();
   }
 
   public MotionLogger getMotionLogger() {
