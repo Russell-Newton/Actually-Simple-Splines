@@ -2,6 +2,7 @@ package org.waltonrobotics.controller;
 
 import java.util.Collections;
 import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Queue;
@@ -24,6 +25,7 @@ public class MotionController {
   private final int period;
   private final MotionLogger motionLogger;
   private final Timer controller;
+  private final List<PathData> history = new LinkedList<PathData>();
   private boolean running;
   private Path currentPath;
   private PathData staticPathData;
@@ -165,6 +167,9 @@ public class MotionController {
         }
       }
       actualPosition = updateActualPosition(wheelPositions, previousLengths, actualPosition);
+
+      history.add(new PathData(actualPosition, wheelPositions.getTime()));
+
       previousLengths = wheelPositions;
 
       errorVector = findCurrentError(targetPathData, actualPosition);
