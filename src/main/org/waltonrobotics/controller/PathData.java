@@ -48,6 +48,13 @@ public class PathData {
     this(new State(0, 0, 0), new State(0, 0, 0), centerPose, 0, true);
   }
 
+  /**
+   * Can be used to make a generic PathData without motion
+   */
+  public PathData(Pose centerPose, double time) {
+    this(new State(0, 0, 0), new State(0, 0, 0), centerPose, time, true);
+  }
+
   public boolean isBackwards() {
     return isBackwards;
   }
