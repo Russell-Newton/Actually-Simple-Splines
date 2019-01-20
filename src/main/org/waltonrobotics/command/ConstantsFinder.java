@@ -102,9 +102,9 @@ public class ConstantsFinder extends Command {
 
   private void guesstimateConstants() {
 
-    drivetrain.getDrivetrainProperties().saveProperties();
-    drivetrain.getDrivetrainProperties().savePIDConstants(pidConstants);
-    drivetrain.getDrivetrainProperties().saveToFile();
+//    drivetrain.getDrivetrainProperties().saveProperties();
+//    drivetrain.getDrivetrainProperties().savePIDConstants(pidConstants);
+//    drivetrain.getDrivetrainProperties().saveToFile();
   }
 
   private boolean errorsWithinTolerance() {
