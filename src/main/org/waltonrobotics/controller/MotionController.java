@@ -180,7 +180,8 @@ public class MotionController {
       if (SimpleMotion.getDrivetrain().isUsingCamera()) {
 
         PathData robotToCameraPosition = SimpleMotion.getDrivetrain().getRobotToCameraPosition();
-        PathData pathData = findClosestPointInHistory(wheelPositions.getTime());
+        PathData pathData = findClosestPointInHistory(robotToCameraPosition.getTime());
+//        TODO interpret
         trimHistory(pathData);
         ErrorVector errorVector = findCurrentError(pathData, robotToCameraPosition.getCenterPose());
 

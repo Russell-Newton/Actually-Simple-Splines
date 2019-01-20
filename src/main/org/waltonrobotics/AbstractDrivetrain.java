@@ -11,7 +11,6 @@ import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.controller.RobotPair;
 import org.waltonrobotics.controller.State;
 import org.waltonrobotics.motion.Path;
-import org.waltonrobotics.util.DrivetrainProperties;
 
 /**
  * Extend this in your drivetrain, and use the methods inside to set up spline motions
@@ -32,7 +31,6 @@ public abstract class AbstractDrivetrain extends Subsystem {
   private double actualPositionTime;
   private PathData currentState;
   private PathData previousState;
-  private DrivetrainProperties drivetrainProperties;
 
 
   /**
@@ -198,9 +196,7 @@ public abstract class AbstractDrivetrain extends Subsystem {
    *
    * @return KV
    */
-  public double getKV() {
-    return Integer.parseInt(drivetrainProperties.getProperty("kV"));
-  }
+  public abstract double getKV();
 
   /**
    * The acceleration constant. This adds to the feed forward by giving a slight boost while accelerating or
@@ -208,18 +204,14 @@ public abstract class AbstractDrivetrain extends Subsystem {
    *
    * @return KAcc
    */
-  public double getKAcc() {
-    return Integer.parseInt(drivetrainProperties.getProperty("kAcc"));
-  }
+  public abstract double getKAcc();
 
   /**
    * This constant gives a slight boost to the motors. Make this a very small number greater than 0 if anything.
    *
    * @return KK
    */
-  public double getKK() {
-    return Integer.parseInt(drivetrainProperties.getProperty("kK"));
-  }
+  public abstract double getKK();
 
   /**
    * This is the constant for steering control. Using the MotionLogger, KS is correct when the cross track error
@@ -227,9 +219,7 @@ public abstract class AbstractDrivetrain extends Subsystem {
    *
    * @return KS
    */
-  public double getKS() {
-    return Integer.parseInt(drivetrainProperties.getProperty("kS"));
-  }
+  public abstract double getKS();
 
   /**
    * This is the constant for angle control. Using the MotionLogger, KT is correct when the angle and cross track errors
@@ -237,27 +227,19 @@ public abstract class AbstractDrivetrain extends Subsystem {
    *
    * @return KAng
    */
-  public double getKAng() {
-    return Integer.parseInt(drivetrainProperties.getProperty("kAng"));
-  }
+  public abstract double getKAng();
 
   /**
    * This is the lag constant. Using the MotionLogger, KL is correct when the lag error is (close to) 0.
    *
    * @return KL
    */
-  public double getKL() {
-    return Integer.parseInt(drivetrainProperties.getProperty("kL"));
-  }
+  public abstract double getKL();
 
   //TODO do documentation for theses variables
-  public double getILag() {
-    return Integer.parseInt(drivetrainProperties.getProperty("iLag"));
-  }
+  public abstract double getILag();
 
-  public double getIAng() {
-    return Integer.parseInt(drivetrainProperties.getProperty("iAng"));
-  }
+  public abstract double getIAng();
 
   public double getPercentPathDone(Path path) {
     return controller.getPercentDone(path);
@@ -322,10 +304,6 @@ public abstract class AbstractDrivetrain extends Subsystem {
    */
   public PathData getCurrentRobotState() {
     return currentState;
-  }
-
-  public DrivetrainProperties getDrivetrainProperties() {
-    return drivetrainProperties;
   }
 
   public int getPathNumber() {
