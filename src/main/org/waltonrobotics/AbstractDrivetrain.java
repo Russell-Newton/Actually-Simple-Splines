@@ -98,6 +98,10 @@ public abstract class AbstractDrivetrain extends Subsystem {
     this(new MotionLogger(), usingCamera, robotToCameraPosition);
   }
 
+  public AbstractDrivetrain() {
+    this(() -> false, () -> null);
+  }
+
   public PathData getRobotToCameraPosition() {
     return robotToCameraPosition.get();
   }
