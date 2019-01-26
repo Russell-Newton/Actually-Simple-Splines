@@ -166,10 +166,14 @@ public class MotionController {
         } else {
 //					System.out.println("No initial path not moving");
           targetPathData = staticPathData;
+          System.out.println("No path available");
         }
       }
 
       actualPosition = updateActualPosition(wheelPositions, previousLengths, actualPosition);
+
+      System.out.println("Current Position: " + actualPosition);
+      System.out.println("Target Position: " + targetPathData.getCenterPose());
 
       history.add(new PathData(actualPosition, wheelPositions.getTime()));
 
@@ -191,6 +195,8 @@ public class MotionController {
         );
       }
 
+      System.out.printf("kV %f, kK %f, kAcc %f, kS %f, kAng %f, kL %f%n", drivetrain.getKV(), drivetrain.getKK(),
+          drivetrain.getKAcc(), drivetrain.getKS(), drivetrain.getKAng(), drivetrain.getKL());
       double centerPower = 0;
       double steerPower = 0;
       if (currentMotionState == MotionState.MOVING) {
@@ -204,8 +210,12 @@ public class MotionController {
             + (drivetrain.getKAcc() * targetPathData.getRightState().getAcceleration());
         // feed back
         double steerPowerXTE = drivetrain.getKS() * errorVector.getXTrack();
-        double steerPowerAngle = drivetrain.getKAng() * errorVector.getAngle();
+        double steerPowerAngle =
+            drivetrain.getKAng() * errorVector.getAngle(); //error angle must be negative because it is target-actual
         double centerPowerLag = drivetrain.getKL() * errorVector.getLag();
+
+        System.out.printf("steerPowerXTE: %f steerPowerAngle: %f centerPowerLag: %f%n", steerPowerXTE, steerPowerAngle,
+            centerPowerLag);
 
         centerPower = ((leftPower + rightPower) / 2.0) + centerPowerLag;
         steerPower = Math.max(-1,
@@ -238,6 +248,8 @@ public class MotionController {
         centerPower = 0;
       }
 
+      System.out.println(currentMotionState);
+      System.out.printf("Left Power %f \t Right Power %f%n", centerPower - steerPower, centerPower + steerPower);
       return new RobotPair(centerPower - steerPower, centerPower + steerPower,
           wheelPositions.getTime());
     }
