@@ -522,6 +522,10 @@ public class MotionController {
 
     @Override
     public final void run() {
+      if (drivetrain.getKK() == 0 && drivetrain.getKV() == 0 && drivetrain.getKL() == 0) {
+        System.out.println("Please make KK, KV or KL, not equal 0 otherwise the robot will not move");
+      }
+
       RobotPair wheelPositions = drivetrain.getWheelPositions();
 
       powers = calculateSpeeds(wheelPositions);

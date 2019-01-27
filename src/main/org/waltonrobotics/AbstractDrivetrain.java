@@ -42,6 +42,10 @@ public abstract class AbstractDrivetrain extends Subsystem {
    */
   protected AbstractDrivetrain(MotionLogger motionLogger, Supplier<Boolean> usingCamera,
       Supplier<PathData> robotToCameraPosition) {
+    if (getKK() == 0 && getKV() == 0 && getKL() == 0) {
+        System.out.println("Please make KK, KV or KL, not equal 0 otherwise the robot will not move");
+    }
+
     this.usingCamera = usingCamera;
     this.motionLogger = motionLogger;
     this.robotToCameraPosition = robotToCameraPosition;
