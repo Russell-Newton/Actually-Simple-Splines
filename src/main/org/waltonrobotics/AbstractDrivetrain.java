@@ -33,8 +33,12 @@ public abstract class AbstractDrivetrain extends Subsystem {
   private PathData previousState;
 
 
+  public AbstractDrivetrain(MotionLogger motionLogger) {
+    this(motionLogger, () -> false, () -> null);
+  }
+
   /**
-   * Create the static drivetrain after creating the motion logger so you can use the MotionContoller
+   * Create the static drivetrain after creating the motion logger so you can use the MotionController
    */
   protected AbstractDrivetrain(MotionLogger motionLogger, Supplier<Boolean> usingCamera,
       Supplier<PathData> robotToCameraPosition) {
