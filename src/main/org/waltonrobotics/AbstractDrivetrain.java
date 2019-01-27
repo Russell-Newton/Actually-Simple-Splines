@@ -253,11 +253,14 @@ public abstract class AbstractDrivetrain extends Subsystem {
    * This returns the max velocity the robot can achieve.
    * <br>
    * This value can also be found using the <a href=https://github.com/NamelessSuperCoder/Motion-Profiller-Log-Display>Motion
-   * Log Viewer</a> using a motion that is long and straight and has a high max velocity.
+   * Log Viewer</a> using a motion that is long and straight and has a high max velocity. or it can be calculated by
+   * using the (1 - kK)/ kV equation
    *
-   * @return the max acceleration the robot can achieve.
+   * @return the max velocity the robot can achieve.
    */
-  public abstract double getMaxVelocity();
+  public double getMaxVelocity() {
+    return (1 - getKK()) / getKV();
+  }
 
   /**
    * This returns the max acceleration the robot can be achieve
