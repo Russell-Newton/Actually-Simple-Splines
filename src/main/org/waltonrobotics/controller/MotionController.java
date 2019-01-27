@@ -419,20 +419,21 @@ public class MotionController {
     double arcCenter = (arcRight + arcLeft) / 2;
     double dX;
     double dY;
+
+    double currentAngle = estimatedActualPosition.getAngle();
+
     if (Math.abs(dAngle) < 0.01) {
-      dX = arcCenter * StrictMath.cos(estimatedActualPosition.getAngle());
-      dY = arcCenter * StrictMath.sin(estimatedActualPosition.getAngle());
+      dX = arcCenter * StrictMath.cos(currentAngle);
+      dY = arcCenter * StrictMath.sin(currentAngle);
     } else {
-      dX = arcCenter * (
-          ((StrictMath.sin(dAngle) * StrictMath.cos(estimatedActualPosition.getAngle())) / dAngle)
-              - (
-              ((StrictMath.cos(dAngle) - 1) * StrictMath.sin(estimatedActualPosition.getAngle()))
-                  / dAngle));
-      dY = arcCenter * (
-          ((StrictMath.sin(dAngle) * StrictMath.sin(estimatedActualPosition.getAngle())) / dAngle)
-              - (
-              ((StrictMath.cos(dAngle) - 1) * StrictMath.cos(estimatedActualPosition.getAngle()))
-                  / dAngle));
+      double xPrime = arcCenter / dAngle * StrictMath.sin(dAngle);
+      double yPrime = arcCenter / dAngle * (1 - StrictMath.cos(dAngle));
+
+      dX = (xPrime * StrictMath.cos(currentAngle))
+          - (yPrime * StrictMath.sin(currentAngle));
+
+      dY = ((xPrime * StrictMath.sin(currentAngle)))
+          + ((yPrime * StrictMath.cos(currentAngle)));
     }
 
     estimatedActualPosition = estimatedActualPosition.offset(dX, dY, dAngle);
