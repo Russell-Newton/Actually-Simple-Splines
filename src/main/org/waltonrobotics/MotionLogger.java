@@ -58,11 +58,15 @@ public class MotionLogger {
     motionDataList.clear();
   }
 
+  public synchronized final void writeMotionDataCSV() {
+    writeMotionDataCSV(false);
+  }
+
   /**
    * Saves data to a .csv file with the name in "yyyy-MM-dd hh-mm-ss" format. Call this in disabledInit() to send the
    * motionDataList to a .csv file.
    */
-  public synchronized final void writeMotionDataCSV() {
+  public synchronized final void writeMotionDataCSV(boolean clearData) {
     if (motionDataList.isEmpty()) {
       return;
     }
@@ -135,6 +139,10 @@ public class MotionLogger {
       bf.write(sb.toString());
 //			pw.flush();
 //			pw.close();
+
+      if (clearData) {
+        motionDataList.clear();
+      }
     } catch (FileNotFoundException e) {
       System.out.println("There is no file at " + file);
       e.printStackTrace();
