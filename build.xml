@@ -7,6 +7,8 @@
       overwrite="true" tofile="${user.home}/Documents/GitHub/PowerUp/PowerUp/lib/2974Splines.jar"/>
     <copy file="out/artifacts/Actually_Simple_Splines__For_Library__jar/2974Splines.jar"
       overwrite="true" tofile="${user.home}/Documents/GitHub/Path Planning/motionLibrary/2974Splines.jar"/>
+    <copy file="out/artifacts/Actually_Simple_Splines__For_Library__jar/2974Splines.jar"
+      overwrite="true" tofile="${user.home}/Documents/GitHub/DeepSpace/DeepSpaceRobot/lib/2974Splines.jar"/>
   </target>
 </project>
 
