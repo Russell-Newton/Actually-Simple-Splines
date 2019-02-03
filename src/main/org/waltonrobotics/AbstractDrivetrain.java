@@ -299,6 +299,7 @@ public abstract class AbstractDrivetrain extends Subsystem {
    */
   public void setStartingPosition(Pose startingPosition) {
     controller.setStartPosition(startingPosition);
+    actualPosition = startingPosition;
   }
 
   @Override
