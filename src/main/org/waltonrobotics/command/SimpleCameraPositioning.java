@@ -7,7 +7,8 @@ import org.waltonrobotics.motion.Spline;
 public class SimpleCameraPositioning extends SimpleMotion {
 
 
-  public SimpleCameraPositioning(Pose robotCameraEstimatedPosition, double maxVelocity, double maxAcceleration,
+  public SimpleCameraPositioning(Pose robotCameraEstimatedPosition, Pose targetPosition, double maxVelocity,
+      double maxAcceleration,
       double startVelocity, double endVelocity, boolean isBackwards) {
     super(new Spline(
         maxVelocity,
@@ -16,13 +17,19 @@ public class SimpleCameraPositioning extends SimpleMotion {
         endVelocity,
         isBackwards,
         robotCameraEstimatedPosition,
-        Pose.ZERO.offset(-getDrivetrain().getRobotWidth())
+        targetPosition
     ));
   }
 
   public SimpleCameraPositioning(CameraData cameraData, double maxVelocity, double maxAcceleration,
       double startVelocity, double endVelocity, boolean isBackwards) {
     this(cameraData.getCameraPose(), maxVelocity, maxAcceleration, startVelocity, endVelocity, isBackwards);
+  }
+
+  public SimpleCameraPositioning(Pose cameraData, double maxVelocity, double maxAcceleration,
+      double startVelocity, double endVelocity, boolean isBackwards) {
+    this(cameraData, Pose.ZERO.offset(-getDrivetrain().getRobotLength() / 2.0), maxVelocity, maxAcceleration, startVelocity,
+        endVelocity, isBackwards);
   }
 
   public static SimpleCameraPositioning toCameraTarget(CameraData cameraData) {

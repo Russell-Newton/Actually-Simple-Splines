@@ -137,6 +137,14 @@ public abstract class AbstractDrivetrain extends Subsystem {
   public abstract double getRobotWidth();
 
   /**
+   * return the length of the robot from the outside of the bumpers
+   *
+   * @return a double informing the width of the robot
+   */
+  public abstract double getRobotLength();
+
+
+  /**
    * Reset the encoders here
    */
   public abstract void reset();

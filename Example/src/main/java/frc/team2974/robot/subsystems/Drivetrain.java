@@ -36,6 +36,11 @@ public class Drivetrain extends AbstractDrivetrain {
   }
 
   @Override
+  public double getRobotLength() {
+    return 0;
+  }
+
+  @Override
   protected void initDefaultCommand() {
     setDefaultCommand(new DriveCommand());
   }
