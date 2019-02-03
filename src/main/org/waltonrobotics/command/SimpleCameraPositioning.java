@@ -41,4 +41,9 @@ public class SimpleCameraPositioning extends SimpleMotion {
     return new SimpleCameraPositioning(estimatedRobotPosition, getDrivetrain().getMaxVelocity(),
         getDrivetrain().getMaxAcceleration(), 0, 0, false);
   }
+
+  public static SimpleCameraPositioning toCameraTarget(Pose estimatedRobotPosition, Pose targetPosition) {
+    return new SimpleCameraPositioning(estimatedRobotPosition, targetPosition, getDrivetrain().getMaxVelocity(),
+        getDrivetrain().getMaxAcceleration(), 0, 0, false);
+  }
 }
