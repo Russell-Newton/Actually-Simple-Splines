@@ -19,8 +19,6 @@ public class SimpleCameraPositioning extends SimpleMotion {
         robotCameraEstimatedPosition,
         targetPosition
     ));
-
-    getDrivetrain().setStartingPosition(robotCameraEstimatedPosition);
   }
 
   public SimpleCameraPositioning(CameraData cameraData, double maxVelocity, double maxAcceleration,
