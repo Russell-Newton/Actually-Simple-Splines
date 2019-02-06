@@ -209,10 +209,10 @@ public class MotionController {
             + (drivetrain.getKK() * Math.signum(targetPathData.getRightState().getVelocity())))
             + (drivetrain.getKAcc() * targetPathData.getRightState().getAcceleration());
         // feed back
-        double steerPowerXTE = drivetrain.getKS() * -errorVector.getXTrack();
+        double steerPowerXTE = drivetrain.getKS() * errorVector.getXTrack();
         double steerPowerAngle =
-            drivetrain.getKAng() * -errorVector.getAngle(); //error angle must be negative because it is target-actual
-        double centerPowerLag = drivetrain.getKL() * -errorVector.getLag();
+            drivetrain.getKAng() * errorVector.getAngle(); //error angle must be negative because it is target-actual
+        double centerPowerLag = drivetrain.getKL() * errorVector.getLag();
 
         System.out.printf("steerPowerXTE: %f steerPowerAngle: %f centerPowerLag: %f%n", steerPowerXTE, steerPowerAngle,
             centerPowerLag);
