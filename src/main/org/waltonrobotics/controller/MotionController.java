@@ -84,6 +84,67 @@ public class MotionController {
     this(drivetrain, drivetrain.getRobotWidth(), drivetrain.getMotionLogger());
   }
 
+  /**
+   * Updates where the robot thinks it is, based off of the encoder lengths
+   */
+  public static Pose updateActualPosition(RobotPair wheelPositions, RobotPair previousWheelPositions,
+      Pose estimatedActualPosition) {
+    double arcLeft = wheelPositions.getLeft() - previousWheelPositions.getLeft();
+    double arcRight = wheelPositions.getRight() - previousWheelPositions.getRight();
+    double dAngle = (arcRight - arcLeft) / Path.getRobotWidth();
+    double arcCenter = (arcRight + arcLeft) / 2;
+    double dX;
+    double dY;
+
+    double currentAngle = estimatedActualPosition.getAngle();
+
+    if (Math.abs(dAngle) < 0.01) {
+      dX = arcCenter * StrictMath.cos(currentAngle);
+      dY = arcCenter * StrictMath.sin(currentAngle);
+    } else {
+      double xPrime = arcCenter / dAngle * StrictMath.sin(dAngle);
+      double yPrime = arcCenter / dAngle * (1 - StrictMath.cos(dAngle));
+
+      dX = (xPrime * StrictMath.cos(currentAngle))
+          - (yPrime * StrictMath.sin(currentAngle));
+
+      dY = ((xPrime * StrictMath.sin(currentAngle)))
+          + ((yPrime * StrictMath.cos(currentAngle)));
+    }
+
+    estimatedActualPosition = estimatedActualPosition.offset(dX, dY, dAngle);
+
+    return estimatedActualPosition;
+  }
+
+  /**
+   * Finds the current lag and cross track ErrorVector
+   */
+  public static ErrorVector findCurrentError(PathData targetPathData, Pose actualPose) {
+    Pose targetPose = targetPathData.getCenterPose();
+    double dX = targetPose.getX() - actualPose.getX();
+    double dY = targetPose.getY() - actualPose.getY();
+    double angle = targetPose.getAngle();
+    // error in direction facing
+    double lagError = (dX * StrictMath.cos(angle)) + (dY * StrictMath.sin(angle));
+    // error perpendicular to direction facing
+
+    double crossTrackError = (-dX * StrictMath.sin(angle)) + (dY * StrictMath.cos(angle));
+    // the error of the current angle
+    double angleError = targetPose.getAngle() - actualPose.getAngle();
+
+    if (targetPathData.isBackwards()) {
+      crossTrackError *= -1;
+    }
+
+    if (angleError > Math.PI) {
+      angleError -= 2 * Math.PI;
+    } else if (angleError < -Math.PI) {
+      angleError += 2 * Math.PI;
+    }
+    return new ErrorVector(lagError, crossTrackError, angleError);
+  }
+
   public int getPathNumber() {
     return pathNumber;
   }
@@ -406,67 +467,6 @@ public class MotionController {
       drivetrain.setSpeeds(0, 0);
       pathNumber = 0;
     }
-  }
-
-  /**
-   * Updates where the robot thinks it is, based off of the encoder lengths
-   */
-  public Pose updateActualPosition(RobotPair wheelPositions, RobotPair previousWheelPositions,
-      Pose estimatedActualPosition) {
-    double arcLeft = wheelPositions.getLeft() - previousWheelPositions.getLeft();
-    double arcRight = wheelPositions.getRight() - previousWheelPositions.getRight();
-    double dAngle = (arcRight - arcLeft) / Path.getRobotWidth();
-    double arcCenter = (arcRight + arcLeft) / 2;
-    double dX;
-    double dY;
-
-    double currentAngle = estimatedActualPosition.getAngle();
-
-    if (Math.abs(dAngle) < 0.01) {
-      dX = arcCenter * StrictMath.cos(currentAngle);
-      dY = arcCenter * StrictMath.sin(currentAngle);
-    } else {
-      double xPrime = arcCenter / dAngle * StrictMath.sin(dAngle);
-      double yPrime = arcCenter / dAngle * (1 - StrictMath.cos(dAngle));
-
-      dX = (xPrime * StrictMath.cos(currentAngle))
-          - (yPrime * StrictMath.sin(currentAngle));
-
-      dY = ((xPrime * StrictMath.sin(currentAngle)))
-          + ((yPrime * StrictMath.cos(currentAngle)));
-    }
-
-    estimatedActualPosition = estimatedActualPosition.offset(dX, dY, dAngle);
-
-    return estimatedActualPosition;
-  }
-
-  /**
-   * Finds the current lag and cross track ErrorVector
-   */
-  private ErrorVector findCurrentError(PathData targetPathData, Pose actualPose) {
-    Pose targetPose = targetPathData.getCenterPose();
-    double dX = targetPose.getX() - actualPose.getX();
-    double dY = targetPose.getY() - actualPose.getY();
-    double angle = targetPose.getAngle();
-    // error in direction facing
-    double lagError = (dX * StrictMath.cos(angle)) + (dY * StrictMath.sin(angle));
-    // error perpendicular to direction facing
-
-    double crossTrackError = (-dX * StrictMath.sin(angle)) + (dY * StrictMath.cos(angle));
-    // the error of the current angle
-    double angleError = targetPose.getAngle() - actualPose.getAngle();
-
-    if (targetPathData.isBackwards()) {
-      crossTrackError *= -1;
-    }
-
-    if (angleError > Math.PI) {
-      angleError -= 2 * Math.PI;
-    } else if (angleError < -Math.PI) {
-      angleError += 2 * Math.PI;
-    }
-    return new ErrorVector(lagError, crossTrackError, angleError);
   }
 
   public boolean isClose(double closeTime) {
