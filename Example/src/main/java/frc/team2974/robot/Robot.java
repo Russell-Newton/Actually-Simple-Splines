@@ -10,6 +10,10 @@ import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.motion.Line;
 import org.waltonrobotics.motion.PointTurn;
 import org.waltonrobotics.motion.Spline;
+import org.waltonrobotics.util.Controls;
+import org.waltonrobotics.util.EncoderConfig;
+import org.waltonrobotics.util.RobotConfig;
+import org.waltonrobotics.util.TalonConfig;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to each mode, as
@@ -20,12 +24,104 @@ public class Robot extends IterativeRobot {
 
   public static Drivetrain drivetrain;
 
+  RobotConfig robotConfig = new RobotConfig("Test") {
+    @Override
+    public EncoderConfig getRightEncoderConfig() {
+      return null;
+    }
+
+    @Override
+    public EncoderConfig getLeftEncoderConfig() {
+      return null;
+    }
+
+    @Override
+    public TalonConfig getLeftTalonConfig() {
+      return null;
+    }
+
+    @Override
+    public TalonConfig getRightTalonConfig() {
+      return null;
+    }
+
+    @Override
+    public Controls getRightJoystickConfig() {
+      return null;
+    }
+
+    @Override
+    public Controls getLeftJoystickConfig() {
+      return null;
+    }
+
+    @Override
+    public double getMaxAcceleration() {
+      return 1;
+    }
+
+    @Override
+    public double getKV() {
+      return 1;
+    }
+
+    @Override
+    public double getKAcc() {
+      return 0;
+    }
+
+    @Override
+    public double getKK() {
+      return 0;
+    }
+
+    @Override
+    public double getKS() {
+      return 0;
+    }
+
+    @Override
+    public double getKAng() {
+      return 0;
+    }
+
+    @Override
+    public double getKL() {
+      return 0;
+    }
+
+    @Override
+    public double getILag() {
+      return 0;
+    }
+
+    @Override
+    public double getIAng() {
+      return 0;
+    }
+
+    @Override
+    public double getRobotWidth() {
+      return 0;
+    }
+
+    @Override
+    public double getRobotLength() {
+      return 0;
+    }
+
+    @Override
+    public boolean isCurrentRobot() {
+      return true;
+    }
+  };
+
   /**
    * This function is run when the robot is first started up and should be used for any initialization code.
    */
   @Override
   public void robotInit() {
-    drivetrain = new Drivetrain();
+    drivetrain = new Drivetrain(robotConfig);
 
     updateSmartDashboard();
     Scheduler.getInstance().run();
