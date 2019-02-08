@@ -16,6 +16,10 @@ public class CameraReader extends TimerTask {
     serialPort.setReadBufferSize(25);
   }
 
+  public CameraData getCameraData() {
+    return cameraData;
+  }
+
   @Override
   public synchronized void run() {
       String data = serialPort.readString();
