@@ -1,16 +1,17 @@
 package org.waltonrobotics.controller;
 
 public class CameraData {
+
   private final Pose cameraPose;
   private final double height;
   private final int numberOfTargets;
-  private final double t;
+  private final double time;
 
-  public CameraData(double x, double y, double height, double angle, int numberOfTargets, double t) {
+  public CameraData(double x, double y, double height, double angle, int numberOfTargets, double time) {
     cameraPose = new Pose(x, y, angle);
     this.height = height;
     this.numberOfTargets = numberOfTargets;
-    this.t = t;
+    this.time = time;
   }
 
   public CameraData(int numberOfTargets) {
@@ -33,7 +34,7 @@ public class CameraData {
     return numberOfTargets;
   }
 
-  public double getT() {
-    return t;
+  public double getTime() {
+    return time;
   }
 }
