@@ -35,5 +35,11 @@ public class CameraReader extends TimerTask {
         int numberOfTargets = Integer.parseInt(data.substring(2));
         this.cameraData = new CameraData(numberOfTargets);
       }
+  public void startCollecting() {
+    serialPort.writeString("S");
+  }
+
+  public void endCollecting() {
+    serialPort.writeString("E");
   }
 }
