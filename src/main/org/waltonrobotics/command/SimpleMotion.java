@@ -41,7 +41,7 @@ public class SimpleMotion extends Command {
   }
 
   @Override
-  protected boolean isFinished() {
+  public boolean isFinished() {
     return path.isFinished();
   }
 
