@@ -28,22 +28,24 @@ public class SimpleCameraPositioning extends SimpleMotion {
 
   public SimpleCameraPositioning(Pose cameraData, double maxVelocity, double maxAcceleration,
       double startVelocity, double endVelocity, boolean isBackwards) {
-    this(cameraData, Pose.ZERO.offset(-getDrivetrain().getRobotLength() / 2.0), maxVelocity, maxAcceleration, startVelocity,
+    this(cameraData, Pose.ZERO.offset(-getDrivetrain().getRobotConfig().getRobotLength() / 2.0), maxVelocity,
+        maxAcceleration, startVelocity,
         endVelocity, isBackwards);
   }
 
   public static SimpleCameraPositioning toCameraTarget(CameraData cameraData) {
-    return new SimpleCameraPositioning(cameraData, getDrivetrain().getMaxVelocity(),
-        getDrivetrain().getMaxAcceleration(), 0, 0, false);
+    return new SimpleCameraPositioning(cameraData, getDrivetrain().getRobotConfig().getMaxVelocity(),
+        getDrivetrain().getRobotConfig().getMaxAcceleration(), 0, 0, false);
   }
 
   public static SimpleCameraPositioning toCameraTarget(Pose estimatedRobotPosition) {
-    return new SimpleCameraPositioning(estimatedRobotPosition, getDrivetrain().getMaxVelocity(),
-        getDrivetrain().getMaxAcceleration(), 0, 0, false);
+    return new SimpleCameraPositioning(estimatedRobotPosition, getDrivetrain().getRobotConfig().getMaxVelocity(),
+        getDrivetrain().getRobotConfig().getMaxAcceleration(), 0, 0, false);
   }
 
   public static SimpleCameraPositioning toCameraTarget(Pose estimatedRobotPosition, Pose targetPosition) {
-    return new SimpleCameraPositioning(estimatedRobotPosition, targetPosition, getDrivetrain().getMaxVelocity(),
-        getDrivetrain().getMaxAcceleration(), 0, 0, false);
+    return new SimpleCameraPositioning(estimatedRobotPosition, targetPosition,
+        getDrivetrain().getRobotConfig().getMaxVelocity(),
+        getDrivetrain().getRobotConfig().getMaxAcceleration(), 0, 0, false);
   }
 }

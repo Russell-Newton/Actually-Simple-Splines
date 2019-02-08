@@ -5,12 +5,15 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Supplier;
 import org.waltonrobotics.command.SimpleMotion;
+import org.waltonrobotics.controller.CameraData;
 import org.waltonrobotics.controller.MotionController;
 import org.waltonrobotics.controller.PathData;
 import org.waltonrobotics.controller.Pose;
 import org.waltonrobotics.controller.RobotPair;
 import org.waltonrobotics.controller.State;
 import org.waltonrobotics.motion.Path;
+import org.waltonrobotics.util.RobotConfig;
+import org.waltonrobotics.util.SetSpeeds;
 
 /**
  * Extend this in your drivetrain, and use the methods inside to set up spline motions
@@ -22,34 +25,42 @@ public abstract class AbstractDrivetrain extends Subsystem {
 
 
   private final MotionController controller;
-  private final MotionLogger motionLogger;
-  private final Supplier<PathData> robotToCameraPosition;
   private final Supplier<Boolean> usingCamera;
   private final long period = 5;
+  private RobotConfig robotConfig;
   private Pose actualPosition = new Pose(0, 0, 0);
   private RobotPair previousLengths;
   private double actualPositionTime;
   private PathData currentState;
   private PathData previousState;
 
-
-  public AbstractDrivetrain(MotionLogger motionLogger) {
-    this(motionLogger, () -> false, () -> null);
+  public AbstractDrivetrain(RobotConfig robotConfig) {
+    this(robotConfig, () -> false);
   }
 
   /**
    * Create the static drivetrain after creating the motion logger so you can use the MotionController
    */
-  protected AbstractDrivetrain(MotionLogger motionLogger, Supplier<Boolean> usingCamera,
-      Supplier<PathData> robotToCameraPosition) {
-    if (getKK() == 0 && getKV() == 0 && getKL() == 0) {
-        System.out.println("Please make KK, KV or KL, not equal 0 otherwise the robot will not move");
+  public AbstractDrivetrain(RobotConfig robotConfig, Supplier<Boolean> usingCamera) {
+    this.robotConfig = robotConfig;
+    if (robotConfig.getKK() == 0 && robotConfig.getKV() == 0 && robotConfig.getKL() == 0) {
+      System.out.println("Please make KK, KV or KL, not equal 0 otherwise the robot will not move");
     }
 
+    AbstractDrivetrain drivetrain = this;
     this.usingCamera = usingCamera;
-    this.motionLogger = motionLogger;
-    this.robotToCameraPosition = robotToCameraPosition;
-    controller = new MotionController(this);
+    controller = new MotionController(robotConfig, new SetSpeeds() {
+      @Override
+      public void setSpeeds(double left, double right) {
+        drivetrain.setSpeeds(left, right);
+      }
+
+      @Override
+      public RobotPair getWheelPositions() {
+        return drivetrain.getWheelPositions();
+      }
+    }, usingCamera);
+
     SimpleMotion.setDrivetrain(this);
     previousLengths = getWheelPositions();
 
@@ -69,7 +80,7 @@ public abstract class AbstractDrivetrain extends Subsystem {
       public void run() {
 //		Gets the current predicted actual position
         RobotPair wheelPosition = getWheelPositions();
-        actualPosition = controller.updateActualPosition(wheelPosition, previousLengths, actualPosition);
+        actualPosition = MotionController.updateActualPosition(wheelPosition, previousLengths, actualPosition);
         actualPositionTime = wheelPosition.getTime();
 
 //		Found change in time between the different periodic calls
@@ -102,47 +113,24 @@ public abstract class AbstractDrivetrain extends Subsystem {
     }, 0, period);
   }
 
-  public AbstractDrivetrain(Supplier<Boolean> usingCamera, Supplier<PathData> robotToCameraPosition) {
-    this(new MotionLogger(), usingCamera, robotToCameraPosition);
+  public MotionController getController() {
+    return controller;
   }
 
-  public AbstractDrivetrain() {
-    this(() -> false, () -> null);
+  public RobotConfig getRobotConfig() {
+    return robotConfig;
   }
 
-  public PathData getRobotToCameraPosition() {
-    return robotToCameraPosition.get();
-  }
 
   public boolean isUsingCamera() {
     return usingCamera.get();
   }
 
-  public MotionLogger getMotionLogger() {
-    return motionLogger;
+  public CameraData getCurrentCameraData() {
+    return controller.getCurrentCameraData();
   }
 
-  /**
-   * return a new robot pair with left.getDistance(), right.getDistance()
-   *
-   * @return a RobotPair with the encoder distances;
-   */
   public abstract RobotPair getWheelPositions();
-
-  /**
-   * return the width of t he robot from teh outside of the wheel on the left side and the right side
-   *
-   * @return a double informing the width of the robot
-   */
-  public abstract double getRobotWidth();
-
-  /**
-   * return the length of the robot from the outside of the bumpers
-   *
-   * @return a double informing the width of the robot
-   */
-  public abstract double getRobotLength();
-
 
   /**
    * Reset the encoders here
@@ -168,7 +156,7 @@ public abstract class AbstractDrivetrain extends Subsystem {
    * Starts the MotionController
    */
   public final void startControllerMotion() {
-    controller.setStartPosition(getActualPosition());
+    controller.setStartPosition(actualPosition);
     controller.enableScheduler();
   }
 
@@ -210,80 +198,13 @@ public abstract class AbstractDrivetrain extends Subsystem {
    */
   public abstract void setEncoderDistancePerPulse();
 
-  /**
-   * The velocity constant. This is the feed forward multiplier. Using the MotionLogger, KV is correct if lag error
-   * levels out.
-   *
-   * @return KV
-   */
-  public abstract double getKV();
-
-  /**
-   * The acceleration constant. This adds to the feed forward by giving a slight boost while accelerating or
-   * decelerating. Make this a very small number greater than 0 if anything.
-   *
-   * @return KAcc
-   */
-  public abstract double getKAcc();
-
-  /**
-   * This constant gives a slight boost to the motors. Make this a very small number greater than 0 if anything.
-   *
-   * @return KK
-   */
-  public abstract double getKK();
-
-  /**
-   * This is the constant for steering control. Using the MotionLogger, KS is correct when the cross track error
-   * provides a steady oscillation. Set this before KAng.
-   *
-   * @return KS
-   */
-  public abstract double getKS();
-
-  /**
-   * This is the constant for angle control. Using the MotionLogger, KT is correct when the angle and cross track errors
-   * approach 0.
-   *
-   * @return KAng
-   */
-  public abstract double getKAng();
-
-  /**
-   * This is the lag constant. Using the MotionLogger, KL is correct when the lag error is (close to) 0.
-   *
-   * @return KL
-   */
-  public abstract double getKL();
-
-  //TODO do documentation for theses variables
-  public abstract double getILag();
-
-  public abstract double getIAng();
+  public MotionLogger getMotionLogger() {
+    return controller.getMotionLogger();
+  }
 
   public double getPercentPathDone(Path path) {
     return controller.getPercentDone(path);
   }
-
-  /**
-   * This returns the max velocity the robot can achieve.
-   * <br>
-   * This value can also be found using the <a href=https://github.com/NamelessSuperCoder/Motion-Profiller-Log-Display>Motion
-   * Log Viewer</a> using a motion that is long and straight and has a high max velocity. or it can be calculated by
-   * using the (1 - kK)/ kV equation
-   *
-   * @return the max velocity the robot can achieve.
-   */
-  public double getMaxVelocity() {
-    return (1 - getKK()) / getKV();
-  }
-
-  /**
-   * This returns the max acceleration the robot can be achieve
-   *
-   * @return the max acceleration the robot can achieve
-   */
-  public abstract double getMaxAcceleration();
 
   /**
    * Returns the approximate actual location of the robot from the origin (0,0)
@@ -306,7 +227,6 @@ public abstract class AbstractDrivetrain extends Subsystem {
   public String toString() {
     return "AbstractDrivetrain{" +
         "controller=" + controller +
-        ", motionLogger=" + motionLogger +
         ", actualPosition=" + actualPosition +
         ", previousLengths=" + previousLengths +
         ", actualPositionTime=" + actualPositionTime +

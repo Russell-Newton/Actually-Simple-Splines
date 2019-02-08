@@ -15,13 +15,15 @@ public class SimpleTurn extends SimpleMotion {
   }
 
   public static SimpleTurn pointTurn(Pose startPosition, double endAngle) {
-    return pointTurn(getDrivetrain().getMaxVelocity() / 4, getDrivetrain().getMaxAcceleration(),
+    return pointTurn(getDrivetrain().getRobotConfig().getMaxVelocity() / 4,
+        getDrivetrain().getRobotConfig().getMaxAcceleration(),
         startPosition,
         endAngle);
   }
 
   public static SimpleTurn pointTurn(double endAngle) {
-    return pointTurn(getDrivetrain().getMaxVelocity() / 4, getDrivetrain().getMaxAcceleration(),
+    return pointTurn(getDrivetrain().getRobotConfig().getMaxVelocity() / 4,
+        getDrivetrain().getRobotConfig().getMaxAcceleration(),
         getDrivetrain().getActualPosition(),
         endAngle);
   }
@@ -38,14 +40,16 @@ public class SimpleTurn extends SimpleMotion {
   }
 
   public static SimpleTurn pointTurn(Pose startPosition, Pose endPosition) {
-    return pointTurn(getDrivetrain().getMaxVelocity() / 2, getDrivetrain().getMaxAcceleration(),
+    return pointTurn(getDrivetrain().getRobotConfig().getMaxVelocity() / 2,
+        getDrivetrain().getRobotConfig().getMaxAcceleration(),
         startPosition,
         endPosition.getAngle());
   }
 
 
   public static SimpleTurn pointTurn(Pose endPosition) {
-    return pointTurn(getDrivetrain().getMaxVelocity() / 2, getDrivetrain().getMaxAcceleration(),
+    return pointTurn(getDrivetrain().getRobotConfig().getMaxVelocity() / 2,
+        getDrivetrain().getRobotConfig().getMaxAcceleration(),
         getDrivetrain().getActualPosition(),
         endPosition.getAngle());
   }

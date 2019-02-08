@@ -14,21 +14,24 @@ public class SimpleLine extends SimpleMotion {
   }
 
   public static SimpleLine lineWithDistance(Pose startPosition, double distance) {
-    return lineWithDistance(getDrivetrain().getMaxVelocity(), getDrivetrain().getMaxAcceleration(),
+    return lineWithDistance(getDrivetrain().getRobotConfig().getMaxVelocity(),
+        getDrivetrain().getRobotConfig().getMaxAcceleration(),
         startPosition,
         distance);
   }
 
 
   public static SimpleLine lineWithDistance(double distance) {
-    return lineWithDistance(getDrivetrain().getMaxVelocity(), getDrivetrain().getMaxAcceleration(),
+    return lineWithDistance(getDrivetrain().getRobotConfig().getMaxVelocity(),
+        getDrivetrain().getRobotConfig().getMaxAcceleration(),
         getDrivetrain().getActualPosition(),
         distance);
   }
 
   public static SimpleLine lineWithDistance(boolean isBackwards, Pose startPosition,
       double distance) {
-    return new SimpleLine(getDrivetrain().getMaxVelocity(), getDrivetrain().getMaxAcceleration(), 0,
+    return new SimpleLine(getDrivetrain().getRobotConfig().getMaxVelocity(),
+        getDrivetrain().getRobotConfig().getMaxAcceleration(), 0,
         0, isBackwards,
         startPosition,
         startPosition.offset(distance));
@@ -36,7 +39,8 @@ public class SimpleLine extends SimpleMotion {
 
   public static SimpleLine lineWithDistance(boolean isBackwards,
       double distance) {
-    return new SimpleLine(getDrivetrain().getMaxVelocity(), getDrivetrain().getMaxAcceleration(), 0,
+    return new SimpleLine(getDrivetrain().getRobotConfig().getMaxVelocity(),
+        getDrivetrain().getRobotConfig().getMaxAcceleration(), 0,
         0, isBackwards,
         getDrivetrain().getActualPosition(),
         getDrivetrain().getActualPosition().offset(distance));

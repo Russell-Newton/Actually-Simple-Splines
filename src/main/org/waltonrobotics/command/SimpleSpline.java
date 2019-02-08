@@ -35,8 +35,8 @@ public class SimpleSpline extends SimpleMotion {
   }
 
   public static SimpleSpline pathFromPosesWithAngle(boolean isBackwards, Pose... knots) {
-    return pathFromPosesWithAngle(getDrivetrain().getMaxVelocity(),
-        getDrivetrain().getMaxAcceleration(),
+    return pathFromPosesWithAngle(getDrivetrain().getRobotConfig().getMaxVelocity(),
+        getDrivetrain().getRobotConfig().getMaxAcceleration(),
         isBackwards, knots);
   }
 
@@ -70,8 +70,8 @@ public class SimpleSpline extends SimpleMotion {
 
   public static SimpleSpline pathFromPosesWithAngleAndScale(
       boolean isBackwards, double startScale, double endScale, Pose... knots) {
-    return pathFromPosesWithAngleAndScale(getDrivetrain().getMaxVelocity(),
-        getDrivetrain().getMaxAcceleration(),
+    return pathFromPosesWithAngleAndScale(getDrivetrain().getRobotConfig().getMaxVelocity(),
+        getDrivetrain().getRobotConfig().getMaxAcceleration(),
         isBackwards,
         startScale, endScale, knots);
   }

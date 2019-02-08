@@ -9,10 +9,11 @@ import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.LinkedBlockingDeque;
-import org.waltonrobotics.AbstractDrivetrain;
+import java.util.function.Supplier;
 import org.waltonrobotics.MotionLogger;
-import org.waltonrobotics.command.SimpleMotion;
 import org.waltonrobotics.motion.Path;
+import org.waltonrobotics.util.RobotConfig;
+import org.waltonrobotics.util.SetSpeeds;
 
 /**
  * Controls Path motions
@@ -21,12 +22,14 @@ import org.waltonrobotics.motion.Path;
  */
 public class MotionController {
 
-  private final AbstractDrivetrain drivetrain;
+  private final RobotConfig robotConfig;
   private final Queue<Path> paths = new LinkedBlockingDeque<>();
   private final int period;
   private final MotionLogger motionLogger;
   private final Timer controller;
   private final List<PathData> history = new LinkedList<PathData>();
+  private final SetSpeeds setSpeeds;
+  private final Supplier<Boolean> usingCamera;
   private boolean running;
   private Path currentPath;
   private PathData staticPathData;
@@ -44,14 +47,17 @@ public class MotionController {
   private double integratedLagError;
   private double integratedAngleError;
   private int pathNumber;
+  private CameraReader cameraTimerTask;
 
   /**
-   * @param drivetrain - the drivetrain to use the AbstractDrivetrain methods from
+   * @param robotConfig - the robotConfig to use the AbstractDrivetrain methods from
    * @param robotWidth - the robot width from the outside of the wheels
    * @param motionLogger - the MotionLogger from the AbstractDrivetrain
    */
-  public MotionController(AbstractDrivetrain drivetrain, double robotWidth,
-      MotionLogger motionLogger) {
+  public MotionController(RobotConfig robotConfig, double robotWidth, MotionLogger motionLogger, SetSpeeds setSpeeds,
+      Supplier<Boolean> usingCamera) {
+    this.setSpeeds = setSpeeds;
+    this.usingCamera = usingCamera;
     running = false;
     Path.setRobotWidth(robotWidth);
 
@@ -60,28 +66,69 @@ public class MotionController {
     controller = new Timer();
     period = 5;
 
-    RobotPair wheelPositions = drivetrain.getWheelPositions();
+    RobotPair wheelPositions = setSpeeds.getWheelPositions();
     staticPathData = new PathData(new State(wheelPositions.getLeft(), 0, 0),
         new State(wheelPositions.getRight(), 0, 0), new Pose(0, 0, 0), 0, true);
 
-    this.drivetrain = drivetrain;
+    this.robotConfig = robotConfig;
 
     pathNumber = 0;
   }
 
   /**
-   * @param drivetrain - the drivetrain to use the AbstractDrivetrain methods from
+   * @param robotConfig - the robotConfig to use the AbstractDrivetrain methods from
    * @param motionLogger - the MotionLogger from the AbstractDrivetrain
    */
-  public MotionController(AbstractDrivetrain drivetrain, MotionLogger motionLogger) {
-    this(drivetrain, drivetrain.getRobotWidth(), motionLogger);
+  public MotionController(RobotConfig robotConfig, MotionLogger motionLogger, SetSpeeds setSpeeds,
+      Supplier<Boolean> usingCamera) {
+    this(robotConfig, robotConfig.getRobotWidth(), motionLogger, setSpeeds, usingCamera);
+  }
+
+
+  /**
+   * @param robotConfig - the robotConfig to use the AbstractDrivetrain methods from
+   * @param motionLogger - the MotionLogger from the AbstractDrivetrain
+   */
+  public MotionController(RobotConfig robotConfig, MotionLogger motionLogger, SetSpeeds setSpeeds) {
+    this(robotConfig, robotConfig.getRobotWidth(), motionLogger, setSpeeds, () -> false);
   }
 
   /**
-   * @param drivetrain - the drivetrain to use the AbstractDrivetrain methods from
+   * @param robotConfig - the robotConfig to use the AbstractDrivetrain methods from
    */
-  public MotionController(AbstractDrivetrain drivetrain) {
-    this(drivetrain, drivetrain.getRobotWidth(), drivetrain.getMotionLogger());
+  public MotionController(RobotConfig robotConfig, SetSpeeds setSpeeds, Supplier<Boolean> usingCamera) {
+    this(robotConfig, robotConfig.getRobotWidth(), new MotionLogger(), setSpeeds, usingCamera);
+  }
+
+  /**
+   * @param robotConfig - the robotConfig to use the AbstractDrivetrain methods from
+   */
+  public MotionController(RobotConfig robotConfig, SetSpeeds setSpeeds) {
+    this(robotConfig, robotConfig.getRobotWidth(), new MotionLogger(), setSpeeds, () -> false);
+  }
+
+  /**
+   * @param robotConfig - the robotConfig to use the AbstractDrivetrain methods from
+   */
+  public MotionController(RobotConfig robotConfig) {
+    this(robotConfig, () -> false);
+  }
+
+  /**
+   * @param robotConfig - the robotConfig to use the AbstractDrivetrain methods from
+   */
+  public MotionController(RobotConfig robotConfig, Supplier<Boolean> usingCamera) {
+    this(robotConfig, robotConfig.getRobotWidth(), new MotionLogger(), new SetSpeeds() {
+      @Override
+      public void setSpeeds(double left, double right) {
+
+      }
+
+      @Override
+      public RobotPair getWheelPositions() {
+        return null;
+      }
+    }, usingCamera);
   }
 
   /**
@@ -145,6 +192,10 @@ public class MotionController {
     return new ErrorVector(lagError, crossTrackError, angleError);
   }
 
+  public MotionLogger getMotionLogger() {
+    return motionLogger;
+  }
+
   public int getPathNumber() {
     return pathNumber;
   }
@@ -158,6 +209,72 @@ public class MotionController {
     Collections.addAll(this.paths, paths);
   }
 
+  public void findCurrentPath(RobotPair wheelPositions) {
+    if (currentPath != null) {
+      targetPathData = interpolate(wheelPositions);
+
+      if (currentPath.isFinished()) {
+        System.out.println("Current path is finished");
+        Deque<PathData> temp = currentPath.getPathData();
+        currentPath = paths.poll();
+
+        integratedLagError = 0;
+        integratedAngleError = 0;
+
+        if (currentPath != null) {
+          System.out.println("Getting new path");
+          double time = temp.getLast().getTime() - temp.getFirst().getTime();
+
+          //Used to allow smooth transition between motions not making assumption that it finishes perfectly on time
+          pathStartTime = time + pathStartTime;
+
+          pdIterator = currentPath.getPathData().listIterator();
+          pdPrevious = targetPathData = pdIterator.next();
+          pdNext = pdIterator.next();
+
+          targetPathData = interpolate(wheelPositions);
+
+          currentMotionState = MotionState.MOVING;
+          pathNumber += 1;
+        } else {
+          System.out.println("Done with motions! :)");
+
+          staticPathData = new PathData(new State(wheelPositions.getLeft(), 0, 0),
+              new State(wheelPositions.getRight(), 0, 0),
+              targetPathData.getCenterPose(), wheelPositions.getTime(),
+              targetPathData.isBackwards());
+          targetPathData = staticPathData;
+          currentMotionState = MotionState.FINISHING;
+        }
+      }
+    } else {
+      // if there is absolutely no more paths at the moment says to not move
+
+      currentPath = paths.poll();
+      if (currentPath != null) {
+        System.out.println("Getting initial path");
+//					actualPosition = currentPath.getPathData().get(0).getCenterPose();
+        pathStartTime = wheelPositions.getTime();
+        pdIterator = currentPath.getPathData().listIterator();
+        pdPrevious = targetPathData = pdIterator.next();
+        pdNext = pdIterator.next();
+
+        currentMotionState = MotionState.MOVING;
+        targetPathData = interpolate(wheelPositions);
+
+        integratedLagError = 0;
+        integratedAngleError = 0;
+
+        pathNumber += 1;
+      } else {
+//					System.out.println("No initial path not moving");
+        targetPathData = staticPathData;
+        System.out.println("No path available");
+      }
+    }
+
+  }
+
   /**
    * Calculates the powers to send to the wheels
    *
@@ -165,72 +282,7 @@ public class MotionController {
    */
   private synchronized RobotPair calculateSpeeds(RobotPair wheelPositions) {
     if (running) {
-      double leftPower = 0;
-      double rightPower = 0;
-
-      if (currentPath != null) {
-        targetPathData = interpolate(wheelPositions);
-
-        if (currentPath.isFinished()) {
-          System.out.println("Current path is finished");
-          Deque<PathData> temp = currentPath.getPathData();
-          currentPath = paths.poll();
-
-          integratedLagError = 0;
-          integratedAngleError = 0;
-
-          if (currentPath != null) {
-            System.out.println("Getting new path");
-            double time = temp.getLast().getTime() - temp.getFirst().getTime();
-
-            //Used to allow smooth transition between motions not making assumption that it finishes perfectly on time
-            pathStartTime = time + pathStartTime;
-
-            pdIterator = currentPath.getPathData().listIterator();
-            pdPrevious = targetPathData = pdIterator.next();
-            pdNext = pdIterator.next();
-
-            targetPathData = interpolate(wheelPositions);
-
-            currentMotionState = MotionState.MOVING;
-            pathNumber += 1;
-          } else {
-            System.out.println("Done with motions! :)");
-
-            staticPathData = new PathData(new State(wheelPositions.getLeft(), 0, 0),
-                new State(wheelPositions.getRight(), 0, 0),
-                targetPathData.getCenterPose(), wheelPositions.getTime(),
-                targetPathData.isBackwards());
-            targetPathData = staticPathData;
-            currentMotionState = MotionState.FINISHING;
-          }
-        }
-      } else {
-        // if there is absolutely no more paths at the moment says to not move
-
-        currentPath = paths.poll();
-        if (currentPath != null) {
-          System.out.println("Getting initial path");
-//					actualPosition = currentPath.getPathData().get(0).getCenterPose();
-          pathStartTime = wheelPositions.getTime();
-          pdIterator = currentPath.getPathData().listIterator();
-          pdPrevious = targetPathData = pdIterator.next();
-          pdNext = pdIterator.next();
-
-          currentMotionState = MotionState.MOVING;
-          targetPathData = interpolate(wheelPositions);
-
-          integratedLagError = 0;
-          integratedAngleError = 0;
-
-          pathNumber += 1;
-        } else {
-//					System.out.println("No initial path not moving");
-          targetPathData = staticPathData;
-          System.out.println("No path available");
-        }
-      }
-
+      findCurrentPath(wheelPositions);
       actualPosition = updateActualPosition(wheelPositions, previousLengths, actualPosition);
 
       System.out.println("Current Position: " + actualPosition);
@@ -242,80 +294,93 @@ public class MotionController {
 
       errorVector = findCurrentError(targetPathData, actualPosition);
 
-      if (SimpleMotion.getDrivetrain().isUsingCamera()) {
-
-        PathData robotToCameraPosition = SimpleMotion.getDrivetrain().getRobotToCameraPosition();
-        PathData pathData = findClosestPointInHistory(robotToCameraPosition.getTime());
-//        TODO interpret
-        trimHistory(pathData);
-        ErrorVector errorVector = findCurrentError(pathData, robotToCameraPosition.getCenterPose());
-
-        this.errorVector = new ErrorVector(errorVector.getLag() + this.errorVector.getLag(),
-            errorVector.getXTrack() + this.errorVector.getXTrack(),
-            errorVector.getAngle() + this.errorVector.getAngle()
-        );
+      if (isUsingCamera()) {
+        errorVector = handleCameraData();
       }
 
-      System.out.printf("kV %f, kK %f, kAcc %f, kS %f, kAng %f, kL %f%n", drivetrain.getKV(), drivetrain.getKK(),
-          drivetrain.getKAcc(), drivetrain.getKS(), drivetrain.getKAng(), drivetrain.getKL());
-      double centerPower = 0;
-      double steerPower = 0;
-      if (currentMotionState == MotionState.MOVING) {
-        // feed forward
-
-        leftPower += ((drivetrain.getKV() * targetPathData.getLeftState().getVelocity())
-            + (drivetrain.getKK() * Math.signum(targetPathData.getLeftState().getVelocity())))
-            + (drivetrain.getKAcc() * targetPathData.getLeftState().getAcceleration());
-        rightPower += ((drivetrain.getKV() * targetPathData.getRightState().getVelocity())
-            + (drivetrain.getKK() * Math.signum(targetPathData.getRightState().getVelocity())))
-            + (drivetrain.getKAcc() * targetPathData.getRightState().getAcceleration());
-        // feed back
-        double steerPowerXTE = drivetrain.getKS() * errorVector.getXTrack();
-        double steerPowerAngle =
-            drivetrain.getKAng() * errorVector.getAngle(); //error angle must be negative because it is target-actual
-        double centerPowerLag = drivetrain.getKL() * errorVector.getLag();
-
-        System.out.printf("steerPowerXTE: %f steerPowerAngle: %f centerPowerLag: %f%n", steerPowerXTE, steerPowerAngle,
-            centerPowerLag);
-
-        centerPower = ((leftPower + rightPower) / 2.0) + centerPowerLag;
-        steerPower = Math.max(-1,
-            Math.min(1, ((rightPower - leftPower) / 2.0) + steerPowerXTE + steerPowerAngle));
-        centerPower = Math
-            .max(-1 + Math.abs(steerPower),
-                Math.min(1 - Math.abs(steerPower), centerPower));
-      }
-      if ((currentMotionState == MotionState.FINISHING) || isClose(1)) {
-//          to give the extra oomph when finished the path but there is a little bit more to do//FIXME left, right powers somehow manage to be greater than 1
-
-        if ((wheelPositions.getTime() - staticPathData.getTime()) >= 2) {
-          currentMotionState = MotionState.WAITING;
-        }
-
-        integratedLagError += drivetrain.getILag() * errorVector.getLag();
-        integratedAngleError += drivetrain.getIAng() * errorVector.getAngle();
-
-        integratedAngleError = Math.max(Math.min(0.5, integratedAngleError), -0.5);
-        integratedLagError = Math.max(Math.min(0.5, integratedLagError), -0.5);
-
-        steerPower += integratedAngleError;
-        centerPower += integratedLagError;
-
-
-      }
-
-      if (currentMotionState == MotionState.WAITING) {
-        steerPower = 0;
-        centerPower = 0;
-      }
-
-      System.out.println(currentMotionState);
-      System.out.printf("Left Power %f \t Right Power %f%n", centerPower - steerPower, centerPower + steerPower);
-      return new RobotPair(centerPower - steerPower, centerPower + steerPower,
-          wheelPositions.getTime());
+      return findSpeeds(wheelPositions.getTime());
     }
 
     return new RobotPair(0, 0, wheelPositions.getTime());
+  }
+
+  private boolean isUsingCamera() {
+    return usingCamera.get();
+  }
+
+
+  public RobotPair findSpeeds(double time) {
+    double leftPower = 0;
+    double rightPower = 0;
+
+    System.out.printf("kV %f, kK %f, kAcc %f, kS %f, kAng %f, kL %f%n", robotConfig.getKV(), robotConfig.getKK(),
+        robotConfig.getKAcc(), robotConfig.getKS(), robotConfig.getKAng(), robotConfig.getKL());
+    double centerPower = 0;
+    double steerPower = 0;
+    if (currentMotionState == MotionState.MOVING) {
+      // feed forward
+
+      leftPower += ((robotConfig.getKV() * targetPathData.getLeftState().getVelocity())
+          + (robotConfig.getKK() * Math.signum(targetPathData.getLeftState().getVelocity())))
+          + (robotConfig.getKAcc() * targetPathData.getLeftState().getAcceleration());
+      rightPower += ((robotConfig.getKV() * targetPathData.getRightState().getVelocity())
+          + (robotConfig.getKK() * Math.signum(targetPathData.getRightState().getVelocity())))
+          + (robotConfig.getKAcc() * targetPathData.getRightState().getAcceleration());
+      // feed back
+      double steerPowerXTE = robotConfig.getKS() * errorVector.getXTrack();
+      double steerPowerAngle =
+          robotConfig.getKAng() * errorVector.getAngle(); //error angle must be negative because it is target-actual
+      double centerPowerLag = robotConfig.getKL() * errorVector.getLag();
+
+      System.out.printf("steerPowerXTE: %f steerPowerAngle: %f centerPowerLag: %f%n", steerPowerXTE, steerPowerAngle,
+          centerPowerLag);
+
+      centerPower = ((leftPower + rightPower) / 2.0) + centerPowerLag;
+      steerPower = Math.max(-1,
+          Math.min(1, ((rightPower - leftPower) / 2.0) + steerPowerXTE + steerPowerAngle));
+      centerPower = Math
+          .max(-1 + Math.abs(steerPower),
+              Math.min(1 - Math.abs(steerPower), centerPower));
+    }
+    if ((currentMotionState == MotionState.FINISHING) || isClose(1)) {
+//          to give the extra oomph when finished the path but there is a little bit more to do//FIXME left, right powers somehow manage to be greater than 1
+
+      if ((time - staticPathData.getTime()) >= 2) {
+        currentMotionState = MotionState.WAITING;
+      }
+
+      integratedLagError += robotConfig.getILag() * errorVector.getLag();
+      integratedAngleError += robotConfig.getIAng() * errorVector.getAngle();
+
+      integratedAngleError = Math.max(Math.min(0.5, integratedAngleError), -0.5);
+      integratedLagError = Math.max(Math.min(0.5, integratedLagError), -0.5);
+
+      steerPower += integratedAngleError;
+      centerPower += integratedLagError;
+    }
+
+    if (currentMotionState == MotionState.WAITING) {
+      steerPower = 0;
+      centerPower = 0;
+    }
+
+    System.out.println(currentMotionState);
+    System.out.printf("Left Power %f \t Right Power %f%n", centerPower - steerPower, centerPower + steerPower);
+    return new RobotPair(centerPower - steerPower, centerPower + steerPower,
+        time);
+  }
+
+  private ErrorVector handleCameraData() {
+    CameraData robotToCameraPosition = getCurrentCameraData();
+    PathData pathData = findClosestPointInHistory(robotToCameraPosition.getTime());
+//        TODO interpret
+    trimHistory(pathData);
+    ErrorVector errorVector = findCurrentError(pathData, robotToCameraPosition.getCameraPose());
+
+    return new ErrorVector(errorVector.getLag() + this.errorVector.getLag(),
+        errorVector.getXTrack() + this.errorVector.getXTrack(),
+        errorVector.getAngle() + this.errorVector.getAngle()
+    );
   }
 
   private void trimHistory(PathData pathData) {
@@ -411,11 +476,11 @@ public class MotionController {
         actualPosition = new Pose(0, 0, 0);
       }
 
-      previousLengths = drivetrain.getWheelPositions();
+      previousLengths = setSpeeds.getWheelPositions();
 
       staticPathData = new PathData(
-          new State(drivetrain.getWheelPositions().getLeft(), 0, 0),
-          new State(drivetrain.getWheelPositions().getRight(), 0, 0),
+          new State(setSpeeds.getWheelPositions().getLeft(), 0, 0),
+          new State(setSpeeds.getWheelPositions().getRight(), 0, 0),
           actualPosition,
           0, true);
 
@@ -426,6 +491,19 @@ public class MotionController {
       currentMotionState = MotionState.WAITING;
       running = true;
     }
+  }
+
+  public void enableCameraStream() {
+    cameraTimerTask = new CameraReader();
+    controller.schedule(cameraTimerTask, 0L, period);
+  }
+
+  public void disbaleCameraStream() {
+    cameraTimerTask.cancel();
+  }
+
+  public CameraData getCurrentCameraData() {
+    return cameraTimerTask.getCameraData();
   }
 
   /**
@@ -447,7 +525,7 @@ public class MotionController {
    */
   public double getPercentDone(Path pathToUse) {
     if (currentPath.equals(pathToUse)) {
-      double currentTime = drivetrain.getWheelPositions().getTime() - pathStartTime;
+      double currentTime = setSpeeds.getWheelPositions().getTime() - pathStartTime;
       double endTime = currentPath.getPathData().getLast().getTime();
       return currentTime / endTime;
     }
@@ -464,7 +542,7 @@ public class MotionController {
       currentTimerTask.cancel();
       controller.purge();
       currentPath = null;
-      drivetrain.setSpeeds(0, 0);
+      setSpeeds.setSpeeds(0, 0);
       pathNumber = 0;
     }
   }
@@ -479,7 +557,7 @@ public class MotionController {
   @Override
   public String toString() {
     return "MotionController{" +
-        "drivetrain=" + drivetrain +
+        "robotConfig=" + robotConfig +
         ", paths=" + paths +
         ", period=" + period +
         ", motionLogger=" + motionLogger +
@@ -522,15 +600,15 @@ public class MotionController {
 
     @Override
     public final void run() {
-      if (drivetrain.getKK() == 0 && drivetrain.getKV() == 0 && drivetrain.getKL() == 0) {
+      if (robotConfig.getKK() == 0 && robotConfig.getKV() == 0 && robotConfig.getKL() == 0) {
         System.out.println("Please make KK, KV or KL, not equal 0 otherwise the robot will not move");
       }
 
-      RobotPair wheelPositions = drivetrain.getWheelPositions();
+      RobotPair wheelPositions = setSpeeds.getWheelPositions();
 
       powers = calculateSpeeds(wheelPositions);
 
-      drivetrain.setSpeeds(powers.getLeft(), powers.getRight());
+      setSpeeds.setSpeeds(powers.getLeft(), powers.getRight());
 
       motionLogger.addMotionData(
           new MotionData(actualPosition, targetPathData.getCenterPose(), errorVector,
