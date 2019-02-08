@@ -1,4 +1,4 @@
-package org.waltonrobotics.command;
+package org.waltonrobotics.command.autolearning;
 
 import edu.wpi.first.wpilibj.command.Command;
 import java.util.AbstractList;
@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.DoubleStream;
 import org.waltonrobotics.AbstractDrivetrain;
+import org.waltonrobotics.command.SimpleLine;
+import org.waltonrobotics.command.SimpleMotion;
 import org.waltonrobotics.controller.ErrorVector;
 
 public class ConstantsFinder extends Command {
