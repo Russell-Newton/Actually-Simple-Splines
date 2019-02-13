@@ -121,6 +121,10 @@ public abstract class AbstractDrivetrain extends Subsystem {
     return robotConfig;
   }
 
+  public void setRobotConfig(RobotConfig robotConfig) {
+    this.robotConfig = robotConfig;
+    controller.setRobotConfig(robotConfig);
+  }
 
   public boolean isUsingCamera() {
     return usingCamera.get();

@@ -37,4 +37,14 @@ public class CameraData {
   public double getTime() {
     return time;
   }
+
+  @Override
+  public String toString() {
+    return "CameraData{" +
+        "cameraPose=" + cameraPose +
+        ", height=" + height +
+        ", numberOfTargets=" + numberOfTargets +
+        ", time=" + time +
+        '}';
+  }
 }

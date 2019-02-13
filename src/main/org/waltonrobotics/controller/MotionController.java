@@ -84,7 +84,6 @@ public class MotionController {
     this(robotConfig, robotConfig.getRobotWidth(), motionLogger, setSpeeds, usingCamera);
   }
 
-
   /**
    * @param robotConfig - the robotConfig to use the AbstractDrivetrain methods from
    * @param motionLogger - the MotionLogger from the AbstractDrivetrain
@@ -92,6 +91,7 @@ public class MotionController {
   public MotionController(RobotConfig robotConfig, MotionLogger motionLogger, SetSpeeds setSpeeds) {
     this(robotConfig, robotConfig.getRobotWidth(), motionLogger, setSpeeds, () -> false);
   }
+
 
   /**
    * @param robotConfig - the robotConfig to use the AbstractDrivetrain methods from
@@ -190,6 +190,10 @@ public class MotionController {
       angleError += 2 * Math.PI;
     }
     return new ErrorVector(lagError, crossTrackError, angleError);
+  }
+
+  public void setRobotConfig(RobotConfig robotConfig) {
+    this.robotConfig = robotConfig;
   }
 
   public MotionLogger getMotionLogger() {
