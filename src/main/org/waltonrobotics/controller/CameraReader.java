@@ -13,7 +13,7 @@ public class CameraReader extends TimerTask {
   public CameraReader() {
     serialPort = new SerialPort(115200, Port.kUSB);
     serialPort.enableTermination();
-    serialPort.setReadBufferSize(25);
+    serialPort.setReadBufferSize(1);
   }
 
   public CameraData getCameraData() {
