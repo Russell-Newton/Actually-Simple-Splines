@@ -8,7 +8,7 @@ public class CameraData {
   private final double time;
 
   public CameraData(double x, double y, double height, double angle, int numberOfTargets, double time) {
-    cameraPose = new Pose(x, y, angle);
+    cameraPose = new Pose(x, y, StrictMath.toRadians(angle));
     this.height = height;
     this.numberOfTargets = numberOfTargets;
     this.time = time;
