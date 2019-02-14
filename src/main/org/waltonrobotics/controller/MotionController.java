@@ -47,7 +47,7 @@ public class MotionController {
   private double integratedLagError;
   private double integratedAngleError;
   private int pathNumber;
-  private CameraReader cameraTimerTask;
+  private CameraReader cameraTimerTask = new CameraReader();
 
   /**
    * @param robotConfig - the robotConfig to use the AbstractDrivetrain methods from
@@ -497,16 +497,8 @@ public class MotionController {
     }
   }
 
-  public void enableCameraStream() {
-    cameraTimerTask = new CameraReader();
-    controller.schedule(cameraTimerTask, 0L, period);
-  }
-
-  public void disbaleCameraStream() {
-    cameraTimerTask.cancel();
-  }
-
   public CameraData getCurrentCameraData() {
+    cameraTimerTask.run();
     return cameraTimerTask.getCameraData();
   }
 
