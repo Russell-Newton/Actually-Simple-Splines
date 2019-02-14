@@ -41,7 +41,7 @@ public class CameraData {
   @Override
   public String toString() {
     return "CameraData{" +
-        "cameraPose=" + cameraPose +
+        "cameraPose=" + cameraPose.toString() +
         ", height=" + height +
         ", numberOfTargets=" + numberOfTargets +
         ", time=" + time +

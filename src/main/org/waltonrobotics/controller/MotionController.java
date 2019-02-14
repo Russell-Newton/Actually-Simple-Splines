@@ -22,7 +22,7 @@ import org.waltonrobotics.util.SetSpeeds;
  */
 public class MotionController {
 
-  private final RobotConfig robotConfig;
+  private RobotConfig robotConfig;
   private final Queue<Path> paths = new LinkedBlockingDeque<>();
   private final int period;
   private final MotionLogger motionLogger;
