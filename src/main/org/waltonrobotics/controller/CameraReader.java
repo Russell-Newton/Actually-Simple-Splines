@@ -35,6 +35,10 @@ public class CameraReader extends TimerTask {
             (data.charAt(12) == 'A' ? 1 : -1);
         int numberOfTargets = Integer.parseInt(data.substring(17));
         double t = Timer.getFPGATimestamp() - 0.052;
+
+        x /= 100;
+        y /= 100;
+
         this.cameraData = new CameraData(x, y, z, angle, numberOfTargets, t);
       } else {
         int numberOfTargets = Integer.parseInt(data.substring(2));
