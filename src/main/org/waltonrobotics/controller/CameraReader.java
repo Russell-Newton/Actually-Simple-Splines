@@ -44,6 +44,8 @@ public class CameraReader extends TimerTask {
         int numberOfTargets = Integer.parseInt(data.substring(2));
         this.cameraData = new CameraData(numberOfTargets);
       }
+    }else{
+      this.cameraData = new CameraData();
     }
   }
 
