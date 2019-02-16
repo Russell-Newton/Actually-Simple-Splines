@@ -12,6 +12,7 @@ public class CameraReader extends TimerTask {
 
   private final SerialPort serialPort;
   private CameraData cameraData = new CameraData();
+  boolean isRunning = false;
 
   public CameraReader() {
     serialPort = new SerialPort(115200, Port.kUSB);
@@ -26,6 +27,11 @@ public class CameraReader extends TimerTask {
 
   @Override
   public synchronized void run() {
+    if (!isRunning){
+      startCollecting();
+      isRunning = true;
+    }
+
     String data = serialPort.readString().trim();
 
 //    System.out.println(data.matches("(F)|(\\d{2,})"));
