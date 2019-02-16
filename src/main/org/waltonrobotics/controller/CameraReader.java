@@ -2,6 +2,7 @@ package org.waltonrobotics.controller;
 
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.SerialPort.WriteBufferMode;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.TimerTask;
 
@@ -12,6 +13,7 @@ public class CameraReader extends TimerTask {
 
   public CameraReader() {
     serialPort = new SerialPort(115200, Port.kUSB);
+    serialPort.setWriteBufferMode(WriteBufferMode.kFlushWhenFull);
     serialPort.enableTermination();
     serialPort.setReadBufferSize(18);
   }
