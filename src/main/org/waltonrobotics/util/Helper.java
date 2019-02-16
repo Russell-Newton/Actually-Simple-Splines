@@ -20,12 +20,6 @@ public class Helper {
   }
 
   /**
-   * Finds the factorial of any integer or double, d
-   *
-   * @return the factorial of d
-   */
-
-  /**
    * Calculates the binomial coefficients for the demanded path degree
    */
   public static int[] calculateCoefficients(int degree) {
