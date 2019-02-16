@@ -59,7 +59,7 @@ public class CameraReader {
   }
 
   public void startCollecting() {
-    String currentDate = new SimpleDateFormat("yyyy.MM.dd.hh.mm.ss").format(new Date());
+    String currentDate = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
     serialPort.writeString("S" + currentDate);
   }
 
