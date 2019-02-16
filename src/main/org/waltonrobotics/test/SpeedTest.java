@@ -2,12 +2,11 @@ package org.waltonrobotics.test;
 
 public class SpeedTest {
 
-  public static final int ITERATIONS = Integer.MAX_VALUE/50;
+  public static final int ITERATIONS = Integer.MAX_VALUE / 50;
 
   public static void main(String[] args) {
     String[] numbers = new String[ITERATIONS];
-    for (int i = 0 ; i < ITERATIONS; i++)
-    {
+    for (int i = 0; i < ITERATIONS; i++) {
       numbers[i] = String.valueOf(i);
     }
 

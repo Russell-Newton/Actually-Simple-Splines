@@ -29,7 +29,6 @@ public class CameraReader extends TimerTask {
 //    System.out.println(data.matches("(F)|(\\d{2,})"));
     System.out.println(data);
 
-
 //    if (data.length() > 17) {
     if (data.matches("^[xX]\\d{3}[yY]\\d{3}[zZ]\\d{3}[aA]\\d{3}N\\d+$")) {
       int x = Integer.parseUnsignedInt(data.substring(1, 4)) *
