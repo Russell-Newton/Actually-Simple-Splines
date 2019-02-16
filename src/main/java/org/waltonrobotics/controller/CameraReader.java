@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.SerialPort.WriteBufferMode;
 import edu.wpi.first.wpilibj.Timer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.TimerTask;
 
 public class CameraReader extends TimerTask {
@@ -52,10 +54,15 @@ public class CameraReader extends TimerTask {
   }
 
   public void startCollecting() {
-    serialPort.writeString("S");
+    String currentDate = new SimpleDateFormat("yyyy.MM.dd.hh.mm.ss").format(new Date());
+    serialPort.writeString("S" + currentDate);
   }
 
   public void endCollecting() {
     serialPort.writeString("E");
+  }
+
+  public void singleCollect() {
+    serialPort.writeString("s");
   }
 }
