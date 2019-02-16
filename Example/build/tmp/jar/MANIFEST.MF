@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Main-Class: edu.wpi.first.wpilibj.RobotBase
-org.waltonrobotics.util.Robot-Class: frc.team2974.robot.org.waltonrobotics.util.Robot
-
