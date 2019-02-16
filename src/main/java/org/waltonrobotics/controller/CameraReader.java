@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimerTask;
 
-public class CameraReader extends TimerTask {
+public class CameraReader {
 
   private final SerialPort serialPort;
   private CameraData cameraData = new CameraData();
@@ -25,7 +25,6 @@ public class CameraReader extends TimerTask {
     return cameraData;
   }
 
-  @Override
   public synchronized void run() {
     if (!isRunning){
       startCollecting();
