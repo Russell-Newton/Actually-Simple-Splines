@@ -104,11 +104,7 @@ public class PathLearner extends Command {
 
   @Override
   protected boolean isFinished() {
-    if (joystickButton == null) {
-      return averageVelocity <= VELOCITY_TOLERANCE;
-    } else {
-      return joystickButton.get();
-    }
+    return joystickButton == null ? averageVelocity <= VELOCITY_TOLERANCE : joystickButton.get();
   }
 
   @Override

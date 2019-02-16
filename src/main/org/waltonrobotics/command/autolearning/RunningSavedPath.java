@@ -21,7 +21,7 @@ public final class RunningSavedPath extends SimpleMotion {
   }
 
   private RunningSavedPath(double maxVelocity, double maxAcceleration, List<PathData> movement) {
-    this(maxVelocity, maxAcceleration, 1, movement);
+    this(maxVelocity, maxAcceleration, 1.0, movement);
   }
 
   private RunningSavedPath(double maxVelocity, double maxAcceleration, double inverseScale,
@@ -30,11 +30,11 @@ public final class RunningSavedPath extends SimpleMotion {
   }
 
   private RunningSavedPath(double maxVelocity, double maxAcceleration, PathData... movement) {
-    this(maxVelocity, maxAcceleration, 1, Arrays.asList(movement));
+    this(maxVelocity, maxAcceleration, 1.0, Arrays.asList(movement));
   }
 
   public static RunningSavedPath loadSavedPath(String filePath) throws IOException {
-    return loadSavedPath(filePath, 1);
+    return loadSavedPath(filePath, 1.0);
   }
 
   public static RunningSavedPath loadSavedPath(String filePath, double speedIncrease)
@@ -47,7 +47,7 @@ public final class RunningSavedPath extends SimpleMotion {
   }
 
   public static RunningSavedPath loadSavedPath(LearnPath learnedPath) {
-    return loadSavedPath(learnedPath, 1);
+    return loadSavedPath(learnedPath, 1.0);
   }
 
   public static RunningSavedPath loadSavedPath(LearnPath learnedPath, double speedIncrease) {

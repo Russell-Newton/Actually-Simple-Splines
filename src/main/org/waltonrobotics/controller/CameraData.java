@@ -15,11 +15,11 @@ public class CameraData {
   }
 
   public CameraData(int numberOfTargets) {
-    this(0, 0, 0, 0, numberOfTargets, -1);
+    this(0, 0, 0, 0, numberOfTargets, -1.0);
   }
 
   public CameraData() {
-    this(0, 0, 0, 0, 0, -1);
+    this(0, 0, 0, 0, 0, -1.0);
   }
 
   public Pose getCameraPose() {
@@ -41,7 +41,7 @@ public class CameraData {
   @Override
   public String toString() {
     return "CameraData{" +
-        "cameraPose=" + cameraPose.toString() +
+        "cameraPose=" + cameraPose +
         ", height=" + height +
         ", numberOfTargets=" + numberOfTargets +
         ", time=" + time +

@@ -61,7 +61,7 @@ public final class Config {
   public static final class Path {
 
 
-    public static final double VELOCITY_MAX = 4; /* 3.075548163 TESTED MAX VELOCITY*/ //3 m/s
+    public static final double VELOCITY_MAX = 4.0; /* 3.075548163 TESTED MAX VELOCITY*/ //3 m/s
     public static final double ACCELERATION_MAX = 3.5; //2 m/s^2
 
     private Path() {
@@ -78,7 +78,7 @@ public final class Config {
       // the new angle is the original angle but x is negated
       double newAngle = StrictMath.atan2(StrictMath.sin(angle), -StrictMath.cos(angle));
       if (newAngle < 0) {
-        newAngle += 2 * Math.PI;
+        newAngle += 2.0 * Math.PI;
       }
       return new Pose(-p.getX(), p.getY(), newAngle);
     }
@@ -90,9 +90,9 @@ public final class Config {
     public static final double KAcc = 0.067555; //0
     public static final double KK = 0.193466; // 0
 
-    public static final double KS = 2;//1
-    public static final double KAng = 1;//1
-    public static final double KL = 2; //2
+    public static final double KS = 2.0;//1
+    public static final double KAng = 1.0;//1
+    public static final double KL = 2.0; //2
 
     public static final double IL = 0.00; // 0.01
     public static final double IAng = 0.005; // 0.01

@@ -30,8 +30,8 @@ public class SimpleSpline extends SimpleMotion {
 
   public SimpleSpline(double maxVelocity, double maxAcceleration, boolean isBackwards,
       Pose... knots) {
-    this(maxVelocity, maxAcceleration, isBackwards, 1,
-        1, 0, 0, knots);
+    this(maxVelocity, maxAcceleration, isBackwards, 1.0,
+        1.0, 0, 0, knots);
   }
 
   public static SimpleSpline pathFromPosesWithAngle(boolean isBackwards, Pose... knots) {
@@ -56,7 +56,7 @@ public class SimpleSpline extends SimpleMotion {
 
   public static SimpleSpline pathFromPosesWithAngle(double maxVelocity, double maxAcceleration,
       double startVelocity, double endVelocity, boolean isBackwards, Pose... knots) {
-    return new SimpleSpline(maxVelocity, maxAcceleration, isBackwards, 1, 1, startVelocity,
+    return new SimpleSpline(maxVelocity, maxAcceleration, isBackwards, 1.0, 1.0, startVelocity,
         endVelocity, knots);
   }
 

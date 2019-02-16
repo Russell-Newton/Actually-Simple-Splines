@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -97,7 +98,7 @@ public abstract class DynamicPath {
     if (angle > Math.PI) {
       return angle - (2.0 * Math.PI);
     } else if (angle < -Math.PI) {
-      return angle + (2 * Math.PI);
+      return angle + (2.0 * Math.PI);
     }
     return angle;
   }
@@ -105,13 +106,13 @@ public abstract class DynamicPath {
 
   public static DynamicPath loadPath(String filePath) throws IOException {
     try (BufferedReader bufferedReader = new BufferedReader(
-        new InputStreamReader(new FileInputStream(filePath)))) {
+        new InputStreamReader(new FileInputStream(filePath), StandardCharsets.UTF_8))) {
 
       List<PathData> pathDataList = new LinkedList<>();
       List<Pose> keyPoints = new LinkedList<>();
 
-      final double[] pathDataSize = {1};
-      final double[] keyPointSize = {1};
+      final double[] pathDataSize = {1.0};
+      final double[] keyPointSize = {1.0};
 
       final double[] maxVelocity = new double[1];
       final double[] maxAcceleration = new double[1];

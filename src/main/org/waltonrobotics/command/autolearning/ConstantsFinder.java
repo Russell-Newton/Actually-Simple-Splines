@@ -80,9 +80,9 @@ public class ConstantsFinder extends Command {
   }
 
   public double normalizeSumSquares(AbstractList<ErrorVector> errorVectors) {
-    return StrictMath.pow(normalizeSum(errorVectors, ErrorVector::getLag), 2) +
-        StrictMath.pow(normalizeSum(errorVectors, ErrorVector::getAngle), 2) +
-        StrictMath.pow(normalizeSum(errorVectors, ErrorVector::getXTrack), 2);
+    return StrictMath.pow(normalizeSum(errorVectors, ErrorVector::getLag), 2.0) +
+        StrictMath.pow(normalizeSum(errorVectors, ErrorVector::getAngle), 2.0) +
+        StrictMath.pow(normalizeSum(errorVectors, ErrorVector::getXTrack), 2.0);
   }
 
   public double normalizeSum(AbstractList<ErrorVector> errorVectors, ToDoubleFunction<ErrorVector> toDoubleFunction) {

@@ -43,7 +43,7 @@ public final class SavePath extends Path {
    * that the robot will complete the motion faster.
    */
   public SavePath scaleTime(double inverseScale) {
-    if (inverseScale != 1) {
+    if (inverseScale != 1.0) {
       List<PathData> updatedPathData = getPathData().stream().map(moment ->
           new PathData(
               new State(moment.getLeftState().getLength(),

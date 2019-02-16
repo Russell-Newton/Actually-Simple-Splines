@@ -134,7 +134,7 @@ public class BezierCurve extends Path {
     for (int i = 0; i <= n; i++) {
       double coefficient = coefficients[i];
 
-      double oneMinusT = StrictMath.pow(1 - percentage, (n - i));
+      double oneMinusT = StrictMath.pow(1.0 - percentage, (n - i));
 
       double powerOfT = StrictMath.pow(percentage, (double) i);
 
@@ -199,8 +199,8 @@ public class BezierCurve extends Path {
     // FIXME This is probably wrong dLength should be 0 if there is not angle
 //		double dLength = (previousCenter.sameCoordinates(nextPosition)? 0: previousCenter.distance(nextPosition)) * (isBackwards() ? -1 : 1);
     double dLength = previousCenter.distance(nextPosition) * (isBackwards() ? -1 : 1);
-    double dlLeft = dLength - ((dAngle * getRobotWidth()) / 2);
-    double dlRight = dLength + ((dAngle * getRobotWidth()) / 2);
+    double dlLeft = dLength - ((dAngle * getRobotWidth()) / 2.0);
+    double dlRight = dLength + ((dAngle * getRobotWidth()) / 2.0);
 
     // The time required to get to the next point
     double dTime = Math.max(Math.abs(dlLeft), Math.abs(dlRight)) / getVCruise();
@@ -214,10 +214,10 @@ public class BezierCurve extends Path {
 
     if (isBackwards()) {
       vAccelerating = -Math
-          .sqrt(StrictMath.pow(startVelocity, 2) + (getAMax() * Math.abs(lCenter)));
+          .sqrt(StrictMath.pow(startVelocity, 2.0) + (getAMax() * Math.abs(lCenter)));
       vDecelerating = -Math
           .sqrt(
-              StrictMath.pow(endVelocity, 2) + (getAMax() * Math
+              StrictMath.pow(endVelocity, 2.0) + (getAMax() * Math
                   .abs(curveLength - Math.abs(lCenter))));
       if ((vAccelerating > velocity) && (vAccelerating > vDecelerating)) {
         acceleration = -getAMax();
@@ -229,10 +229,10 @@ public class BezierCurve extends Path {
       }
     } else {
       vAccelerating = Math
-          .sqrt(StrictMath.pow(startVelocity, 2) + (getAMax() * Math.abs(lCenter)));
+          .sqrt(StrictMath.pow(startVelocity, 2.0) + (getAMax() * Math.abs(lCenter)));
       vDecelerating = Math
           .sqrt(
-              StrictMath.pow(endVelocity, 2) + (getAMax() * Math
+              StrictMath.pow(endVelocity, 2.0) + (getAMax() * Math
                   .abs(curveLength - Math.abs(lCenter))));
 
       if ((vAccelerating < velocity) && (vAccelerating < vDecelerating)) {
@@ -264,12 +264,12 @@ public class BezierCurve extends Path {
   }
 
   public double computeArcLength() {
-    return computeArcLength(16 /* this number seems to give decent accuracy*/, 0, 1);
+    return computeArcLength(16 /* this number seems to give decent accuracy*/, 0, 1.0);
   }
 
   public double computeArcLength(int n) {
 
-    return computeArcLength(n, 0, 1);
+    return computeArcLength(n, 0, 1.0);
   }
 
   public double computeArcLength(double lowerBound, double upperBound) {
@@ -306,7 +306,7 @@ public class BezierCurve extends Path {
 
       Pose point = getDerivative(t[i]);
 
-      sum += C[i] * Math.hypot(point.getX(), point.getY());
+      sum += C[i] * StrictMath.hypot(point.getX(), point.getY());
     }
 
     return sum;
@@ -338,12 +338,12 @@ public class BezierCurve extends Path {
         Pose pointI = getKeyPoints().get(i);
 
         double multiplier =
-            coefficients[i] * StrictMath.pow(1 - percentage, ((degree - 1) - i)) * StrictMath
+            coefficients[i] * StrictMath.pow(1.0 - percentage, ((degree - 1) - i)) * StrictMath
                 .pow(percentage, (double) i);
 
         Pose nextPointI = getKeyPoints().get(i + 1);
 
-        dx += (multiplier = multiplier * (degree)) * (nextPointI.getX() - pointI.getX());
+        dx += (multiplier *= degree) * (nextPointI.getX() - pointI.getX());
         dy += multiplier * (nextPointI.getY() - pointI.getY());
       }
     }
@@ -353,7 +353,7 @@ public class BezierCurve extends Path {
     if (isBackwards()) {
       angle += Math.PI;
     }
-    angle %= (2 * Math.PI);
+    angle %= (2.0 * Math.PI);
 
     return new Pose(dx, dy, angle);
   }
@@ -427,7 +427,7 @@ public class BezierCurve extends Path {
       if (this == o) {
         return true;
       }
-      if (o == null || getClass() != o.getClass()) {
+      if ((o == null) || (getClass() != o.getClass())) {
         return false;
       }
 
@@ -448,9 +448,9 @@ public class BezierCurve extends Path {
       long temp;
       result = n;
       temp = Double.doubleToLongBits(upper);
-      result = 31 * result + (int) (temp ^ (temp >>> 32));
+      result = (31 * result) + (int) (temp ^ (temp >>> 32));
       temp = Double.doubleToLongBits(lower);
-      result = 31 * result + (int) (temp ^ (temp >>> 32));
+      result = (31 * result) + (int) (temp ^ (temp >>> 32));
       return result;
     }
   }

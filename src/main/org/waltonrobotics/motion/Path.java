@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -101,20 +102,20 @@ public abstract class Path {
     if (angle > Math.PI) {
       return angle - (2.0 * Math.PI);
     } else if (angle < -Math.PI) {
-      return angle + (2 * Math.PI);
+      return angle + (2.0 * Math.PI);
     }
     return angle;
   }
 
   public static Path loadPath(String filePath) throws IOException {
     try (BufferedReader bufferedReader = new BufferedReader(
-        new InputStreamReader(new FileInputStream(filePath)))) {
+        new InputStreamReader(new FileInputStream(filePath), StandardCharsets.UTF_8))) {
 
       List<PathData> pathDataList = new LinkedList<>();
       List<Pose> keyPoints = new LinkedList<>();
 
-      final double[] pathDataSize = {1};
-      final double[] keyPointSize = {1};
+      final double[] pathDataSize = {1.0};
+      final double[] keyPointSize = {1.0};
 
       final double[] maxVelocity = new double[1];
       final double[] maxAcceleration = new double[1];
@@ -183,7 +184,7 @@ public abstract class Path {
     for (; i < data.length; i++) {
       String parameter = data[i];
 
-      if (parameter.equals("PF")) {
+      if ("PF".equals(parameter)) {
         i++;
         break;
       }

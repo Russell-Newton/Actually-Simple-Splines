@@ -24,7 +24,7 @@ public class Tester {
 //    points.add(new Pose(0, 0, StrictMath.toRadians(0)));
     points.add(new Pose(0, 0, StrictMath.toRadians(0)));
 //    points.add(new Pose(.5, 0, StrictMath.toRadians(0)));
-    points.add(new Pose(1, 0, StrictMath.toRadians(0)));
+    points.add(new Pose(1.0, 0, StrictMath.toRadians(0)));
 //    points.add(new Pose(1, 1, StrictMath.toRadians(0)));
 //    points.add(new Pose(1.5, 0, StrictMath.toRadians(0)));
 //    points.add(new Pose(2, 0, StrictMath.toRadians(0)));
@@ -32,8 +32,8 @@ public class Tester {
 
 //    Spline spline = new Spline(1, 1, 0, 0, false, points);
     {
-      BezierCurve spline = new BezierCurve(1, 1, 0, 0, false, points);
-      DynamicBezierCurve dynamicBezierCurve = new DynamicBezierCurve(1, 1, 0, 0, false, points);
+      BezierCurve spline = new BezierCurve(1.0, 1.0, 0, 0, false, points);
+      DynamicBezierCurve dynamicBezierCurve = new DynamicBezierCurve(1.0, 1.0, 0, 0, false, points);
 
       System.out.println(spline.getCurveLength());
       System.out.println(dynamicBezierCurve.getCurveLength());
@@ -57,11 +57,11 @@ public class Tester {
     }
 
     {
-      Spline spline = new Spline(1, 1, 0, 0, false, points);
-      DynamicSpline dynamicBezierCurve = new DynamicSpline(1, 1, 0, 0, false, points);
+      Spline spline = new Spline(1.0, 1.0, 0, 0, false, points);
+      DynamicSpline dynamicBezierCurve = new DynamicSpline(1.0, 1.0, 0, 0, false, points);
 
-      BezierCurve bezier = new BezierCurve(1, 1, 0, 0, false, points);
-      DynamicBezierCurve dynamic = new DynamicBezierCurve(1, 1, 0, 0, false, points);
+      BezierCurve bezier = new BezierCurve(1.0, 1.0, 0, 0, false, points);
+      DynamicBezierCurve dynamic = new DynamicBezierCurve(1.0, 1.0, 0, 0, false, points);
 
       System.out.println(spline.getCurveLength());
 //      System.out.println(dynamicBezierCurve.getCurveLength());

@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class Helper {
 
-  public final static HashMap<Integer, int[]> coefficents = new HashMap<>();
+  public static final HashMap<Integer, int[]> coefficents = new HashMap<>();
 
   static {
     coefficents.put(0, new int[]{1});
@@ -65,7 +65,7 @@ public class Helper {
 
     int result = 1;
     for (int i = 1; i <= d; i++) {
-      result = result * i;
+      result *= i;
     }
 
     return result;

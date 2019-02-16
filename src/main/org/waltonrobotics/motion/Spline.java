@@ -117,26 +117,26 @@ public class Spline extends Path {
 
     /* left most segment */
     a[0] = 0;
-    b[0] = 2;
-    c[0] = 1;
-    rX[0] = knots.get(0).getX() + (2 * knots.get(1).getX());
-    rY[0] = knots.get(0).getY() + (2 * knots.get(1).getY());
+    b[0] = 2.0;
+    c[0] = 1.0;
+    rX[0] = knots.get(0).getX() + (2.0 * knots.get(1).getX());
+    rY[0] = knots.get(0).getY() + (2.0 * knots.get(1).getY());
 
     /* internal segments */
     for (int i = 1; i < (degree - 1); i++) {
-      a[i] = 1;
-      b[i] = 4;
-      c[i] = 1;
-      rX[i] = (4 * knots.get(i).getX()) + (2 * knots.get(i + 1).getX());
-      rY[i] = (4 * knots.get(i).getY()) + (2 * knots.get(i + 1).getY());
+      a[i] = 1.0;
+      b[i] = 4.0;
+      c[i] = 1.0;
+      rX[i] = (4.0 * knots.get(i).getX()) + (2.0 * knots.get(i + 1).getX());
+      rY[i] = (4.0 * knots.get(i).getY()) + (2.0 * knots.get(i + 1).getY());
     }
 
     /* right segment */
-    a[degree - 1] = 2;
-    b[degree - 1] = 7;
+    a[degree - 1] = 2.0;
+    b[degree - 1] = 7.0;
     c[degree - 1] = 0;
-    rX[degree - 1] = (8 * knots.get(degree - 1).getX()) + knots.get(degree).getX();
-    rY[degree - 1] = (8 * knots.get(degree - 1).getY()) + knots.get(degree).getY();
+    rX[degree - 1] = (8.0 * knots.get(degree - 1).getX()) + knots.get(degree).getX();
+    rY[degree - 1] = (8.0 * knots.get(degree - 1).getY()) + knots.get(degree).getY();
 
     /* solves Ax=b with the Thomas algorithm */
     for (int i = 1; i < degree; i++) {
@@ -155,8 +155,8 @@ public class Spline extends Path {
 
     /* we have p1, now compute p2 */
     for (int i = 0; i < (degree - 1); i++) {
-      points2[i] = new Pose((2 * knots.get(i + 1).getX()) - points1[i + 1].getX(),
-          (2 * knots.get(i + 1).getY()) - points1[i + 1].getY());
+      points2[i] = new Pose((2.0 * knots.get(i + 1).getX()) - points1[i + 1].getX(),
+          (2.0 * knots.get(i + 1).getY()) - points1[i + 1].getY());
     }
 
     points2[degree - 1] = new Pose(

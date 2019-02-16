@@ -26,7 +26,7 @@ public class MotionController {
   private final int period;
   private final MotionLogger motionLogger;
   private final Timer controller;
-  private final List<PathData> history = new LinkedList<PathData>();
+  private final List<PathData> history = new LinkedList<>();
   private final SetSpeeds setSpeeds;
   private final Supplier<Boolean> usingCamera;
   private RobotConfig robotConfig;
@@ -139,7 +139,7 @@ public class MotionController {
     double arcLeft = wheelPositions.getLeft() - previousWheelPositions.getLeft();
     double arcRight = wheelPositions.getRight() - previousWheelPositions.getRight();
     double dAngle = (arcRight - arcLeft) / Path.getRobotWidth();
-    double arcCenter = (arcRight + arcLeft) / 2;
+    double arcCenter = (arcRight + arcLeft) / 2.0;
     double dX;
     double dY;
 
@@ -149,8 +149,8 @@ public class MotionController {
       dX = arcCenter * StrictMath.cos(currentAngle);
       dY = arcCenter * StrictMath.sin(currentAngle);
     } else {
-      double xPrime = arcCenter / dAngle * StrictMath.sin(dAngle);
-      double yPrime = arcCenter / dAngle * (1 - StrictMath.cos(dAngle));
+      double xPrime = (arcCenter / dAngle) * StrictMath.sin(dAngle);
+      double yPrime = (arcCenter / dAngle) * (1.0 - StrictMath.cos(dAngle));
 
       dX = (xPrime * StrictMath.cos(currentAngle))
           - (yPrime * StrictMath.sin(currentAngle));
@@ -181,13 +181,13 @@ public class MotionController {
     double angleError = targetPose.getAngle() - actualPose.getAngle();
 
     if (targetPathData.isBackwards()) {
-      crossTrackError *= -1;
+      crossTrackError *= -1.0;
     }
 
     if (angleError > Math.PI) {
-      angleError -= 2 * Math.PI;
+      angleError -= 2.0 * Math.PI;
     } else if (angleError < -Math.PI) {
-      angleError += 2 * Math.PI;
+      angleError += 2.0 * Math.PI;
     }
     return new ErrorVector(lagError, crossTrackError, angleError);
   }
@@ -340,16 +340,16 @@ public class MotionController {
           centerPowerLag);
 
       centerPower = ((leftPower + rightPower) / 2.0) + centerPowerLag;
-      steerPower = Math.max(-1,
-          Math.min(1, ((rightPower - leftPower) / 2.0) + steerPowerXTE + steerPowerAngle));
+      steerPower = Math.max(-1.0,
+          Math.min(1.0, ((rightPower - leftPower) / 2.0) + steerPowerXTE + steerPowerAngle));
       centerPower = Math
-          .max(-1 + Math.abs(steerPower),
-              Math.min(1 - Math.abs(steerPower), centerPower));
+          .max(-1.0 + Math.abs(steerPower),
+              Math.min(1.0 - Math.abs(steerPower), centerPower));
     }
-    if ((currentMotionState == MotionState.FINISHING) || isClose(1)) {
+    if ((currentMotionState == MotionState.FINISHING) || isClose(1.0)) {
 //          to give the extra oomph when finished the path but there is a little bit more to do//FIXME left, right powers somehow manage to be greater than 1
 
-      if ((time - staticPathData.getTime()) >= 2) {
+      if ((time - staticPathData.getTime()) >= 2.0) {
         currentMotionState = MotionState.WAITING;
       }
 
@@ -401,7 +401,7 @@ public class MotionController {
     for (int i = history.size() - 1; i >= 1; i--) {
       previousPathData = history.get(i - 1);
 
-      if (previousPathData.getTime() >= pointTime && history.get(i).getTime() < pointTime) {
+      if ((previousPathData.getTime() >= pointTime) && (history.get(i).getTime() < pointTime)) {
         break;
       }
     }
@@ -525,7 +525,7 @@ public class MotionController {
       double endTime = currentPath.getPathData().getLast().getTime();
       return currentTime / endTime;
     }
-    return -1;
+    return -1.0;
   }
 
   /**
@@ -596,7 +596,7 @@ public class MotionController {
 
     @Override
     public final void run() {
-      if (robotConfig.getKK() == 0 && robotConfig.getKV() == 0 && robotConfig.getKL() == 0) {
+      if ((robotConfig.getKK() == 0) && (robotConfig.getKV() == 0) && (robotConfig.getKL() == 0)) {
         System.out.println("Please make KK, KV or KL, not equal 0 otherwise the robot will not move");
       }
 

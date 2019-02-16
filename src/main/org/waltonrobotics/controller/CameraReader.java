@@ -32,13 +32,13 @@ public class CameraReader extends TimerTask {
 //    if (data.length() > 17) {
     if (data.matches("^[xX]\\d{3}[yY]\\d{3}[zZ]\\d{3}[aA]\\d{3}N\\d+$")) {
       int x = Integer.parseUnsignedInt(data.substring(1, 4)) *
-          (data.charAt(0) == 'X' ? 1 : -1);
+          ((data.charAt(0) == 'X') ? 1 : -1);
       int y = Integer.parseUnsignedInt(data.substring(5, 8)) *
-          (data.charAt(4) == 'Y' ? 1 : -1);
+          ((data.charAt(4) == 'Y') ? 1 : -1);
       int z = Integer.parseUnsignedInt(data.substring(9, 12)) *
-          (data.charAt(8) == 'Z' ? 1 : -1);
+          ((data.charAt(8) == 'Z') ? 1 : -1);
       int angle = Integer.parseUnsignedInt(data.substring(13, 16)) *
-          (data.charAt(12) == 'A' ? 1 : -1);
+          ((data.charAt(12) == 'A') ? 1 : -1);
       int numberOfTargets = Integer.parseUnsignedInt(data.substring(17));
       double t = Timer.getFPGATimestamp() - 0.052;
 

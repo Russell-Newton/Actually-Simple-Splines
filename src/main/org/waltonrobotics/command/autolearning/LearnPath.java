@@ -19,7 +19,7 @@ public class LearnPath extends Command {
   private final String buttonName;
   private final boolean useButtonToStop;
   private double movementTolerance = .1; // This is in meters
-  private double angleTolerance = 15;
+  private double angleTolerance = 15.0;
   private double maxVelocity;
   private double maxAcceleration;
 
@@ -121,7 +121,7 @@ public class LearnPath extends Command {
           double dY = Math.abs(currentPosition.getY() - previousPosition.getY());
           double dAngle = Math.abs(currentPosition.getAngle() - previousPosition.getAngle());
 
-          movementChange += Math.hypot(dX, dY);
+          movementChange += StrictMath.hypot(dX, dY);
           angleChange += dAngle;
         }
 

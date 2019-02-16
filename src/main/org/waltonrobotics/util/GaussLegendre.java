@@ -18,7 +18,7 @@ public class GaussLegendre {
    */
   public GaussLegendre(int numberOfPoints, double lowerBound, double upperBound) {
 
-    numberOfPoints = numberOfPoints - 1;
+    numberOfPoints -= 1;
     int n1 = numberOfPoints + 1;
     int n2 = numberOfPoints + 2;
 
@@ -26,15 +26,15 @@ public class GaussLegendre {
 
     double[] xu = new double[n1];
     for (int i = 0; i < n1; i++) {
-      xu[i] = -1 + h * i;
+      xu[i] = -1.0 + (h * i);
     }
 
     //Initial guess
     double[] y = new double[numberOfPoints + 1];
     double[] y0 = new double[numberOfPoints + 1];
     for (int i = 0; i <= numberOfPoints; i++) {
-      y[i] = Math.cos((2.0 * i + 1) * Math.PI / (2 * numberOfPoints + 2)) + 0.27 / n1 * Math
-          .sin(Math.PI * xu[i] * numberOfPoints / n2);
+      y[i] = StrictMath.cos((((2.0 * i) + 1.0) * Math.PI) / ((2 * numberOfPoints) + 2)) + ((0.27 / n1) * StrictMath
+          .sin((Math.PI * xu[i] * numberOfPoints) / n2));
       y0[i] = 2.0;
 
     }
@@ -60,16 +60,16 @@ public class GaussLegendre {
 
       for (int k = 1; k < n1; k++) {
         for (int j = 0; j < n1; j++) {
-          L[j][k + 1] = ((2.0 * (k + 1) - 1) * y[j] * L[j][k] - (k) * L[j][k - 1]) / (k + 1);
+          L[j][k + 1] = ((((2.0 * (k + 1)) - 1.0) * y[j] * L[j][k]) - ((k) * L[j][k - 1])) / (k + 1);
         }
       }
 
       for (int j = 0; j < n1; j++) {
         //Lp(j)=(N2)*( L(j,N1)-y(j).*L(j,N2) )./(1-y(j).^2);
-        Lp[j] = (n2) * (L[j][n1 - 1] - y[j] * L[j][n2 - 1]) / (1 - y[j] * y[j]);
+        Lp[j] = ((n2) * (L[j][n1 - 1] - (y[j] * L[j][n2 - 1]))) / (1.0 - (y[j] * y[j]));
         //y(j)=y(j)-L(j,N2)./Lp(j);
 
-        y[j] = y[j] - L[j][n2 - 1] / Lp[j];
+        y[j] -= (L[j][n2 - 1] / Lp[j]);
       }
 
     }
@@ -81,12 +81,12 @@ public class GaussLegendre {
     for (int j = 0; j < n1; j++) {
       //Linear map from[-1,1] to [a,b]
       //x=(a*(1-y)+b*(1+y))/2;
-      x[j] = (lowerBound * (1 - y[j]) + upperBound * (1 + y[j])) / 2.0;
+      x[j] = ((lowerBound * (1.0 - y[j])) + (upperBound * (1.0 + y[j]))) / 2.0;
       xInverted[n1 - 1 - j] = x[j]; //TODO Change this to make the nodes reversed
       //corresponding weights
       //w=(b-a)./((1-y.^2).*Lp.^2)*(N2/N1)^2;
-      w[j] = (upperBound - lowerBound) / ((1 - y[j] * y[j]) * Lp[j] * Lp[j]) * Math
-          .pow(((double) n2) / n1, 2);
+      w[j] = ((upperBound - lowerBound) / ((1.0 - (y[j] * y[j])) * Lp[j] * Lp[j])) * StrictMath
+          .pow(((double) n2) / n1, 2.0);
     }
 
     this.lowerBound = lowerBound;
@@ -98,7 +98,7 @@ public class GaussLegendre {
   public static void main(String[] args) {
 
     int n = 5;
-    GaussLegendre gl = new GaussLegendre(n, -1, 1);
+    GaussLegendre gl = new GaussLegendre(n, -1.0, 1.0);
 
     System.out.println("Gauss Legendre nodes for n =" + n + " between 0 and 1");
     for (int j = 0; j < n; j++) {

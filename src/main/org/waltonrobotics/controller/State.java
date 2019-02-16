@@ -34,7 +34,7 @@ public class State {
     this.jerk = jerk;
   }
 
-  public final static State calculateConstants(State previous, double wheelDistance,
+  public static final State calculateConstants(State previous, double wheelDistance,
       double deltaTime) {
     double velocity = (wheelDistance - previous.getLength()) / deltaTime;
     double acceleration = (velocity - previous.getVelocity()) / deltaTime;

@@ -57,12 +57,12 @@ public class Robot extends IterativeRobot {
 
     @Override
     public double getMaxAcceleration() {
-      return 1;
+      return 1.0;
     }
 
     @Override
     public double getKV() {
-      return 1;
+      return 1.0;
     }
 
     @Override
@@ -87,16 +87,6 @@ public class Robot extends IterativeRobot {
 
     @Override
     public double getKL() {
-      return 0;
-    }
-
-    @Override
-    public double getILag() {
-      return 0;
-    }
-
-    @Override
-    public double getIAng() {
       return 0;
     }
 
@@ -150,9 +140,9 @@ public class Robot extends IterativeRobot {
     drivetrain.getMotionLogger().initialize();
 
     Line starightLine = new Line(Path.VELOCITY_MAX, Path.ACCELERATION_MAX, 0, 0, false, drivetrain.getActualPosition(),
-        1);
+        1.0);
 
-    PointTurn pointTurn = new PointTurn(Path.VELOCITY_MAX, Path.ACCELERATION_MAX, drivetrain.getActualPosition(), 180);
+    PointTurn pointTurn = new PointTurn(Path.VELOCITY_MAX, Path.ACCELERATION_MAX, drivetrain.getActualPosition(), 180.0);
 
     Spline spline = new Spline(Path.VELOCITY_MAX, Path.ACCELERATION_MAX, 0, 0, false, drivetrain.getActualPosition(),
         Pose.ZERO);

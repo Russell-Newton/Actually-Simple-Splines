@@ -34,7 +34,7 @@ public abstract class RobotConfig {
    * @return the max velocity the robot can achieve.
    */
   public double getMaxVelocity() {
-    return (1 - getKK()) / getKV();
+    return (1.0 - getKK()) / getKV();
   }
 
   /**

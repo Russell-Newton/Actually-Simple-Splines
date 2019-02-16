@@ -34,7 +34,7 @@ public class DebugCurves {
     points.add(new Pose(0, 1, StrictMath.toRadians(10)));
 
     for (int length = 0; length <= 10; length++) {
-      Path.setPathNumberOfSteps((int) Math.pow(10, length));
+      Path.setPathNumberOfSteps((int) StrictMath.pow(10, length));
 
       double pathNumber = Path.getPathNumberOfSteps();
 

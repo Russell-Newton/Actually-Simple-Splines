@@ -26,7 +26,7 @@ public abstract class AbstractDrivetrain extends Subsystem {
 
   private final MotionController controller;
   private final Supplier<Boolean> usingCamera;
-  private final long period = 5;
+  private final long period = 5L;
   private RobotConfig robotConfig;
   private Pose actualPosition = new Pose(0, 0, 0);
   private RobotPair previousLengths;
@@ -43,7 +43,7 @@ public abstract class AbstractDrivetrain extends Subsystem {
    */
   public AbstractDrivetrain(RobotConfig robotConfig, Supplier<Boolean> usingCamera) {
     this.robotConfig = robotConfig;
-    if (robotConfig.getKK() == 0 && robotConfig.getKV() == 0 && robotConfig.getKL() == 0) {
+    if ((robotConfig.getKK() == 0) && (robotConfig.getKV() == 0) && (robotConfig.getKL() == 0)) {
       System.out.println("Please make KK, KV or KL, not equal 0 otherwise the robot will not move");
     }
 
@@ -110,7 +110,7 @@ public abstract class AbstractDrivetrain extends Subsystem {
         previousState = currentState;
         previousLengths = wheelPosition;
       }
-    }, 0, period);
+    }, 0L, period);
   }
 
   public MotionController getController() {

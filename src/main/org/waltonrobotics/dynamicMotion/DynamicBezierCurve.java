@@ -140,7 +140,7 @@ public class DynamicBezierCurve extends DynamicPath {
     double decelerationTime = calculateTime(getVCruise(), endVelocity, -getAMax());
     double decelDistance = distance(getVCruise(), -getAMax(), accelerationTime);
 
-    if (accelDistance + decelDistance > curveLength) {
+    if ((accelDistance + decelDistance) > curveLength) {
       return calculateTime(startVelocity, endVelocity, getAMax());
     } else {
       double cruiseTime = (curveLength - (accelDistance + decelDistance)) / getVCruise();
@@ -154,16 +154,16 @@ public class DynamicBezierCurve extends DynamicPath {
   }
 
   private double distance(double startVelocity, double constantAcceleration, double time) {
-    return startVelocity * time + (constantAcceleration * time * time) / 2;
+    return (startVelocity * time) + ((constantAcceleration * time * time) / 2.0);
   }
 
   public double computeArcLength() {
-    return computeArcLength(16, 0, 1);
+    return computeArcLength(16, 0, 1.0);
   }
 
   public double computeArcLength(int n) {
 
-    return computeArcLength(n, 0, 1);
+    return computeArcLength(n, 0, 1.0);
   }
 
   public double computeArcLength(double lowerBound, double upperBound) {
@@ -198,7 +198,7 @@ public class DynamicBezierCurve extends DynamicPath {
     for (int i = 0; i < t.length; i++) {
 
       Pose point = getDerivative(t[i]);
-      sum += C[i] * Math.hypot(point.getX(), point.getY());
+      sum += C[i] * StrictMath.hypot(point.getX(), point.getY());
     }
 
     return sum;
@@ -258,12 +258,12 @@ public class DynamicBezierCurve extends DynamicPath {
         Pose pointI = getKeyPoints().get(i);
 
         double multiplier =
-            coefficients[i] * StrictMath.pow(1 - percentage, ((degree - 1) - i)) * StrictMath
+            coefficients[i] * StrictMath.pow(1.0 - percentage, ((degree - 1) - i)) * StrictMath
                 .pow(percentage, (double) i);
 
         Pose nextPointI = getKeyPoints().get(i + 1);
 
-        dx += (multiplier = multiplier * (degree)) * (nextPointI.getX() - pointI.getX());
+        dx += (multiplier *= degree) * (nextPointI.getX() - pointI.getX());
         dy += multiplier * (nextPointI.getY() - pointI.getY());
       }
     }
@@ -273,7 +273,7 @@ public class DynamicBezierCurve extends DynamicPath {
     if (isBackwards()) {
       angle += Math.PI;
     }
-    angle %= (2 * Math.PI);
+    angle %= (2.0 * Math.PI);
 
     return new Pose(dx, dy, angle);
   }
@@ -300,17 +300,17 @@ public class DynamicBezierCurve extends DynamicPath {
       Pose pointI = getKeyPoints().get(i);
 
       double multiplier = coefficients[i] *
-          StrictMath.pow(1 - percentage, (degree - i)) *
+          StrictMath.pow(1.0 - percentage, (degree - i)) *
           StrictMath.pow(percentage, (double) i);
 
       xCoordinateAtPercentage += (multiplier * pointI.getX());
       yCoordinateAtPercentage += (multiplier * pointI.getY());
 
-      if (percentage != 1 && i < degree) {
+      if ((percentage != 1.0) && (i < degree)) {
         Pose nextPointI = getKeyPoints().get(i + 1);
 
         multiplier = derivativeCoefficients[i] *
-            StrictMath.pow(1 - percentage, ((degree - 1) - i)) *
+            StrictMath.pow(1.0 - percentage, ((degree - 1) - i)) *
             StrictMath.pow(percentage, (double) i) * degree;
 
         dx += multiplier * (nextPointI.getX() - pointI.getX());
@@ -332,7 +332,7 @@ public class DynamicBezierCurve extends DynamicPath {
     if (isBackwards()) {
       angle += Math.PI;
     }
-    angle %= (2 * Math.PI);
+    angle %= (2.0 * Math.PI);
 
     return new Pose(xCoordinateAtPercentage, yCoordinateAtPercentage, angle);
   }
@@ -350,7 +350,7 @@ public class DynamicBezierCurve extends DynamicPath {
   }
 
   private double calculateTimeConstantAcceleration(double startVelocity, double acceleration, double distance) {
-    return (-startVelocity + Math.sqrt((startVelocity * startVelocity) - (2 * acceleration * distance))) / acceleration;
+    return (-startVelocity + Math.sqrt((startVelocity * startVelocity) - (2.0 * acceleration * distance))) / acceleration;
   }
 
   private double computeTimeToPosition(double distanceAtPercentage) {
@@ -378,7 +378,7 @@ public class DynamicBezierCurve extends DynamicPath {
   public LinkedList<PathData> getPathData(double v) {
     LinkedList<PathData> pathData = new LinkedList<>();
     pathData.add(new PathData(getPoint(0)));
-    pathData.add(new PathData(getPoint(1)));
+    pathData.add(new PathData(getPoint(1.0)));
     return pathData;
   }
 }
