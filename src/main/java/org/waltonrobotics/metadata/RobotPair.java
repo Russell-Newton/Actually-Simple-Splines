@@ -1,4 +1,4 @@
-package org.waltonrobotics.controller;
+package org.waltonrobotics.metadata;
 
 /**
  * Holds information about the left and right sides of the robot at a specific time

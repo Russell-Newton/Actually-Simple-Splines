@@ -6,9 +6,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import org.waltonrobotics.controller.PathData;
-import org.waltonrobotics.controller.Pose;
-import org.waltonrobotics.controller.State;
+import org.waltonrobotics.metadata.PathData;
+import org.waltonrobotics.metadata.Pose;
+import org.waltonrobotics.metadata.State;
 import org.waltonrobotics.util.GaussLegendre;
 
 /**

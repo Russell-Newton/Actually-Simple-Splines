@@ -6,8 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import org.waltonrobotics.command.SimpleMotion;
-import org.waltonrobotics.controller.PathData;
-import org.waltonrobotics.controller.Pose;
+import org.waltonrobotics.metadata.PathData;
+import org.waltonrobotics.metadata.Pose;
 import org.waltonrobotics.motion.Path;
 import org.waltonrobotics.motion.SavePath;
 

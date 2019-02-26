@@ -1,6 +1,6 @@
 package org.waltonrobotics.motion;
 
-import org.waltonrobotics.controller.Pose;
+import org.waltonrobotics.metadata.Pose;
 
 /**
  * <p>

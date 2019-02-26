@@ -5,15 +5,16 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Supplier;
 import org.waltonrobotics.command.SimpleMotion;
-import org.waltonrobotics.controller.CameraData;
+import org.waltonrobotics.controller.MotionLogger;
+import org.waltonrobotics.metadata.CameraData;
 import org.waltonrobotics.controller.MotionController;
-import org.waltonrobotics.controller.PathData;
-import org.waltonrobotics.controller.Pose;
-import org.waltonrobotics.controller.RobotPair;
-import org.waltonrobotics.controller.State;
+import org.waltonrobotics.metadata.PathData;
+import org.waltonrobotics.metadata.Pose;
+import org.waltonrobotics.metadata.RobotPair;
+import org.waltonrobotics.metadata.State;
 import org.waltonrobotics.motion.Path;
-import org.waltonrobotics.util.RobotConfig;
-import org.waltonrobotics.util.SetSpeeds;
+import org.waltonrobotics.config.RobotConfig;
+import org.waltonrobotics.config.SetSpeeds;
 
 /**
  * Extend this in your drivetrain, and use the methods inside to set up spline motions

@@ -15,9 +15,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import org.waltonrobotics.controller.PathData;
-import org.waltonrobotics.controller.Pose;
-import org.waltonrobotics.controller.State;
+import org.waltonrobotics.metadata.PathData;
+import org.waltonrobotics.metadata.Pose;
+import org.waltonrobotics.metadata.State;
 
 /**
  * Extend this if you want to make your own Motion.

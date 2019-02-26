@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.Timer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimerTask;
+import org.waltonrobotics.metadata.CameraData;
 
 public class CameraReader {
 

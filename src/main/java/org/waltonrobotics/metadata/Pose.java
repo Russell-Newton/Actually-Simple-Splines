@@ -1,4 +1,4 @@
-package org.waltonrobotics.controller;
+package org.waltonrobotics.metadata;
 
 /**
  * This holds the x, y, and angle of the robot.

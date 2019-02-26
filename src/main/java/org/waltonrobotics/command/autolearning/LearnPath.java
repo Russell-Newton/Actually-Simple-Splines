@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj.command.Command;
 import java.util.LinkedList;
 import java.util.List;
 import org.waltonrobotics.command.SimpleMotion;
-import org.waltonrobotics.controller.PathData;
-import org.waltonrobotics.controller.Pose;
+import org.waltonrobotics.metadata.PathData;
+import org.waltonrobotics.metadata.Pose;
 
 //TODO test this
 public class LearnPath extends Command {

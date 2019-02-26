@@ -1,6 +1,6 @@
 package org.waltonrobotics.command;
 
-import org.waltonrobotics.controller.Pose;
+import org.waltonrobotics.metadata.Pose;
 import org.waltonrobotics.motion.PointTurn;
 
 public class SimpleTurn extends SimpleMotion {

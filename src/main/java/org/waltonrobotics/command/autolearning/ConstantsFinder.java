@@ -8,7 +8,7 @@ import java.util.stream.DoubleStream;
 import org.waltonrobotics.AbstractDrivetrain;
 import org.waltonrobotics.command.SimpleLine;
 import org.waltonrobotics.command.SimpleMotion;
-import org.waltonrobotics.controller.ErrorVector;
+import org.waltonrobotics.metadata.ErrorVector;
 
 public class ConstantsFinder extends Command {
 

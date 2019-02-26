@@ -10,10 +10,17 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.function.Supplier;
-import org.waltonrobotics.MotionLogger;
+import org.waltonrobotics.metadata.CameraData;
+import org.waltonrobotics.metadata.ErrorVector;
+import org.waltonrobotics.metadata.MotionData;
+import org.waltonrobotics.metadata.MotionState;
+import org.waltonrobotics.metadata.PathData;
+import org.waltonrobotics.metadata.Pose;
+import org.waltonrobotics.metadata.RobotPair;
+import org.waltonrobotics.metadata.State;
 import org.waltonrobotics.motion.Path;
-import org.waltonrobotics.util.RobotConfig;
-import org.waltonrobotics.util.SetSpeeds;
+import org.waltonrobotics.config.RobotConfig;
+import org.waltonrobotics.config.SetSpeeds;
 
 /**
  * Controls Path motions

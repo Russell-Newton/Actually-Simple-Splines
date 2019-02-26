@@ -1,6 +1,6 @@
-package org.waltonrobotics.util;
+package org.waltonrobotics.config;
 
-import org.waltonrobotics.controller.RobotPair;
+import org.waltonrobotics.metadata.RobotPair;
 
 public interface SetSpeeds {
 

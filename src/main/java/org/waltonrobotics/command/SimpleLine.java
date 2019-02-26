@@ -1,6 +1,6 @@
 package org.waltonrobotics.command;
 
-import org.waltonrobotics.controller.Pose;
+import org.waltonrobotics.metadata.Pose;
 import org.waltonrobotics.motion.Line;
 
 public class SimpleLine extends SimpleMotion {

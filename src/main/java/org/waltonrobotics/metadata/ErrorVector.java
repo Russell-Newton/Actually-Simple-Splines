@@ -1,4 +1,4 @@
-package org.waltonrobotics.controller;
+package org.waltonrobotics.metadata;
 
 /**
  * Holds the cross-track, lag and angle errors

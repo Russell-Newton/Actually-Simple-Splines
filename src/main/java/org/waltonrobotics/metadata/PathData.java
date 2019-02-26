@@ -1,4 +1,4 @@
-package org.waltonrobotics.controller;
+package org.waltonrobotics.metadata;
 
 /**
  * Holds information about the robot at a specific time in a Path

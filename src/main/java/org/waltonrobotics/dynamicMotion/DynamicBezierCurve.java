@@ -6,8 +6,8 @@ import static org.waltonrobotics.util.Helper.calculateCoefficients;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import org.waltonrobotics.controller.PathData;
-import org.waltonrobotics.controller.Pose;
+import org.waltonrobotics.metadata.PathData;
+import org.waltonrobotics.metadata.Pose;
 import org.waltonrobotics.motion.BezierCurve.Key;
 import org.waltonrobotics.util.GaussLegendre;
 

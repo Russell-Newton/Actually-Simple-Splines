@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
-import org.waltonrobotics.controller.PathData;
-import org.waltonrobotics.controller.Pose;
-import org.waltonrobotics.controller.State;
+import org.waltonrobotics.metadata.PathData;
+import org.waltonrobotics.metadata.Pose;
+import org.waltonrobotics.metadata.State;
 
 /**
  * This path is a spline that will go through the set knots by stitching together several Bezier curves. By default, it

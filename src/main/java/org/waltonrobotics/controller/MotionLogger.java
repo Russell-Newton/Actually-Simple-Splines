@@ -1,4 +1,4 @@
-package org.waltonrobotics;
+package org.waltonrobotics.controller;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,8 +11,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.waltonrobotics.controller.ErrorVector;
-import org.waltonrobotics.controller.MotionData;
+import org.waltonrobotics.metadata.ErrorVector;
+import org.waltonrobotics.metadata.MotionData;
 
 /**
  * This class is used to log MotionData during autonomous

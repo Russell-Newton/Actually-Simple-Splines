@@ -1,4 +1,4 @@
-package org.waltonrobotics.controller;
+package org.waltonrobotics.metadata;
 
 /**
  * Holds an encoder length, velocity, and acceleration

@@ -1,7 +1,7 @@
 package org.waltonrobotics.command;
 
-import org.waltonrobotics.controller.CameraData;
-import org.waltonrobotics.controller.Pose;
+import org.waltonrobotics.metadata.CameraData;
+import org.waltonrobotics.metadata.Pose;
 import org.waltonrobotics.motion.Spline;
 
 public class SimpleCameraPositioning extends SimpleMotion {

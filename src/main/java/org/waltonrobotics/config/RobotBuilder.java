@@ -1,4 +1,4 @@
-package org.waltonrobotics.util;
+package org.waltonrobotics.config;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import java.util.ArrayList;

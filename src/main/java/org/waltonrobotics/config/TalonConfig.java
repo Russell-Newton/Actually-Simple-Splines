@@ -1,4 +1,4 @@
-package org.waltonrobotics.util;
+package org.waltonrobotics.config;
 
 public interface TalonConfig {
 

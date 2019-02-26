@@ -1,9 +1,9 @@
-package org.waltonrobotics.controller;
+package org.waltonrobotics.metadata;
 
 /**
  * The state that the robot is in right now.
  */
-enum MotionState {
+public enum MotionState {
   /**
    * The robot is moving through the path motion
    */

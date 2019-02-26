@@ -1,9 +1,9 @@
 package org.waltonrobotics.motion;
 
 import java.util.LinkedList;
-import org.waltonrobotics.controller.PathData;
-import org.waltonrobotics.controller.Pose;
-import org.waltonrobotics.controller.State;
+import org.waltonrobotics.metadata.PathData;
+import org.waltonrobotics.metadata.Pose;
+import org.waltonrobotics.metadata.State;
 
 public class PointTurn extends Path {
 
