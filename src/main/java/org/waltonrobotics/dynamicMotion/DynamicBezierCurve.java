@@ -350,7 +350,8 @@ public class DynamicBezierCurve extends DynamicPath {
   }
 
   private double calculateTimeConstantAcceleration(double startVelocity, double acceleration, double distance) {
-    return (-startVelocity + Math.sqrt((startVelocity * startVelocity) - (2.0 * acceleration * distance))) / acceleration;
+    return (-startVelocity + Math.sqrt((startVelocity * startVelocity) - (2.0 * acceleration * distance)))
+        / acceleration;
   }
 
   private double computeTimeToPosition(double distanceAtPercentage) {
