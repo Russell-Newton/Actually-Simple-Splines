@@ -1,11 +1,19 @@
 package org.waltonrobotics.motion;
 
 import static org.waltonrobotics.util.Helper.calculateCoefficients;
+import static org.waltonrobotics.util.Helper.resizeArrayLeft;
+import static org.waltonrobotics.util.PolynomialHelper.calculateDerivative;
+import static org.waltonrobotics.util.PolynomialHelper.deconstructCoefficientsMatrix;
+import static org.waltonrobotics.util.PolynomialHelper.expandBinomial;
+import static org.waltonrobotics.util.PolynomialHelper.getPoint;
+import static org.waltonrobotics.util.PolynomialHelper.minimizeDistance;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import org.ejml.data.DMatrixRMaj;
+import org.ejml.dense.row.CommonOps_DDRM;
 import org.waltonrobotics.metadata.PathData;
 import org.waltonrobotics.metadata.Pose;
 import org.waltonrobotics.metadata.State;
@@ -13,10 +21,11 @@ import org.waltonrobotics.util.GaussLegendre;
 
 /**
  * <p>This Path is a simple curve. The shape of the curve is controlled by the control points.
- * There are tangents from the first and second control points and the second to last and last control points. Use this
- * to make a straight line (use two control points) <br> <a href=https://en.wikipedia.org/wiki/B%C3%A9zier_curve>Wikipedia
- * page on Bezier Curves</a> <br> <a href=https://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-der.html>Bezier
- * curve equations for N number of control points</a>
+ * There are tangents from the first and second control points and the second to last and last
+ * control points. Use this to make a straight line (use two control points) <br> <a
+ * href=https://en.wikipedia.org/wiki/B%C3%A9zier_curve>Wikipedia page on Bezier Curves</a> <br> <a
+ * href=https://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-der.html>Bezier curve
+ * equations for N number of control points</a>
  * <p/>
  *
  * @author Marius Juston, Walton Robotics
@@ -33,9 +42,11 @@ public class BezierCurve extends Path {
   private final double startLCenter;
   public double curveLength;
   private List<Pose> pathPoints;
+  private List<double[]> coefficients;
 
   /**
-   * This constructor is used with the splines, but feel free to use it when creating your own motions
+   * This constructor is used with the splines, but feel free to use it when creating your own
+   * motions
    *
    * @param vCruise - the cruise velocity of the robot
    * @param aMax - the maximum acceleration of the robot
@@ -54,6 +65,7 @@ public class BezierCurve extends Path {
     this.startPathData = startPathData;
     // The starting average encoder distance should always be 0
     startLCenter = startPathData.getLCenter();
+    defineCoefficients();
 
     createPath();
   }
@@ -92,13 +104,46 @@ public class BezierCurve extends Path {
     this(vCruise, aMax, startVelocity, endVelocity, isBackwards, Arrays.asList(controlPoints));
   }
 
+//  public static void main(String[] args) {
+//    BezierCurve curve = new BezierCurve(1, 1, 0, 0, false,
+//        new Pose(0, 0), new Pose(1, -1), new Pose(2, -1), new Pose(3, 0));
+//    System.out.println(curve.getClosestPose(new Pose(3, 0)).toString());
+//  }
+
+  private void defineCoefficients() {
+    coefficients = new LinkedList<>();
+    DMatrixRMaj coefficientsX = new DMatrixRMaj(keyPoints.size(), 1);
+    DMatrixRMaj coefficientsY = new DMatrixRMaj(keyPoints.size(), 1);
+    int[] binomialCoefficients = calculateCoefficients(keyPoints.size() - 1);
+    for(int i = 0; i < keyPoints.size(); i++) {
+      DMatrixRMaj expandedBinomial = new DMatrixRMaj(resizeArrayLeft(expandBinomial(1, -1, i),
+          keyPoints.size()));
+      DMatrixRMaj coefficientsIX = new DMatrixRMaj(keyPoints.size(), 1);
+      DMatrixRMaj coefficientsIY = new DMatrixRMaj(keyPoints.size(), 1);
+      for(int j = 0; j < keyPoints.size(); j++) {
+        coefficientsIX.set(j,
+            expandedBinomial.get(j) * keyPoints.get(keyPoints.size() - i - 1).getX()
+                * binomialCoefficients[i]);
+        coefficientsIY.set(j,
+            expandedBinomial.get(j) * keyPoints.get(keyPoints.size() - i - 1).getY()
+                * binomialCoefficients[i]);
+      }
+//      System.out.println(coefficientsIX.toString());
+//      System.out.println(coefficientsIY.toString());
+      CommonOps_DDRM.add(coefficientsX, coefficientsIX, coefficientsX);
+      CommonOps_DDRM.add(coefficientsY, coefficientsIY, coefficientsY);
+    }
+    coefficients.add(deconstructCoefficientsMatrix(coefficientsX));
+    coefficients.add(deconstructCoefficientsMatrix(coefficientsY));
+  }
 
   public List<Pose> createPoints() {
     List<Pose> pathPoints = new LinkedList<>();
 
     for (double i = 0; i <= getPathNumberOfSteps(); i++) {
 
-      pathPoints.add(getPoint(i / getPathNumberOfSteps()));
+      pathPoints.add(getPoint(coefficients.get(0), coefficients.get(1),
+          i / getPathNumberOfSteps()));
     }
 
     return pathPoints;
@@ -119,35 +164,6 @@ public class BezierCurve extends Path {
     return curveLength;
   }
 
-
-  /**
-   * @param percentage - t
-   * @return the Pose that is at percentage t along the curve
-   */
-  public Pose getPoint(double percentage) {
-    double xCoordinateAtPercentage = 0;
-    double yCoordinateAtPercentage = 0;
-
-    int n = getDegree();
-    int[] coefficients = calculateCoefficients(n);
-
-    for (int i = 0; i <= n; i++) {
-      double coefficient = coefficients[i];
-
-      double oneMinusT = StrictMath.pow(1.0 - percentage, (n - i));
-
-      double powerOfT = StrictMath.pow(percentage, (double) i);
-
-      Pose pointI = getKeyPoints().get(i);
-
-      xCoordinateAtPercentage += (coefficient * oneMinusT * powerOfT * pointI.getX());
-      yCoordinateAtPercentage += (coefficient * oneMinusT * powerOfT * pointI.getY());
-    }
-
-//    System.out.println(xCoordinateAtPercentage + "\t" + yCoordinateAtPercentage);
-    return new Pose(xCoordinateAtPercentage, yCoordinateAtPercentage, getAngle(percentage));
-  }
-
   /**
    * @return the degree of the curve
    */
@@ -155,17 +171,6 @@ public class BezierCurve extends Path {
     return getKeyPoints().size() - 1;
   }
 
-  /**
-   * @param t - percent along curve
-   * @return angle at point
-   */
-  public double getAngle(double t) {
-    Pose getDerivative = getDerivative(t);
-
-//    System.out.println(Math.hypot(getDerivative.getX(), getDerivative.getY()) + "\t" + getDerivative.getAngle());
-
-    return getDerivative.getAngle();
-  }
 
   /**
    * Creates the PathData list
@@ -277,8 +282,9 @@ public class BezierCurve extends Path {
   }
 
   /**
-   * Uses the Gauss Legendre integration to approximate the arc length of the Bezier curve. This is the fastest
-   * technique (faster than sampling) when having a large path and shows the most accurate results
+   * Uses the Gauss Legendre integration to approximate the arc length of the Bezier curve. This is
+   * the fastest technique (faster than sampling) when having a large path and shows the most
+   * accurate results
    *
    * @param n the number of integral strips 2+ more means better accuracy
    * @param lowerBound the lower bound to integrate (inclusive) [0,1]
@@ -304,60 +310,13 @@ public class BezierCurve extends Path {
 
     for (int i = 0; i < t.length; i++) {
 
-      Pose point = getDerivative(t[i]);
-
-      sum += C[i] * StrictMath.hypot(point.getX(), point.getY());
+      double dx = calculateDerivative(coefficients.get(0), t[i]);
+      double dy = calculateDerivative(coefficients.get(1), t[i]);
+      sum += C[i] * StrictMath.hypot(dx, dy);
     }
 
     return sum;
   }
-
-  /**
-   * Gets the derivative of point at value percentage
-   */
-  public Pose getDerivative(double percentage) {
-    double dx = 0;
-    double dy = 0;
-
-    if (percentage == 1.0) {
-
-      int last = getKeyPoints().size() - 1;
-
-      dx = getKeyPoints().get(last).getX()
-          - getKeyPoints().get(last - 1).getX();
-      dy = getKeyPoints().get(last).getY()
-          - getKeyPoints().get(last - 1).getY();
-    } else {
-
-      int degree = getDegree();
-
-      int[] coefficients = calculateCoefficients(degree - 1);
-
-      for (int i = 0; i < degree; i++) {
-
-        Pose pointI = getKeyPoints().get(i);
-
-        double multiplier =
-            coefficients[i] * StrictMath.pow(1.0 - percentage, ((degree - 1) - i)) * StrictMath
-                .pow(percentage, (double) i);
-
-        Pose nextPointI = getKeyPoints().get(i + 1);
-
-        dx += (multiplier *= degree) * (nextPointI.getX() - pointI.getX());
-        dy += multiplier * (nextPointI.getY() - pointI.getY());
-      }
-    }
-
-    double angle = StrictMath.atan2(dy, dx);
-
-    if (isBackwards()) {
-      angle += Math.PI;
-    }
-    angle %= (2.0 * Math.PI);
-
-    return new Pose(dx, dy, angle);
-  }
-
 
   public String convertToString() {
 			/*
@@ -400,6 +359,16 @@ public class BezierCurve extends Path {
         ", pathPoints=" + pathPoints +
         ", curveLength=" + curveLength +
         "} " + super.toString();
+  }
+
+  /**
+   * Finds the closest Pose in the curve to {@code inputPose}. This procedure is an optimization
+   * problem to find t where the distance between B(t) and {@code inputPose} is minimized. This
+   * works only for cubic curves.
+   */
+  public Pose getClosestPose(Pose inputPose) {
+    return minimizeDistance(inputPose, 0, 1, coefficients.get(0),
+        coefficients.get(1));
   }
 
   public double getStartVelocity() {
