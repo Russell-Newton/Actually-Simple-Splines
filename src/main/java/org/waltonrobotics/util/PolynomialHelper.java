@@ -85,8 +85,9 @@ public class PolynomialHelper {
    * @param coefficients Coefficients of the polynomial.
    * @return The roots of the polynomial
    */
-  public static Complex_F64[] findPolynomialRoots(double... coefficients) {
+  public static Complex_F64[] findRoots(double... coefficients) {
 //    System.out.println(Arrays.toString(coefficients));
+    coefficients = removeTrailingZeros(coefficients);
     int N = coefficients.length - 1;
 
     // Construct the companion matrix
@@ -113,6 +114,27 @@ public class PolynomialHelper {
     }
 
     return roots;
+  }
+
+  /**
+   * Removes trailing zeros in a coefficients array. Necessary to ensure success with
+   * {@code findRoots}.
+   * @param coefficients
+   * @return
+   */
+  private static double[] removeTrailingZeros(double[] coefficients) {
+    int trailingZeros = 0;
+    for(int i = coefficients.length - 1; i >= 0; i--) {
+      if(coefficients[i] != 0) {
+        break;
+      }
+      trailingZeros++;
+    }
+    double[] newCoefficients = new double[coefficients.length - trailingZeros];
+    for(int i = 0; i < newCoefficients.length; i++) {
+      newCoefficients[i] = coefficients[i];
+    }
+    return newCoefficients;
   }
 
   /**
@@ -153,7 +175,8 @@ public class PolynomialHelper {
 
     //Find t such that the dot-product is minimized. We can safely assume that there will be at
     // least 1 real root.
-    Complex_F64[] roots = findPolynomialRoots(coefficients);
+    Complex_F64[] roots = findRoots(coefficients);
+//    System.out.println(Arrays.toString(roots));
     double[] realRoots = Arrays.stream(roots).filter(Complex_F64::isReal)
         .mapToDouble(Complex_F64::getReal).toArray();
 
