@@ -17,42 +17,45 @@ import org.waltonrobotics.metadata.Pose;
  **/
 public class PolynomialHelper {
 
+//  public static void main(String[] args) {
+//    System.out.println(multiply(new double[]{1, 3, 3, 1}, new double[]{1, 3, 3, 1}));
+//  }
+
+  /**
+   * Multiplies two polynomials, returning the resulting coefficients.
+   * @param coefficientsA
+   * @param coefficientsB
+   * @return
+   */
+  public static DMatrixRMaj multiply(double[] coefficientsA, double[] coefficientsB) {
+    //Expand polynomial multiplication
+    DMatrixRMaj vertical = new DMatrixRMaj(coefficientsA.length, 1, true, coefficientsA);
+    DMatrixRMaj horizontal = new DMatrixRMaj(1, coefficientsB.length, true, coefficientsB);
+    DMatrixRMaj product = new DMatrixRMaj(coefficientsA.length, coefficientsB.length);
+    CommonOps_DDRM.mult(vertical, horizontal, product);
+
+    //Combine like terms
+    double[] newCoefficients = new double[coefficientsA.length + coefficientsB.length - 1];
+    for(int k = 0; k < newCoefficients.length; k++) {
+      for(int j = 0; j <= k; j++) {
+        int i = k - j;
+        if(i < coefficientsA.length && j < coefficientsB.length) {
+          newCoefficients[k] += product.unsafe_get(i, j);
+        }
+      }
+    }
+//    System.out.println(Arrays.toString(newCoefficients));
+    return new DMatrixRMaj(newCoefficients);
+  }
+
   /**
    * Compute the coefficients of the polynomial resulting from squaring the input polynomial.
    *
    * @param coefficients - Coefficients of the input polynomial, from least to most significant.
    * @return The resulting coefficients, from least to most significant.
    */
-  public static DMatrixRMaj squarePolynomial(double... coefficients) {
-    //Expand polynomial multiplication
-    DMatrixRMaj vertical = new DMatrixRMaj(coefficients.length, 1);
-    DMatrixRMaj horizontal = new DMatrixRMaj(1, coefficients.length);
-    for (int i = 0; i < coefficients.length; i++) {
-      vertical.set(i, coefficients[i]);
-      horizontal.set(i, coefficients[i]);
-    }
-    DMatrixRMaj product = new DMatrixRMaj(coefficients.length, coefficients.length);
-    CommonOps_DDRM.mult(vertical, horizontal, product);
-
-    //Combine like terms
-    double[] newCoefficients = new double[coefficients.length * 2 - 1];
-    for (int i = 0; i < newCoefficients.length; i++) {
-      int column = 0;
-      int row = i;
-      if (row >= coefficients.length) {
-        int overflow = row - coefficients.length + 1;
-        row -= overflow;
-        column += overflow;
-      }
-      double coefficient = 0;
-      for (int j = column; j <= row; j++) {
-        coefficient += product.unsafe_get(row - (j - column), j);
-      }
-      newCoefficients[i] = coefficient;
-    }
-
-//    System.out.println(Arrays.toString(newCoefficients));
-    return new DMatrixRMaj(newCoefficients);
+  public static DMatrixRMaj square(double... coefficients) {
+    return multiply(coefficients, coefficients);
   }
 
   /**
@@ -162,8 +165,8 @@ public class PolynomialHelper {
     double[] tempY = coefficientsY.clone();
     tempX[0] -= inputPose.getX();
     tempY[0] -= inputPose.getY();
-    DMatrixRMaj minimizationCoefficientsX = derivativeCoefficients(squarePolynomial(tempX));
-    DMatrixRMaj minimizationCoefficientsY = derivativeCoefficients(squarePolynomial(tempY));
+    DMatrixRMaj minimizationCoefficientsX = derivativeCoefficients(square(tempX));
+    DMatrixRMaj minimizationCoefficientsY = derivativeCoefficients(square(tempY));
     int combinedCoefficientsLength = Math.max(minimizationCoefficientsX.numRows,
         minimizationCoefficientsY.numRows);
     DMatrixRMaj minimizationCoefficients = new DMatrixRMaj(combinedCoefficientsLength, 1);
