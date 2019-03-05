@@ -15,6 +15,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import org.waltonrobotics.controller.MotionController;
+import org.waltonrobotics.metadata.MotionConstraints;
 import org.waltonrobotics.metadata.PathData;
 import org.waltonrobotics.metadata.Pose;
 import org.waltonrobotics.metadata.State;
@@ -30,11 +32,12 @@ public abstract class Path {
   public static int pathNumberOfSteps = 1000; // TODO find better name for this variable. Also before it was 50 but maybe try smart
   private static double robotWidth; // WHat if you have multiple robots running the same code? Should we account for that scenario?
   private final boolean isBackwards;
-  protected final List<Pose> keyPoints;
   private final LinkedList<PathData> pathData;
   protected double vCruise;
   protected double aMax;
   private boolean isFinished;
+  static MotionConstraints currentMotionConstraints =
+      MotionController.getCurrentMotionConstraints();
 
 
   /**

@@ -14,6 +14,7 @@ import org.waltonrobotics.config.RobotConfig;
 import org.waltonrobotics.config.SetSpeeds;
 import org.waltonrobotics.metadata.CameraData;
 import org.waltonrobotics.metadata.ErrorVector;
+import org.waltonrobotics.metadata.MotionConstraints;
 import org.waltonrobotics.metadata.MotionData;
 import org.waltonrobotics.metadata.MotionState;
 import org.waltonrobotics.metadata.PathData;
@@ -55,6 +56,9 @@ public class MotionController {
   private double integratedAngleError;
   private int pathNumber;
   private CameraReader cameraTimerTask = new CameraReader();
+
+  private static MotionConstraints currentMotionConstraints = new MotionConstraints();
+
   /**
    * @param robotConfig - the robotConfig to use the AbstractDrivetrain methods from
    * @param robotWidth - the robot width from the outside of the wheels
@@ -595,6 +599,15 @@ public class MotionController {
 
   public List<ErrorVector> getErrorVectorList() {
     return motionLogger.getErrorVectorList();
+  }
+
+  public static MotionConstraints getCurrentMotionConstraints() {
+    return currentMotionConstraints;
+  }
+
+  public static void setCurrentMotionConstraints(
+      MotionConstraints currentMotionConstraints) {
+    MotionController.currentMotionConstraints = currentMotionConstraints;
   }
 
   /**

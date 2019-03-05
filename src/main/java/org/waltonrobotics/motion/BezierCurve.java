@@ -2,11 +2,11 @@ package org.waltonrobotics.motion;
 
 import static org.waltonrobotics.util.Helper.calculateCoefficients;
 import static org.waltonrobotics.util.Helper.resizeArrayLeft;
-import static org.waltonrobotics.util.PolynomialHelper.calculateDerivative;
-import static org.waltonrobotics.util.PolynomialHelper.deconstructCoefficientsMatrix;
-import static org.waltonrobotics.util.PolynomialHelper.expandBinomial;
-import static org.waltonrobotics.util.PolynomialHelper.getPoint;
-import static org.waltonrobotics.util.PolynomialHelper.minimizeDistance;
+import static org.waltonrobotics.util.Polynomial.calculateDerivative;
+import static org.waltonrobotics.util.Polynomial.deconstructCoefficientsMatrix;
+import static org.waltonrobotics.util.Polynomial.expandBinomial;
+import static org.waltonrobotics.util.Polynomial.getPoint;
+import static org.waltonrobotics.util.Polynomial.minimizeDistance;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -175,11 +175,11 @@ public class BezierCurve extends Path {
   /**
    * Creates the PathData list
    */
-  private void setData(PathData data) {
+  private void setData(PathData startData) {
 
     for (int i = 1; i <= getPathNumberOfSteps(); i++) {
-      data = calculateData(data, pathPoints.get(i));
-      getPathData().add(data);
+      startData = calculateData(startData, pathPoints.get(i));
+      getPathData().add(startData);
     }
 
   }
