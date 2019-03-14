@@ -73,13 +73,21 @@ public class CameraReader {
   public void startCollecting() {
     String currentDate = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
     serialPort.writeString("S" + currentDate);
+    serialPort.flush();
   }
 
   public void endCollecting() {
     serialPort.writeString("E");
+    serialPort.flush();
   }
 
   public void singleCollect() {
     serialPort.writeString("s");
+    serialPort.flush();
+  }
+
+  public void captureFrames() {
+    serialPort.writeString("frames 5");
+    serialPort.flush();
   }
 }
