@@ -332,14 +332,14 @@ public class Spline extends Path {
 
   /**
    * Returns the point on the path that is closest to initPose.
-   * @param initPose
+   * @param inputPose
    * @return
    */
-  public Pose getClosestPose(Pose initPose) {
+  public Pose getClosestPose(Pose inputPose) {
     HashMap<Pose, Double> distanceMap = new HashMap<>();
     for(BezierCurve curve : getDefiningBezierCurves()) {
-      Pose closestCurvePoint = curve.getClosestPose(initPose);
-      distanceMap.put(closestCurvePoint, initPose.distance(closestCurvePoint));
+      Pose closestCurvePoint = curve.getClosestPose(inputPose);
+      distanceMap.put(closestCurvePoint, inputPose.distance(closestCurvePoint));
     }
     return distanceMap.entrySet().stream().sorted(Entry.comparingByValue()).
         map(Entry::getKey).toArray(Pose[]::new)[0];

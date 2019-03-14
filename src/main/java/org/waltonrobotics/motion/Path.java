@@ -36,6 +36,7 @@ public abstract class Path {
   protected double vCruise;
   protected double aMax;
   private boolean isFinished;
+  protected List<Pose> keyPoints;
   static MotionConstraints currentMotionConstraints =
       MotionController.getCurrentMotionConstraints();
 
