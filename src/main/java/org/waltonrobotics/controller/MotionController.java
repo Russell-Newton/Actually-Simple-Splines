@@ -54,7 +54,8 @@ public class MotionController {
   private double integratedLagError;
   private double integratedAngleError;
   private int pathNumber;
-  private CameraReader cameraTimerTask = new CameraReader();
+  private CameraReader cameraReader = new CameraReader();
+
   /**
    * @param robotConfig - the robotConfig to use the AbstractDrivetrain methods from
    * @param robotWidth - the robot width from the outside of the wheels
@@ -198,8 +199,8 @@ public class MotionController {
     return new ErrorVector(lagError, crossTrackError, angleError);
   }
 
-  public CameraReader getCameraTimerTask() {
-    return cameraTimerTask;
+  public CameraReader getCameraReader() {
+    return cameraReader;
   }
 
   public void setRobotConfig(RobotConfig robotConfig) {
@@ -508,8 +509,8 @@ public class MotionController {
   }
 
   public CameraData getCurrentCameraData() {
-    cameraTimerTask.run();
-    return cameraTimerTask.getCameraData();
+    cameraReader.run();
+    return cameraReader.getCameraData();
   }
 
   /**
