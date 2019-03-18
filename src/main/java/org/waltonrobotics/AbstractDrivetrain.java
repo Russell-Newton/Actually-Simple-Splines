@@ -1,8 +1,6 @@
 package org.waltonrobotics;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.function.Supplier;
 import org.waltonrobotics.command.SimpleMotion;
 import org.waltonrobotics.config.RobotConfig;
@@ -222,6 +220,8 @@ public abstract class AbstractDrivetrain extends Subsystem {
   public void setStartingPosition(Pose startingPosition) {
     controller.setStartPosition(startingPosition);
     actualPosition = startingPosition;
+    previousLengths = getWheelPositions();
+    previousState = new PathData(startingPosition);
   }
 
   @Override
