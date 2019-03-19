@@ -11,8 +11,9 @@ public class CameraReader {
 
   private final SerialPort serialPort;
   private final String[] cmdCommands = {
+      "streamoff",
       "setmapping2 YUYV 640 480 30.0 WaltonRobotics DeepSpace",
-      "setpar serout Hard",
+      "setpar serout All",
       "setpar serlog USB",
       "streamon"
   };
@@ -55,7 +56,7 @@ public class CameraReader {
   }
 
   public void writeCommand(String command) {
-    serialPort.writeString(String.format("%s%n", command));
+    serialPort.writeString(command + '\n');
   }
 
   public CameraData getCameraData() {
