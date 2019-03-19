@@ -68,7 +68,7 @@ public class CameraReader {
       if (!isRunning) {
         startCollecting();
       }
-      if (!isRunning) {
+      if (isRunning) {
 
         String data = readRaw().trim();
 
