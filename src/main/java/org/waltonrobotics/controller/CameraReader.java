@@ -110,6 +110,8 @@ public class CameraReader {
         writeCommand(cmdCommand);
       }
 
+      System.out.println("Started collecting");
+
       isRunning = true;
     }
   }
