@@ -14,7 +14,6 @@ import org.waltonrobotics.config.RobotConfig;
 import org.waltonrobotics.config.SetSpeeds;
 import org.waltonrobotics.metadata.CameraData;
 import org.waltonrobotics.metadata.ErrorVector;
-import org.waltonrobotics.metadata.MotionConstraints;
 import org.waltonrobotics.metadata.MotionData;
 import org.waltonrobotics.metadata.MotionState;
 import org.waltonrobotics.metadata.PathData;
@@ -55,9 +54,7 @@ public class MotionController {
   private double integratedLagError;
   private double integratedAngleError;
   private int pathNumber;
-  private CameraReader cameraTimerTask = new CameraReader();
-
-  private static MotionConstraints currentMotionConstraints = new MotionConstraints();
+  private CameraReader cameraReader = new CameraReader();
 
   /**
    * @param robotConfig - the robotConfig to use the AbstractDrivetrain methods from
@@ -202,8 +199,8 @@ public class MotionController {
     return new ErrorVector(lagError, crossTrackError, angleError);
   }
 
-  public CameraReader getCameraTimerTask() {
-    return cameraTimerTask;
+  public CameraReader getCameraReader() {
+    return cameraReader;
   }
 
   public void setRobotConfig(RobotConfig robotConfig) {
@@ -512,8 +509,8 @@ public class MotionController {
   }
 
   public CameraData getCurrentCameraData() {
-    cameraTimerTask.run();
-    return cameraTimerTask.getCameraData();
+    cameraReader.run();
+    return cameraReader.getCameraData();
   }
 
   /**
@@ -599,15 +596,6 @@ public class MotionController {
 
   public List<ErrorVector> getErrorVectorList() {
     return motionLogger.getErrorVectorList();
-  }
-
-  public static MotionConstraints getCurrentMotionConstraints() {
-    return currentMotionConstraints;
-  }
-
-  public static void setCurrentMotionConstraints(
-      MotionConstraints currentMotionConstraints) {
-    MotionController.currentMotionConstraints = currentMotionConstraints;
   }
 
   /**
