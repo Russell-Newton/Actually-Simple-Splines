@@ -8,10 +8,11 @@ targetCompatibility = JavaVersion.VERSION_11
 
 def userHome = System.getProperty('user.home')
 def otherProjects = [
-        "${userHome}/Documents/GitHub/PowerUp/PowerUp/lib/",
-        "${userHome}/wpilib/user/java/lib/",
-        "${userHome}/Documents/GitHub/Path Planning/motionLibrary/",
-        "${userHome}/Documents/GitHub/DeepSpace/DeepSpaceRobot/lib/",
+//        "${userHome}/Documents/GitHub/PowerUp/PowerUp/lib/",
+        "${userHome}/Documents/PowerUp/NewPowerUp/lib/",
+//        "${userHome}/wpilib/user/java/lib/",
+//        "${userHome}/Documents/GitHub/Path Planning/motionLibrary/",
+//        "${userHome}/Documents/GitHub/DeepSpace/DeepSpaceRobot/lib/",
 ]
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"

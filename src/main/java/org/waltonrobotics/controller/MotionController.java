@@ -45,6 +45,9 @@ public class MotionController {
   private RobotPair previousLengths;
   private double pathStartTime;
   private ListIterator<PathData> pdIterator;
+  private double lagIntegral = 0;
+  private double lagDerivative = 0;
+  private double xTrackIntegral = 0;
   private PathData pdPrevious;
   private PathData pdNext;
   private ErrorVector errorVector;
@@ -174,7 +177,7 @@ public class MotionController {
   /**
    * Finds the current lag and cross track ErrorVector
    */
-  public static ErrorVector findCurrentError(PathData targetPathData, Pose actualPose) {
+  public ErrorVector findCurrentError(PathData targetPathData, Pose actualPose) {
     Pose targetPose = targetPathData.getCenterPose();
     double dX = targetPose.getX() - actualPose.getX();
     double dY = targetPose.getY() - actualPose.getY();
@@ -196,6 +199,11 @@ public class MotionController {
     } else if (angleError < -Math.PI) {
       angleError += 2.0 * Math.PI;
     }
+
+    lagIntegral += lagError * period / 1000.0;  //Add right-riemann-rectangle
+    lagDerivative = (lagError - errorVector.getLag()) / (period / 1000.0); //dy/dx
+    xTrackIntegral += crossTrackError * period / 1000.0;  //Add right-riemann-rectangle
+
     return new ErrorVector(lagError, crossTrackError, angleError);
   }
 
@@ -235,6 +243,8 @@ public class MotionController {
 
         integratedLagError = 0;
         integratedAngleError = 0;
+
+        lagIntegral = lagDerivative = xTrackIntegral = 0;
 
         if (currentPath != null) {
           System.out.println("Getting new path");
@@ -280,6 +290,8 @@ public class MotionController {
         integratedLagError = 0;
         integratedAngleError = 0;
 
+        lagIntegral = lagDerivative = xTrackIntegral = 0;
+
         pathNumber += 1;
       } else {
 //					System.out.println("No initial path not moving");
@@ -295,7 +307,7 @@ public class MotionController {
    *
    * @return a RobotPair with the powers and the time
    */
-  private synchronized RobotPair calculateSpeeds(RobotPair wheelPositions) {
+  private synchronized RobotPair getPowers(RobotPair wheelPositions) {
     if (running) {
       findCurrentPath(wheelPositions);
       actualPosition = updateActualPosition(wheelPositions, previousLengths, actualPosition);
@@ -313,7 +325,7 @@ public class MotionController {
         errorVector = handleCameraData();
       }
 
-      return findSpeeds(wheelPositions.getTime());
+      return calculateSpeeds(wheelPositions.getTime());
     }
 
     return new RobotPair(0, 0, wheelPositions.getTime());
@@ -323,7 +335,49 @@ public class MotionController {
     return usingCamera.get();
   }
 
+  public RobotPair calculateSpeeds(double time) {
+    double leftVelocity = 0;
+    double rightVelocity = 0;
 
+    switch (currentMotionState) {
+      case WAITING:
+        return new RobotPair(0, 0, time);
+
+      case MOVING:
+        double centerVelocity = Math.min(robotConfig.getPLag() * errorVector.getLag() +
+            robotConfig.getILag() * lagIntegral + robotConfig.getDLag() * lagDerivative,
+            robotConfig.getVMax());
+        double steerVelocity = robotConfig.getPSteer() * errorVector.getXTrack() +
+            robotConfig.getISteer() * xTrackIntegral +
+            robotConfig.getDSteer() * errorVector.getAngle();
+
+        //If turning left sharply at high speed, cut down on left with what right cannot cover
+        if(Math.abs(rightVelocity = centerVelocity + steerVelocity) > robotConfig.getVMax()) {
+          double remainderVelocity = rightVelocity - robotConfig.getVMax();
+          rightVelocity -= remainderVelocity;
+          leftVelocity = centerVelocity - steerVelocity - remainderVelocity;
+        }
+        //If turning right sharply at high speed, cut down on right with what left cannot cover
+        else if(Math.abs(leftVelocity = centerVelocity - steerVelocity) > robotConfig.getVMax()) {
+          double remainderVelocity = leftVelocity - robotConfig.getVMax();
+          leftVelocity -= remainderVelocity;
+          rightVelocity = centerVelocity + steerVelocity - remainderVelocity;
+        }
+        //Both sides can effectively cover for steering
+        else {
+          rightVelocity = centerVelocity + steerVelocity;
+          leftVelocity = centerVelocity - steerVelocity;
+        }
+        double rightPower = rightVelocity / robotConfig.getVMax();
+        double leftPower = leftVelocity / robotConfig.getVMax();
+        return new RobotPair(leftPower, rightPower, time);
+
+      default:
+        return new RobotPair(0, 0, time);
+    }
+  }
+
+  @Deprecated
   public RobotPair findSpeeds(double time) {
     double leftPower = 0;
     double rightPower = 0;
@@ -364,7 +418,7 @@ public class MotionController {
         currentMotionState = MotionState.WAITING;
       }
 
-      integratedLagError += robotConfig.getILag() * errorVector.getLag();
+      integratedLagError += robotConfig.getI_Lag() * errorVector.getLag();
       integratedAngleError += robotConfig.getIAng() * errorVector.getAngle();
 
       integratedAngleError = Math.max(Math.min(0.5, integratedAngleError), -0.5);
@@ -613,7 +667,7 @@ public class MotionController {
 
       RobotPair wheelPositions = setSpeeds.getWheelPositions();
 
-      powers = calculateSpeeds(wheelPositions);
+      powers = getPowers(wheelPositions);
 
       setSpeeds.setSpeeds(powers.getLeft(), powers.getRight());
 

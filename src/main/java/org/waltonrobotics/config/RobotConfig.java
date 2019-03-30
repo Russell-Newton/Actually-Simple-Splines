@@ -33,6 +33,7 @@ public abstract class RobotConfig {
    *
    * @return the max velocity the robot can achieve.
    */
+  @Deprecated
   public double getMaxVelocity() {
     return (1.0 - getKK()) / getKV();
   }
@@ -42,6 +43,7 @@ public abstract class RobotConfig {
    *
    * @return the max acceleration the robot can achieve
    */
+  @Deprecated
   public abstract double getMaxAcceleration();
 
   /**
@@ -50,6 +52,7 @@ public abstract class RobotConfig {
    *
    * @return KV
    */
+  @Deprecated
   public abstract double getKV();
 
   /**
@@ -58,6 +61,7 @@ public abstract class RobotConfig {
    *
    * @return KAcc
    */
+  @Deprecated
   public abstract double getKAcc();
 
   /**
@@ -65,6 +69,7 @@ public abstract class RobotConfig {
    *
    * @return KK
    */
+  @Deprecated
   public abstract double getKK();
 
   /**
@@ -73,6 +78,7 @@ public abstract class RobotConfig {
    *
    * @return KS
    */
+  @Deprecated
   public abstract double getKS();
 
   /**
@@ -81,6 +87,7 @@ public abstract class RobotConfig {
    *
    * @return KAng
    */
+  @Deprecated
   public abstract double getKAng();
 
   /**
@@ -88,13 +95,16 @@ public abstract class RobotConfig {
    *
    * @return KL
    */
+  @Deprecated
   public abstract double getKL();
 
   //TODO do documentation for theses variables
-  public double getILag() {
+  @Deprecated
+  public double getI_Lag() {
     return 0;
   }
 
+  @Deprecated
   public double getIAng() {
     return 0;
   }
@@ -121,4 +131,18 @@ public abstract class RobotConfig {
    */
   public abstract boolean isCurrentRobot();
 
+
+  public abstract double getPLag();
+
+  public abstract double getILag();
+
+  public abstract double getDLag();
+
+  public abstract double getPSteer();
+
+  public abstract double getISteer();
+
+  public abstract double getDSteer();
+
+  public abstract double getVMax();
 }
