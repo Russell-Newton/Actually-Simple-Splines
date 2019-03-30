@@ -48,9 +48,12 @@ public class MotionController {
   private double lagIntegral = 0;
   private double lagDerivative = 0;
   private double xTrackIntegral = 0;
+  private double xTrackDerivative = 0;
+  private double angleIntegral = 0;
+  private double angleDerivative = 0;
   private PathData pdPrevious;
   private PathData pdNext;
-  private ErrorVector errorVector;
+  private ErrorVector errorVector = new ErrorVector(0, 0, 0);
   private RobotPair powers;
   private TimerTask currentTimerTask;
   private MotionState currentMotionState = MotionState.WAITING;
@@ -200,9 +203,13 @@ public class MotionController {
       angleError += 2.0 * Math.PI;
     }
 
-    lagIntegral += lagError * period / 1000.0;  //Add right-riemann-rectangle
-    lagDerivative = (lagError - errorVector.getLag()) / (period / 1000.0); //dy/dx
-    xTrackIntegral += crossTrackError * period / 1000.0;  //Add right-riemann-rectangle
+    double dt = period / 1000.0;
+    lagIntegral += lagError * dt;  // Add right-riemann-rectangle
+    lagDerivative = (lagError - errorVector.getLag()) / (dt); // dy/dx
+    xTrackIntegral += crossTrackError * dt;  
+    xTrackDerivative = (crossTrackError - errorVector.getXTrack()) / (dt);
+    angleIntegral += angleError * dt;
+    angleDerivative = (angleError - errorVector.getAngle()) / (dt);
 
     return new ErrorVector(lagError, crossTrackError, angleError);
   }
@@ -349,7 +356,10 @@ public class MotionController {
             robotConfig.getVMax());
         double steerVelocity = robotConfig.getPSteer() * errorVector.getXTrack() +
             robotConfig.getISteer() * xTrackIntegral +
-            robotConfig.getDSteer() * errorVector.getAngle();
+            robotConfig.getDSteer() * xTrackDerivative +
+            robotConfig.getPAngle() * errorVector.getAngle() +
+            robotConfig.getIAngle() * angleIntegral +
+            robotConfig.getDAngle() * angleDerivative;
 
         //If turning left sharply at high speed, cut down on left with what right cannot cover
         if(Math.abs(rightVelocity = centerVelocity + steerVelocity) > robotConfig.getVMax()) {

@@ -144,5 +144,11 @@ public abstract class RobotConfig {
 
   public abstract double getDSteer();
 
+  public abstract double getPAngle();
+
+  public abstract double getIAngle();
+
+  public abstract double getDAngle();
+
   public abstract double getVMax();
 }
