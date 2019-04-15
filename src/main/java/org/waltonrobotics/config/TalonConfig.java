@@ -2,7 +2,7 @@ package org.waltonrobotics.config;
 
 public interface TalonConfig {
 
-  int getChanell();
+  int getChannel();
 
   boolean isInverted();
 }

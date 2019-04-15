@@ -4,9 +4,9 @@ public interface EncoderConfig {
 
   double getDistancePerPulse();
 
-  int getChannell1();
+  int getChannel1();
 
-  int getChannell2();
+  int getChannel2();
 
   boolean isInverted();
 }
