@@ -546,6 +546,13 @@ public class MotionController {
    */
   public final synchronized void enableScheduler() {
     if (!running) {
+      errorVector = new ErrorVector(0, 0, 0);
+      lagDerivative = 0;
+      lagIntegral = 0;
+      xTrackIntegral = 0;
+      xTrackDerivative = 0;
+      angleDerivative = 0;
+      angleIntegral = 0;
       System.out.println("Enabling scheduler");
       System.out.println(actualPosition);
 //			actualPosition = starting;
