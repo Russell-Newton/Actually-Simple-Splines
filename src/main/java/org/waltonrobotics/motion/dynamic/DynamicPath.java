@@ -1,4 +1,4 @@
-package org.waltonrobotics.dynamicMotion;
+package org.waltonrobotics.motion.dynamic;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

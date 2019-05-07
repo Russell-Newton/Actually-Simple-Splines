@@ -60,7 +60,7 @@ public class Spline extends Path {
     this.startVelocity = startVelocity;
 
     createPath();
-    curveLength = getDefiningBezierCurves().stream().mapToDouble(BezierCurve::getCurveLength).sum();
+    curveLength = getDefiningBezierCurves().stream().mapToDouble(BezierCurve::getPathLength).sum();
   }
 
   /**
@@ -181,27 +181,10 @@ public class Spline extends Path {
 
   /**
    * Stitches the bezier curve path data to make the single spline
-   *
-   * @param startPathData - requires the initial pathData
    */
-  private void stitchPathData(PathData startPathData, List<List<Pose>> pathControlPoints) {
-    double nextStartVelocity;
-    double nextEndVelocity;
-    PathData nextStartPathData = startPathData;
-    getPathData().add(startPathData);
-    ListIterator<List<Pose>> iterator = pathControlPoints.listIterator();
-    while (iterator.hasNext()) {
-      BezierCurve curve;
-      nextStartVelocity = (iterator.nextIndex() == 0) ? startVelocity : getVCruise();
-      nextEndVelocity =
-          (iterator.nextIndex() == (pathControlPoints.size() - 1)) ? endVelocity
-              : getVCruise();
-      curve = new BezierCurve(getVCruise(), getAMax(), nextStartVelocity, nextEndVelocity,
-          isBackwards(),
-          nextStartPathData,
-          iterator.next());
+  private void stitchPathData() {
+    for(BezierCurve curve : definingBezierCurves) {
       getPathData().addAll(curve.getPathData());
-      nextStartPathData = getPathData().get(getPathData().size() - 1);
     }
   }
 
@@ -248,7 +231,7 @@ public class Spline extends Path {
     definingBezierCurves = createBezierCurves(startPathData, pathControlPoints);
 //		System.out.println(bezierCurves.size());
 
-    stitchPathData(startPathData, pathControlPoints);
+    stitchPathData();
   }
 
   public List<BezierCurve> getDefiningBezierCurves() {

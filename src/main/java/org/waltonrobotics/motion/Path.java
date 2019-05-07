@@ -1,5 +1,10 @@
 package org.waltonrobotics.motion;
 
+import static org.waltonrobotics.util.Helper.calculateCoefficients;
+import static org.waltonrobotics.util.Helper.resizeArrayLeft;
+import static org.waltonrobotics.util.Polynomial.deconstructCoefficientsMatrix;
+import static org.waltonrobotics.util.Polynomial.expandBinomial;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
@@ -15,6 +20,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import org.ejml.data.DMatrixRMaj;
+import org.ejml.dense.row.CommonOps_DDRM;
 import org.waltonrobotics.controller.MotionController;
 import org.waltonrobotics.metadata.MotionConstraints;
 import org.waltonrobotics.metadata.PathData;
@@ -31,12 +38,14 @@ public abstract class Path {
   //FIXME 1000 points per meter?
   public static int pathNumberOfSteps = 1000; // TODO find better name for this variable. Also before it was 50 but maybe try smart
   private static double robotWidth; // WHat if you have multiple robots running the same code? Should we account for that scenario?
+  private static double robotLength;
   private final boolean isBackwards;
   private final LinkedList<PathData> pathData;
   protected double vCruise;
   protected double aMax;
   private boolean isFinished;
   protected List<Pose> keyPoints;
+  protected List<Pose> pathPoints;
 
 
   /**
@@ -93,6 +102,13 @@ public abstract class Path {
     Path.robotWidth = robotWidth;
   }
 
+  public static double getRobotLength() {
+    return robotLength;
+  }
+
+  public static void setRobotLength(double robotLength) {
+    Path.robotLength = robotLength;
+  }
 
   /**
    * Bounds an angle to be in between -PI and PI. if the angles are more or less then the angle will cycle.
@@ -496,6 +512,48 @@ public abstract class Path {
         ", pathData=" + pathData +
         ", isFinished=" + isFinished +
         '}';
+  }
+
+  protected List<double[]> defineBezierCoefficients() {
+    List<double[]> coefficients = new LinkedList<>();
+    DMatrixRMaj coefficientsX = new DMatrixRMaj(keyPoints.size(), 1);
+    DMatrixRMaj coefficientsY = new DMatrixRMaj(keyPoints.size(), 1);
+    int[] binomialCoefficients = calculateCoefficients(keyPoints.size() - 1);
+    for(int i = 0; i < keyPoints.size(); i++) {
+      DMatrixRMaj expandedBinomial = new DMatrixRMaj(resizeArrayLeft(expandBinomial(1, -1, i),
+          keyPoints.size()));
+      DMatrixRMaj coefficientsIX = new DMatrixRMaj(keyPoints.size(), 1);
+      DMatrixRMaj coefficientsIY = new DMatrixRMaj(keyPoints.size(), 1);
+      for(int j = 0; j < keyPoints.size(); j++) {
+        coefficientsIX.set(j,
+            expandedBinomial.get(j) * keyPoints.get(keyPoints.size() - i - 1).getX()
+                * binomialCoefficients[i]);
+        coefficientsIY.set(j,
+            expandedBinomial.get(j) * keyPoints.get(keyPoints.size() - i - 1).getY()
+                * binomialCoefficients[i]);
+      }
+//      System.out.println(coefficientsIX.toString());
+//      System.out.println(coefficientsIY.toString());
+      CommonOps_DDRM.add(coefficientsX, coefficientsIX, coefficientsX);
+      CommonOps_DDRM.add(coefficientsY, coefficientsIY, coefficientsY);
+    }
+    coefficients.add(deconstructCoefficientsMatrix(coefficientsX));
+    coefficients.add(deconstructCoefficientsMatrix(coefficientsY));
+
+    return coefficients;
+  }
+
+  /**
+   * Caluclates the length of the path
+   */
+  protected double getPathLength() {
+    double curveLength = 0;
+
+    for (int i = 1; i < pathPoints.size(); i++) {
+      curveLength += pathPoints.get(i).distance(pathPoints.get(i - 1));
+    }
+
+    return curveLength;
   }
 
   private static class ClassValuePair {

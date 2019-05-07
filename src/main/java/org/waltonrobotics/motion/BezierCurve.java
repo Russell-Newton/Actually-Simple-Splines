@@ -41,7 +41,6 @@ public class BezierCurve extends Path {
   private final PathData startPathData;
   private final double startLCenter;
   public double curveLength;
-  private List<Pose> pathPoints;
   private List<double[]> coefficients;
 
   /**
@@ -65,7 +64,7 @@ public class BezierCurve extends Path {
     this.startPathData = startPathData;
     // The starting average encoder distance should always be 0
     startLCenter = startPathData.getLCenter();
-    defineCoefficients();
+    coefficients = defineBezierCoefficients();
 
     createPath();
   }
@@ -110,32 +109,6 @@ public class BezierCurve extends Path {
 //    System.out.println(curve.getClosestPose(new Pose(3, 0)).toString());
 //  }
 
-  private void defineCoefficients() {
-    coefficients = new LinkedList<>();
-    DMatrixRMaj coefficientsX = new DMatrixRMaj(keyPoints.size(), 1);
-    DMatrixRMaj coefficientsY = new DMatrixRMaj(keyPoints.size(), 1);
-    int[] binomialCoefficients = calculateCoefficients(keyPoints.size() - 1);
-    for(int i = 0; i < keyPoints.size(); i++) {
-      DMatrixRMaj expandedBinomial = new DMatrixRMaj(resizeArrayLeft(expandBinomial(1, -1, i),
-          keyPoints.size()));
-      DMatrixRMaj coefficientsIX = new DMatrixRMaj(keyPoints.size(), 1);
-      DMatrixRMaj coefficientsIY = new DMatrixRMaj(keyPoints.size(), 1);
-      for(int j = 0; j < keyPoints.size(); j++) {
-        coefficientsIX.set(j,
-            expandedBinomial.get(j) * keyPoints.get(keyPoints.size() - i - 1).getX()
-                * binomialCoefficients[i]);
-        coefficientsIY.set(j,
-            expandedBinomial.get(j) * keyPoints.get(keyPoints.size() - i - 1).getY()
-                * binomialCoefficients[i]);
-      }
-//      System.out.println(coefficientsIX.toString());
-//      System.out.println(coefficientsIY.toString());
-      CommonOps_DDRM.add(coefficientsX, coefficientsIX, coefficientsX);
-      CommonOps_DDRM.add(coefficientsY, coefficientsIY, coefficientsY);
-    }
-    coefficients.add(deconstructCoefficientsMatrix(coefficientsX));
-    coefficients.add(deconstructCoefficientsMatrix(coefficientsY));
-  }
 
   public List<Pose> createPoints() {
     List<Pose> pathPoints = new LinkedList<>();
@@ -147,21 +120,6 @@ public class BezierCurve extends Path {
     }
 
     return pathPoints;
-  }
-
-  /**
-   * Caluclates the length of the curve
-   */
-  public double getCurveLength() {
-    double curveLength = 0;
-
-    if (getKeyPoints().size() > 1) {
-      for (int i = 1; i < getPathNumberOfSteps(); i++) {
-        curveLength += pathPoints.get(i).distance(pathPoints.get(i - 1));
-      }
-    }
-
-    return curveLength;
   }
 
   /**
@@ -264,7 +222,7 @@ public class BezierCurve extends Path {
 
   public void createPath() {
     pathPoints = createPoints();
-    curveLength = getCurveLength();
+    curveLength = getPathLength();
     setData(startPathData);
   }
 

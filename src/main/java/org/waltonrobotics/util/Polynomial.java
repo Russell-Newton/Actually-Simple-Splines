@@ -4,6 +4,7 @@ import static org.waltonrobotics.util.Helper.calculateCoefficients;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import org.ejml.data.Complex_F64;
 import org.ejml.data.DMatrixRMaj;
@@ -210,6 +211,15 @@ public abstract class Polynomial {
       double[] coefficients) {
     return minimizeDistance(inputPose, lowBound, highBound, new double[]{0, 1},
         coefficients);
+  }
+
+  public static Pose getPoint(double[] coefficientsX, double[] coefficientsY,
+      double[] coefficientsAngle, double t) {
+    double x = calculateFunction(coefficientsX, t);
+    double y = calculateFunction(coefficientsY, t);
+    double angle = calculateFunction(coefficientsAngle, t);
+
+    return new Pose(x, y, angle);
   }
 
   /**

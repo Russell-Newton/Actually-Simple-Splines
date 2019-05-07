@@ -1,4 +1,4 @@
-package org.waltonrobotics.dynamicMotion;
+package org.waltonrobotics.motion.dynamic;
 
 import java.util.ArrayList;
 import java.util.Arrays;

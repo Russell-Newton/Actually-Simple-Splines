@@ -1,4 +1,4 @@
-package org.waltonrobotics.dynamicMotion;
+package org.waltonrobotics.motion.dynamic;
 
 import static org.waltonrobotics.motion.BezierCurve.gaussLegendreHashMap;
 import static org.waltonrobotics.util.Helper.calculateCoefficients;
