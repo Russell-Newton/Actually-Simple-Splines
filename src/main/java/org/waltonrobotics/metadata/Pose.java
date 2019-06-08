@@ -123,6 +123,44 @@ public class Pose {
     return new Pose(x * constant, y * constant, angle);
   }
 
+  public Pose add(Pose add) {
+    return offset(add.x, add.y, 0);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    Pose pose = (Pose) o;
+
+    if (Double.compare(pose.x, x) != 0) {
+      return false;
+    }
+    if (Double.compare(pose.y, y) != 0) {
+      return false;
+    }
+    return Double.compare(pose.angle, angle) == 0;
+
+  }
+
+  @Override
+  public int hashCode() {
+    int result;
+    long temp;
+    temp = Double.doubleToLongBits(x);
+    result = (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(y);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(angle);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    return result;
+  }
+
   @Override
   public String toString() {
 
@@ -132,9 +170,5 @@ public class Pose {
         ", y=" + y +
         ", angle=" + angle +
         '}';
-  }
-
-  public Pose add(Pose add) {
-    return offset(add.x, add.y, 0);
   }
 }
