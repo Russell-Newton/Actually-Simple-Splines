@@ -30,8 +30,6 @@ public abstract class Path {
 
   //FIXME 1000 points per meter?
   public static int pathNumberOfSteps = 1000; // TODO find better name for this variable. Also before it was 50 but maybe try smart
-  static MotionConstraints currentMotionConstraints =
-      MotionController.getCurrentMotionConstraints();
   private static double robotWidth; // WHat if you have multiple robots running the same code? Should we account for that scenario?
   private final boolean isBackwards;
   private final LinkedList<PathData> pathData;
