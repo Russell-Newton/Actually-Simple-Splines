@@ -38,7 +38,8 @@ public abstract class AbstractDrivetrain extends Subsystem {
   }
 
   /**
-   * Create the static drivetrain after creating the motion logger so you can use the MotionController
+   * Create the static drivetrain after creating the motion logger so you can use the
+   * MotionController
    */
   public AbstractDrivetrain(RobotConfig robotConfig, Supplier<Boolean> usingCamera) {
     this.robotConfig = robotConfig;
@@ -77,7 +78,8 @@ public abstract class AbstractDrivetrain extends Subsystem {
   public void periodic() {
     //		Gets the current predicted actual position
     RobotPair wheelPosition = getWheelPositions();
-    actualPosition = MotionController.updateActualPosition(wheelPosition, previousLengths, actualPosition);
+    actualPosition = MotionController
+        .updateActualPosition(wheelPosition, previousLengths, actualPosition);
     actualPositionTime = wheelPosition.getTime();
 
 //		Found change in time between the different periodic calls
@@ -244,8 +246,8 @@ public abstract class AbstractDrivetrain extends Subsystem {
   }
 
   /**
-   * Gets the current state of the robot (wheel encoder distances, velocities, accelerations and jerks), its position
-   * (x, y, angle) and the time it was calculated
+   * Gets the current state of the robot (wheel encoder distances, velocities, accelerations and
+   * jerks), its position (x, y, angle) and the time it was calculated
    */
   public PathData getCurrentRobotState() {
     return currentState;

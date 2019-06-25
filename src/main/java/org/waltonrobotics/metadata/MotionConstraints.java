@@ -4,6 +4,7 @@ package org.waltonrobotics.metadata;
  * @author Russell Newton
  **/
 public class MotionConstraints {
+
   private final double vCruise;
   private final double aMax;
   private final double startVelocity;
@@ -12,6 +13,7 @@ public class MotionConstraints {
 
   /**
    * Constraints used to calculate PathData
+   *
    * @param vCruise - max velocity
    * @param aMax - max acceleration
    * @param startVelocity - starting velocity

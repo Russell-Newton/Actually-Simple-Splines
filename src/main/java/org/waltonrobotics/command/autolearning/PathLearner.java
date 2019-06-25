@@ -62,7 +62,8 @@ public class PathLearner extends Command {
   }
 
   public PathData offset(PathData current) {
-    Pose pose = current.getCenterPose().offset(startPosition.getX(), startPosition.getY(), startPosition.getAngle());
+    Pose pose = current.getCenterPose()
+        .offset(startPosition.getX(), startPosition.getY(), startPosition.getAngle());
 
     return new PathData(current.getLeftState(), current.getRightState(), pose, current.getTime(),
         current.isBackwards());

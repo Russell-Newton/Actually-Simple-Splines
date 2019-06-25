@@ -36,7 +36,8 @@ public class SimpleTurn extends SimpleMotion {
 
   public static SimpleTurn pointTurn(double maxVelocity, double maxAcceleration,
       double endAngle) {
-    return new SimpleTurn(maxVelocity, maxAcceleration, getDrivetrain().getActualPosition(), endAngle);
+    return new SimpleTurn(maxVelocity, maxAcceleration, getDrivetrain().getActualPosition(),
+        endAngle);
   }
 
   public static SimpleTurn pointTurn(Pose startPosition, Pose endPosition) {

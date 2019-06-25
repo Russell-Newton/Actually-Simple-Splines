@@ -13,8 +13,8 @@ import org.waltonrobotics.metadata.Pose;
 public class Line extends BezierCurve {
 
   /**
-   * Be careful when using this. If your robot's angle is off, the MotionContoller will try to correct for it, so you
-   * will not get a straight line.
+   * Be careful when using this. If your robot's angle is off, the MotionContoller will try to
+   * correct for it, so you will not get a straight line.
    *
    * @param vCruise - the cruise velocity of the robot
    * @param aMax - the maximum acceleration of the robot
@@ -31,8 +31,8 @@ public class Line extends BezierCurve {
   }
 
   /**
-   * Be careful when using this. If your robot's angle is off, the MotionContoller will try to correct for it, so you
-   * will not get a straight line.
+   * Be careful when using this. If your robot's angle is off, the MotionContoller will try to
+   * correct for it, so you will not get a straight line.
    *
    * @param vCruise - the cruise velocity of the robot
    * @param aMax - the maximum acceleration of the robot

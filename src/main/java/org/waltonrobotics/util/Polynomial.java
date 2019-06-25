@@ -23,9 +23,6 @@ public abstract class Polynomial {
 
   /**
    * Multiplies two polynomials, returning the resulting coefficients.
-   * @param coefficientsA
-   * @param coefficientsB
-   * @return
    */
   public static DMatrixRMaj multiply(double[] coefficientsA, double[] coefficientsB) {
     //Expand polynomial multiplication
@@ -36,10 +33,10 @@ public abstract class Polynomial {
 
     //Combine like terms
     double[] newCoefficients = new double[coefficientsA.length + coefficientsB.length - 1];
-    for(int k = 0; k < newCoefficients.length; k++) {
-      for(int j = 0; j <= k; j++) {
+    for (int k = 0; k < newCoefficients.length; k++) {
+      for (int j = 0; j <= k; j++) {
         int i = k - j;
-        if(i < coefficientsA.length && j < coefficientsB.length) {
+        if (i < coefficientsA.length && j < coefficientsB.length) {
           newCoefficients[k] += product.unsafe_get(i, j);
         }
       }
@@ -120,21 +117,19 @@ public abstract class Polynomial {
   }
 
   /**
-   * Removes trailing zeros in a coefficients array. Necessary to ensure success with
-   * {@code findRoots}.
-   * @param coefficients
-   * @return
+   * Removes trailing zeros in a coefficients array. Necessary to ensure success with {@code
+   * findRoots}.
    */
   private static double[] removeTrailingZeros(double[] coefficients) {
     int trailingZeros = 0;
-    for(int i = coefficients.length - 1; i >= 0; i--) {
-      if(coefficients[i] != 0) {
+    for (int i = coefficients.length - 1; i >= 0; i--) {
+      if (coefficients[i] != 0) {
         break;
       }
       trailingZeros++;
     }
     double[] newCoefficients = new double[coefficients.length - trailingZeros];
-    for(int i = 0; i < newCoefficients.length; i++) {
+    for (int i = 0; i < newCoefficients.length; i++) {
       newCoefficients[i] = coefficients[i];
     }
     return newCoefficients;
@@ -253,9 +248,8 @@ public abstract class Polynomial {
 
   /**
    * Calculates f'(x)
+   *
    * @param coefficients - coefficients defining f'(x), from least to most significant
-   * @param x
-   * @return
    */
   public static double calculateDerivative(double[] coefficients, double x) {
     return calculateFunction(deconstructCoefficientsMatrix(derivativeCoefficients(

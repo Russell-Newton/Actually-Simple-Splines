@@ -30,15 +30,15 @@ public abstract class Path {
 
   //FIXME 1000 points per meter?
   public static int pathNumberOfSteps = 1000; // TODO find better name for this variable. Also before it was 50 but maybe try smart
+  static MotionConstraints currentMotionConstraints =
+      MotionController.getCurrentMotionConstraints();
   private static double robotWidth; // WHat if you have multiple robots running the same code? Should we account for that scenario?
   private final boolean isBackwards;
   private final LinkedList<PathData> pathData;
   protected double vCruise;
   protected double aMax;
-  private boolean isFinished;
   protected List<Pose> keyPoints;
-  static MotionConstraints currentMotionConstraints =
-      MotionController.getCurrentMotionConstraints();
+  private boolean isFinished;
 
 
   /**
@@ -97,7 +97,8 @@ public abstract class Path {
 
 
   /**
-   * Bounds an angle to be in between -PI and PI. if the angles are more or less then the angle will cycle.
+   * Bounds an angle to be in between -PI and PI. if the angles are more or less then the angle will
+   * cycle.
    *
    * @param angle angle to be bounded
    * @return the angle bounded

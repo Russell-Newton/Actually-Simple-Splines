@@ -115,12 +115,12 @@ public class BezierCurve extends Path {
     DMatrixRMaj coefficientsX = new DMatrixRMaj(keyPoints.size(), 1);
     DMatrixRMaj coefficientsY = new DMatrixRMaj(keyPoints.size(), 1);
     int[] binomialCoefficients = calculateCoefficients(keyPoints.size() - 1);
-    for(int i = 0; i < keyPoints.size(); i++) {
+    for (int i = 0; i < keyPoints.size(); i++) {
       DMatrixRMaj expandedBinomial = new DMatrixRMaj(resizeArrayLeft(expandBinomial(1, -1, i),
           keyPoints.size()));
       DMatrixRMaj coefficientsIX = new DMatrixRMaj(keyPoints.size(), 1);
       DMatrixRMaj coefficientsIY = new DMatrixRMaj(keyPoints.size(), 1);
-      for(int j = 0; j < keyPoints.size(); j++) {
+      for (int j = 0; j < keyPoints.size(); j++) {
         coefficientsIX.set(j,
             expandedBinomial.get(j) * keyPoints.get(keyPoints.size() - i - 1).getX()
                 * binomialCoefficients[i]);

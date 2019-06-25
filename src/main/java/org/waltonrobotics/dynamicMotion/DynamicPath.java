@@ -89,7 +89,8 @@ public abstract class DynamicPath {
   }
 
   /**
-   * Bounds an angle to be in between -PI and PI. if the angles are more or less then the angle will cycle.
+   * Bounds an angle to be in between -PI and PI. if the angles are more or less then the angle will
+   * cycle.
    *
    * @param angle angle to be bounded
    * @return the angle bounded

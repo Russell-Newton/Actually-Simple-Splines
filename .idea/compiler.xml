@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="CompilerConfiguration">
-    <bytecodeTargetLevel>
-      <module name="Actually-Simple-Splines.main" target="11" />
-      <module name="Actually-Simple-Splines.test" target="11" />
-    </bytecodeTargetLevel>
-  </component>
-</project>

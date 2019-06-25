@@ -41,8 +41,8 @@ public class SimpleSpline extends SimpleMotion {
   }
 
   /**
-   * Creates a SimpleSpline where the first angle is the angle of the first point and the final angle is the angle of
-   * the last point.
+   * Creates a SimpleSpline where the first angle is the angle of the first point and the final
+   * angle is the angle of the last point.
    *
    * @param isBackwards will the robot move forwards or backwards
    * @param knots the points (with angle) to move through

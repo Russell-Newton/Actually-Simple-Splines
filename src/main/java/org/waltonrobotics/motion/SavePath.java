@@ -39,8 +39,8 @@ public final class SavePath extends Path {
   }
 
   /**
-   * Will scale time to be short the bigger the number. E.i. passing in 3 means that time will go 3 time faster meaning
-   * that the robot will complete the motion faster.
+   * Will scale time to be short the bigger the number. E.i. passing in 3 means that time will go 3
+   * time faster meaning that the robot will complete the motion faster.
    */
   public SavePath scaleTime(double inverseScale) {
     if (inverseScale != 1.0) {

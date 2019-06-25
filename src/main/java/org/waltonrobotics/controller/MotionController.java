@@ -36,18 +36,18 @@ public class MotionController {
   private final List<PathData> history = new LinkedList<>();
   private final SetSpeeds setSpeeds;
   private final Supplier<Boolean> usingCamera;
-  private RobotConfig robotConfig;
+  protected RobotConfig robotConfig;
+  protected PathData targetPathData;
+  protected ErrorVector errorVector;
   private boolean running;
   private Path currentPath;
   private PathData staticPathData;
   private Pose actualPosition;
-  private PathData targetPathData;
   private RobotPair previousLengths;
   private double pathStartTime;
   private ListIterator<PathData> pdIterator;
   private PathData pdPrevious;
   private PathData pdNext;
-  private ErrorVector errorVector;
   private RobotPair powers;
   private TimerTask currentTimerTask;
   private MotionState currentMotionState = MotionState.WAITING;
@@ -61,7 +61,8 @@ public class MotionController {
    * @param robotWidth - the robot width from the outside of the wheels
    * @param motionLogger - the MotionLogger from the AbstractDrivetrain
    */
-  public MotionController(RobotConfig robotConfig, double robotWidth, MotionLogger motionLogger, SetSpeeds setSpeeds,
+  public MotionController(RobotConfig robotConfig, double robotWidth, MotionLogger motionLogger,
+      SetSpeeds setSpeeds,
       Supplier<Boolean> usingCamera) {
     this.setSpeeds = setSpeeds;
     this.usingCamera = usingCamera;
@@ -102,7 +103,8 @@ public class MotionController {
   /**
    * @param robotConfig - the robotConfig to use the AbstractDrivetrain methods from
    */
-  public MotionController(RobotConfig robotConfig, SetSpeeds setSpeeds, Supplier<Boolean> usingCamera) {
+  public MotionController(RobotConfig robotConfig, SetSpeeds setSpeeds,
+      Supplier<Boolean> usingCamera) {
     this(robotConfig, robotConfig.getRobotWidth(), new MotionLogger(), setSpeeds, usingCamera);
   }
 
@@ -141,7 +143,8 @@ public class MotionController {
   /**
    * Updates where the robot thinks it is, based off of the encoder lengths
    */
-  public static Pose updateActualPosition(RobotPair wheelPositions, RobotPair previousWheelPositions,
+  public static Pose updateActualPosition(RobotPair wheelPositions,
+      RobotPair previousWheelPositions,
       Pose estimatedActualPosition) {
     double arcLeft = wheelPositions.getLeft() - previousWheelPositions.getLeft();
     double arcRight = wheelPositions.getRight() - previousWheelPositions.getRight();
@@ -328,7 +331,8 @@ public class MotionController {
     double leftPower = 0;
     double rightPower = 0;
 
-    System.out.printf("kV %f, kK %f, kAcc %f, kS %f, kAng %f, kL %f%n", robotConfig.getKV(), robotConfig.getKK(),
+    System.out.printf("kV %f, kK %f, kAcc %f, kS %f, kAng %f, kL %f%n", robotConfig.getKV(),
+        robotConfig.getKK(),
         robotConfig.getKAcc(), robotConfig.getKS(), robotConfig.getKAng(), robotConfig.getKL());
     double centerPower = 0;
     double steerPower = 0;
@@ -344,10 +348,12 @@ public class MotionController {
       // feed back
       double steerPowerXTE = robotConfig.getKS() * errorVector.getXTrack();
       double steerPowerAngle =
-          robotConfig.getKAng() * errorVector.getAngle(); //error angle must be negative because it is target-actual
+          robotConfig.getKAng() * errorVector
+              .getAngle(); //error angle must be negative because it is target-actual
       double centerPowerLag = robotConfig.getKL() * errorVector.getLag();
 
-      System.out.printf("steerPowerXTE: %f steerPowerAngle: %f centerPowerLag: %f%n", steerPowerXTE, steerPowerAngle,
+      System.out.printf("steerPowerXTE: %f steerPowerAngle: %f centerPowerLag: %f%n", steerPowerXTE,
+          steerPowerAngle,
           centerPowerLag);
 
       centerPower = ((leftPower + rightPower) / 2.0) + centerPowerLag;
@@ -380,7 +386,8 @@ public class MotionController {
     }
 
     System.out.println(currentMotionState);
-    System.out.printf("Left Power %f \t Right Power %f%n", centerPower - steerPower, centerPower + steerPower);
+    System.out.printf("Left Power %f \t Right Power %f%n", centerPower - steerPower,
+        centerPower + steerPower);
     return new RobotPair(centerPower - steerPower, centerPower + steerPower,
         time);
   }
@@ -608,7 +615,8 @@ public class MotionController {
     @Override
     public final void run() {
       if ((robotConfig.getKK() == 0) && (robotConfig.getKV() == 0) && (robotConfig.getKL() == 0)) {
-        System.out.println("Please make KK, KV or KL, not equal 0 otherwise the robot will not move");
+        System.out
+            .println("Please make KK, KV or KL, not equal 0 otherwise the robot will not move");
       }
 
       RobotPair wheelPositions = setSpeeds.getWheelPositions();

@@ -27,8 +27,9 @@ public class MotionLogger {
   /**
    * Create this in robotInit() before making the drivetrain
    *
-   * @param filePath - Where do you want to save the logs? To save to the roboRIO, use base directory "/home/lvuser/".
-   * To save to a thumb drive, use winSCP or similar program to find the right filepath
+   * @param filePath - Where do you want to save the logs? To save to the roboRIO, use base
+   * directory "/home/lvuser/". To save to a thumb drive, use winSCP or similar program to find the
+   * right filepath
    */
   public MotionLogger(String filePath) {
     motionDataList = new LinkedList<>();
@@ -45,7 +46,8 @@ public class MotionLogger {
   }
 
   /**
-   * This is called in the MotionController to add MotionData to the motionDataList that MotionLogger has
+   * This is called in the MotionController to add MotionData to the motionDataList that
+   * MotionLogger has
    */
   public final synchronized void addMotionData(MotionData dataAdd) {
     motionDataList.add(dataAdd);
@@ -63,8 +65,8 @@ public class MotionLogger {
   }
 
   /**
-   * Saves data to a .csv file with the name in "yyyy-MM-dd hh-mm-ss" format. Call this in disabledInit() to send the
-   * motionDataList to a .csv file.
+   * Saves data to a .csv file with the name in "yyyy-MM-dd hh-mm-ss" format. Call this in
+   * disabledInit() to send the motionDataList to a .csv file.
    */
   public final synchronized void writeMotionDataCSV(boolean clearData) {
     if (motionDataList.isEmpty()) {

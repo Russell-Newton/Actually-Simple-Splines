@@ -10,8 +10,9 @@ public class GaussLegendre {
   private double upperBound;
 
   /**
-   * Constructs nodes and weights for an n-dimensional Gauss Legendre quadrature between on the interval [lowerBound,
-   * upperBound]. The constructor creates nodes and weights and then initializes all fields of the instance.
+   * Constructs nodes and weights for an n-dimensional Gauss Legendre quadrature between on the
+   * interval [lowerBound, upperBound]. The constructor creates nodes and weights and then
+   * initializes all fields of the instance.
    *
    * @param numberOfPoints, lowerBound, upperBound
    * @author Alessandro Gnoatto based on Matlab code by Greg von Winckel.
@@ -33,8 +34,10 @@ public class GaussLegendre {
     double[] y = new double[numberOfPoints + 1];
     double[] y0 = new double[numberOfPoints + 1];
     for (int i = 0; i <= numberOfPoints; i++) {
-      y[i] = StrictMath.cos((((2.0 * i) + 1.0) * Math.PI) / ((2 * numberOfPoints) + 2)) + ((0.27 / n1) * StrictMath
-          .sin((Math.PI * xu[i] * numberOfPoints) / n2));
+      y[i] =
+          StrictMath.cos((((2.0 * i) + 1.0) * Math.PI) / ((2 * numberOfPoints) + 2)) + ((0.27 / n1)
+              * StrictMath
+              .sin((Math.PI * xu[i] * numberOfPoints) / n2));
       y0[i] = 2.0;
 
     }
@@ -60,7 +63,8 @@ public class GaussLegendre {
 
       for (int k = 1; k < n1; k++) {
         for (int j = 0; j < n1; j++) {
-          L[j][k + 1] = ((((2.0 * (k + 1)) - 1.0) * y[j] * L[j][k]) - ((k) * L[j][k - 1])) / (k + 1);
+          L[j][k + 1] =
+              ((((2.0 * (k + 1)) - 1.0) * y[j] * L[j][k]) - ((k) * L[j][k - 1])) / (k + 1);
         }
       }
 

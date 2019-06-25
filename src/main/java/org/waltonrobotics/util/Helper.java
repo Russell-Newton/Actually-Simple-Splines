@@ -73,13 +73,10 @@ public class Helper {
 
   /**
    * Resizes an array to a newLength, adding leading zeros as necessary.
-   * @param array
-   * @param newLength
-   * @return
    */
   public static double[] resizeArrayLeft(double[] array, int newLength) {
     double[] newArray = new double[newLength];
-    for(int i = newArray.length - array.length; i < newArray.length; i++) {
+    for (int i = newArray.length - array.length; i < newArray.length; i++) {
       newArray[i] = array[i - (newArray.length - array.length)];
     }
     return newArray;

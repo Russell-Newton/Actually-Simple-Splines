@@ -12,7 +12,8 @@ import org.waltonrobotics.motion.BezierCurve.Key;
 import org.waltonrobotics.util.GaussLegendre;
 
 /**
- * Everything about Bezier Curves https://pomax.github.io/bezierinfo/ http://ttuadvancedrobotics.wikidot.com/trajectory-planning-for-point-to-point-motion
+ * Everything about Bezier Curves https://pomax.github.io/bezierinfo/
+ * http://ttuadvancedrobotics.wikidot.com/trajectory-planning-for-point-to-point-motion
  */
 public class DynamicBezierCurve extends DynamicPath {
 
@@ -26,7 +27,8 @@ public class DynamicBezierCurve extends DynamicPath {
   private double startLCenter;
 
   /**
-   * This constructor is used with the splines, but feel free to use it when creating your own motions
+   * This constructor is used with the splines, but feel free to use it when creating your own
+   * motions
    *
    * @param vCruise - the cruise velocity of the robot
    * @param aMax - the maximum acceleration of the robot
@@ -107,7 +109,8 @@ public class DynamicBezierCurve extends DynamicPath {
   }
 
   /**
-   * Uses sampling (creating multiple points and summing the distance between them) to calculate the length of the path
+   * Uses sampling (creating multiple points and summing the distance between them) to calculate the
+   * length of the path
    *
    * @param numberOfPoints the number of points to create
    * @param lower the lower bound [0,1]
@@ -131,7 +134,8 @@ public class DynamicBezierCurve extends DynamicPath {
   }
 
   /**
-   * Calculates how much time it would take to complete the path given its length acceleration and target velocity
+   * Calculates how much time it would take to complete the path given its length acceleration and
+   * target velocity
    */
   private double computeTime() {
     double accelerationTime = calculateTime(startVelocity, getVCruise(), getAMax());
@@ -171,8 +175,9 @@ public class DynamicBezierCurve extends DynamicPath {
   }
 
   /**
-   * Uses the Gauss Legendre integration to approximate the arc length of the Bezier curve. This is the fastest
-   * technique (faster than sampling) when having a large path and shows the most accurate results
+   * Uses the Gauss Legendre integration to approximate the arc length of the Bezier curve. This is
+   * the fastest technique (faster than sampling) when having a large path and shows the most
+   * accurate results
    *
    * @param n the number of integral strips 2+ more means better accuracy
    * @param lowerBound the lower bound to integrate (inclusive) [0,1]
@@ -349,8 +354,10 @@ public class DynamicBezierCurve extends DynamicPath {
     return null;
   }
 
-  private double calculateTimeConstantAcceleration(double startVelocity, double acceleration, double distance) {
-    return (-startVelocity + Math.sqrt((startVelocity * startVelocity) - (2.0 * acceleration * distance)))
+  private double calculateTimeConstantAcceleration(double startVelocity, double acceleration,
+      double distance) {
+    return (-startVelocity + Math
+        .sqrt((startVelocity * startVelocity) - (2.0 * acceleration * distance)))
         / acceleration;
   }
 

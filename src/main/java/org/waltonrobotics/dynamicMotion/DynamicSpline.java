@@ -22,7 +22,8 @@ public class DynamicSpline extends DynamicPath {
   private List<DynamicBezierCurve> bezierCurves;
 
   /**
-   * Construct a spline. Note that the x axis is the direction the robot is facing if the start angle is 0
+   * Construct a spline. Note that the x axis is the direction the robot is facing if the start
+   * angle is 0
    *
    * @param vCruise - max velocity
    * @param aMax - max acceleration
@@ -31,7 +32,8 @@ public class DynamicSpline extends DynamicPath {
    * @param isBackwards - if the robot will be moving backwards, make this true
    * @param knots - the points you want the robot to drive through
    */
-  public DynamicSpline(double vCruise, double aMax, double startVelocity, double endVelocity, boolean isBackwards,
+  public DynamicSpline(double vCruise, double aMax, double startVelocity, double endVelocity,
+      boolean isBackwards,
       double scaleStart, double scaleEnd,
       List<Pose> knots) {
     super(vCruise, aMax, isBackwards, knots);
@@ -96,8 +98,8 @@ public class DynamicSpline extends DynamicPath {
   }
 
   /**
-   * Creates the control points required to make cubic bezier curves that transition between knots. Will make them for
-   * the shortest path possible.
+   * Creates the control points required to make cubic bezier curves that transition between knots.
+   * Will make them for the shortest path possible.
    *
    * @return A list of lists that hold the control points for the segments in the spline
    */

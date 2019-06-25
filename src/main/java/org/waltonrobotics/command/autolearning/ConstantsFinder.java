@@ -85,7 +85,8 @@ public class ConstantsFinder extends Command {
         StrictMath.pow(normalizeSum(errorVectors, ErrorVector::getXTrack), 2.0);
   }
 
-  public double normalizeSum(AbstractList<ErrorVector> errorVectors, ToDoubleFunction<ErrorVector> toDoubleFunction) {
+  public double normalizeSum(AbstractList<ErrorVector> errorVectors,
+      ToDoubleFunction<ErrorVector> toDoubleFunction) {
     DoubleStream doubleStream = errorVectors.parallelStream().mapToDouble(toDoubleFunction);
     double min = doubleStream.min().orElse(0);
     double max = doubleStream.max().orElse(0);
