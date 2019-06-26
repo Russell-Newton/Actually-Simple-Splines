@@ -21,31 +21,25 @@ public class RamseteController extends MotionController {
 
   /**
    * @param robotConfig - the robotConfig to use the AbstractDrivetrain methods from
-   * @param robotWidth - the robot width from the outside of the wheels
-   * @param motionLogger - the MotionLogger from the AbstractDrivetrain
    * @param setSpeeds something implementing the SetSpeeds interface
    * @param useMotorProfiles whether or not you're paying much attention to motor profiles. Defaults
    * to false.
    * @param usingCamera whether or not you're using a camera. Defaults to false
    */
-  public RamseteController(RobotConfig robotConfig, double robotWidth, MotionLogger motionLogger,
-      SetSpeeds setSpeeds, boolean useMotorProfiles,
+  public RamseteController(RobotConfig robotConfig, SetSpeeds setSpeeds, boolean useMotorProfiles,
       Supplier<Boolean> usingCamera) {
-    super(robotConfig, robotWidth, motionLogger, setSpeeds, usingCamera);
+    super(robotConfig, setSpeeds, usingCamera);
     this.useMotorProfiles = useMotorProfiles;
   }
 
   /**
    * @param robotConfig - the robotConfig to use the AbstractDrivetrain methods from
-   * @param robotWidth - the robot width from the outside of the wheels
-   * @param motionLogger - the MotionLogger from the AbstractDrivetrain
    * @param setSpeeds something implementing the SetSpeeds interface
    * @param usingCamera whether or not you're using a camera. Defaults to false
    */
-  public RamseteController(RobotConfig robotConfig, double robotWidth, MotionLogger motionLogger,
-      SetSpeeds setSpeeds,
+  public RamseteController(RobotConfig robotConfig, SetSpeeds setSpeeds,
       Supplier<Boolean> usingCamera) {
-    this(robotConfig, robotWidth, motionLogger, setSpeeds, false, usingCamera);
+    this(robotConfig, setSpeeds, false, usingCamera);
   }
 
   //sinc(x) = sin(x) / x

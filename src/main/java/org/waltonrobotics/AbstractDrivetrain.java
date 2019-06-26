@@ -7,6 +7,7 @@ import org.waltonrobotics.config.RobotConfig;
 import org.waltonrobotics.config.SetSpeeds;
 import org.waltonrobotics.controller.MotionController;
 import org.waltonrobotics.controller.MotionLogger;
+import org.waltonrobotics.controller.RamseteController;
 import org.waltonrobotics.metadata.CameraData;
 import org.waltonrobotics.metadata.PathData;
 import org.waltonrobotics.metadata.Pose;
@@ -22,9 +23,9 @@ import org.waltonrobotics.motion.Path;
 public abstract class AbstractDrivetrain extends Subsystem {
 //TODO use the java.util.Properties class to save and load the drivetrain constants to a file
 
-
   private final MotionController controller;
   private final Supplier<Boolean> usingCamera;
+  private final ControllerType controllerType;
   private final long period = 5L;
   private RobotConfig robotConfig;
   private Pose actualPosition = new Pose(0, 0, 0);
@@ -34,32 +35,62 @@ public abstract class AbstractDrivetrain extends Subsystem {
   private PathData previousState;
 
   public AbstractDrivetrain(RobotConfig robotConfig) {
-    this(robotConfig, () -> false);
+    this(robotConfig, () -> false, ControllerType.POWERUP);
+  }
+
+  public AbstractDrivetrain(RobotConfig robotConfic, ControllerType controllerType) {
+    this(robotConfic, () -> false, controllerType);
+  }
+
+  public AbstractDrivetrain(RobotConfig robotConfic, Supplier<Boolean> usingCamera) {
+    this(robotConfic, usingCamera, ControllerType.POWERUP);
   }
 
   /**
    * Create the static drivetrain after creating the motion logger so you can use the
    * MotionController
    */
-  public AbstractDrivetrain(RobotConfig robotConfig, Supplier<Boolean> usingCamera) {
+  public AbstractDrivetrain(RobotConfig robotConfig, Supplier<Boolean> usingCamera,
+      ControllerType controllerType) {
     this.robotConfig = robotConfig;
+    this.controllerType = controllerType;
     if ((robotConfig.getKK() == 0) && (robotConfig.getKV() == 0) && (robotConfig.getKL() == 0)) {
       System.out.println("Please make KK, KV or KL, not equal 0 otherwise the robot will not move");
     }
 
     AbstractDrivetrain drivetrain = this;
     this.usingCamera = usingCamera;
-    controller = new MotionController(robotConfig, new SetSpeeds() {
-      @Override
-      public void setSpeeds(double left, double right) {
-        drivetrain.setSpeeds(left, right);
-      }
 
-      @Override
-      public RobotPair getWheelPositions() {
-        return drivetrain.getWheelPositions();
-      }
-    }, usingCamera);
+    switch (controllerType) {
+      case RAMSETE:
+        controller =
+            new RamseteController(robotConfig, new SetSpeeds() {
+              @Override
+              public void setSpeeds(double left, double right) {
+                drivetrain.setSpeeds(left, right);
+              }
+
+              @Override
+              public RobotPair getWheelPositions() {
+                return drivetrain.getWheelPositions();
+              }
+            }, usingCamera);
+        break;
+      default:
+        controller =
+            new MotionController(robotConfig, new SetSpeeds() {
+              @Override
+              public void setSpeeds(double left, double right) {
+                drivetrain.setSpeeds(left, right);
+              }
+
+              @Override
+              public RobotPair getWheelPositions() {
+                return drivetrain.getWheelPositions();
+              }
+            }, usingCamera);
+        break;
+    }
 
     SimpleMotion.setDrivetrain(this);
     previousLengths = getWheelPositions();
@@ -73,6 +104,7 @@ public abstract class AbstractDrivetrain extends Subsystem {
 
     setEncoderDistancePerPulse();
   }
+
 
   @Override
   public void periodic() {
@@ -255,5 +287,11 @@ public abstract class AbstractDrivetrain extends Subsystem {
 
   public int getPathNumber() {
     return controller.getPathNumber();
+  }
+
+
+  public enum ControllerType {
+    POWERUP,
+    RAMSETE
   }
 }
