@@ -82,13 +82,6 @@ public class RamseteController extends MotionController {
       double centerAcceleration = (leftAcceleration + rightAcceleration) / 2;
       double centerAlpha = (rightAcceleration - leftAcceleration) * (Path.getRobotWidth() / 2);
 
-      double leftAccelerationCommand =
-          (centerAcceleration - centerAlpha * robotConfig.effectiveWheelbaseRadius()) /
-              robotConfig.wheelRadius();
-      double rightAccelerationCommand =
-          (centerAcceleration + centerAlpha * robotConfig.effectiveWheelbaseRadius()) /
-              robotConfig.wheelRadius();
-
       //Calculating torques
       double leftTorque = robotConfig.wheelRadius() / 2 *
           (centerAcceleration * robotConfig.robotMass() -
@@ -103,11 +96,11 @@ public class RamseteController extends MotionController {
 
       leftVoltage = robotConfig.leftMotorParameters().getVoltageFromTorque(leftCommand,
           leftTorque);
-      rightVoltage = robotConfig.rightMotorParameters().getVoltageFromTorque(leftCommand,
-          leftTorque);
+      rightVoltage = robotConfig.rightMotorParameters().getVoltageFromTorque(rightCommand,
+          rightTorque);
     } else {
       leftVoltage = robotConfig.leftMotorParameters().getVoltageFromSpeed(leftCommand);
-      rightVoltage = robotConfig.rightMotorParameters().getVoltageFromSpeed(leftCommand);
+      rightVoltage = robotConfig.rightMotorParameters().getVoltageFromSpeed(rightCommand);
     }
     return new RobotPair(leftVoltage, rightVoltage, time);
   }
