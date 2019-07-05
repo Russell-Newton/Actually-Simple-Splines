@@ -11,7 +11,7 @@ def otherProjects = [
         "${userHome}/Documents/GitHub/PowerUp/PowerUp/lib/",
         "${userHome}/wpilib/user/java/lib/",
         "${userHome}/Documents/GitHub/Path Planning/motionLibrary/",
-        "${userHome}/Documents/GitHub/DeepSpace/DeepSpaceRobot/lib/",
+        "${userHome}/Documents/DeepSpace/DeepSpaceRobot/lib/",
 ]
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
