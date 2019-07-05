@@ -34,7 +34,7 @@ public class MotionController {
   private final MotionLogger motionLogger;
   private final Timer controller;
   private final List<PathData> history = new LinkedList<>();
-  private final SetSpeeds setSpeeds;
+  protected final SetSpeeds setSpeeds;
   private final Supplier<Boolean> usingCamera;
   protected RobotConfig robotConfig;
   protected PathData targetPathData;
@@ -137,13 +137,18 @@ public class MotionController {
       public RobotPair getWheelPositions() {
         return null;
       }
+
+      @Override
+      public Pose getSensorCalculatedPose() {
+        return new Pose();
+      }
     }, usingCamera);
   }
 
   /**
    * Updates where the robot thinks it is, based off of the encoder lengths
    */
-  public static Pose updateActualPosition(RobotPair wheelPositions,
+  public Pose updateActualPosition(RobotPair wheelPositions,
       RobotPair previousWheelPositions,
       Pose estimatedActualPosition) {
     double arcLeft = wheelPositions.getLeft() - previousWheelPositions.getLeft();

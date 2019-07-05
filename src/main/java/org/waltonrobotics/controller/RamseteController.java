@@ -3,6 +3,7 @@ package org.waltonrobotics.controller;
 import java.util.function.Supplier;
 import org.waltonrobotics.config.RobotConfig;
 import org.waltonrobotics.config.SetSpeeds;
+import org.waltonrobotics.metadata.Pose;
 import org.waltonrobotics.metadata.RobotPair;
 import org.waltonrobotics.motion.Path;
 
@@ -17,19 +18,22 @@ import org.waltonrobotics.motion.Path;
  **/
 public class RamseteController extends MotionController {
 
-  private boolean useMotorProfiles;
+  private final boolean useMotorProfiles;
+  private final boolean useDrivetrainSuppliedPose;
 
   /**
    * @param robotConfig - the robotConfig to use the AbstractDrivetrain methods from
    * @param setSpeeds something implementing the SetSpeeds interface
    * @param useMotorProfiles whether or not you're paying much attention to motor profiles. Defaults
    * to false.
+   * @param useDrivetrainSuppliedPose
    * @param usingCamera whether or not you're using a camera. Defaults to false
    */
   public RamseteController(RobotConfig robotConfig, SetSpeeds setSpeeds, boolean useMotorProfiles,
-      Supplier<Boolean> usingCamera) {
+      boolean useDrivetrainSuppliedPose, Supplier<Boolean> usingCamera) {
     super(robotConfig, setSpeeds, usingCamera);
     this.useMotorProfiles = useMotorProfiles;
+    this.useDrivetrainSuppliedPose = useDrivetrainSuppliedPose;
   }
 
   /**
@@ -39,7 +43,7 @@ public class RamseteController extends MotionController {
    */
   public RamseteController(RobotConfig robotConfig, SetSpeeds setSpeeds,
       Supplier<Boolean> usingCamera) {
-    this(robotConfig, setSpeeds, false, usingCamera);
+    this(robotConfig, setSpeeds, false, false, usingCamera);
   }
 
   //sinc(x) = sin(x) / x
@@ -65,13 +69,15 @@ public class RamseteController extends MotionController {
     double omegaCommand = targetOmega +
         robotConfig.getKBeta() * targetVelocity * sinc(errorVector.getAngle()) *
             errorVector.getXTrack() + dynamicConstant * errorVector.getAngle();
+    System.out.println(velocityCommand + " " + omegaCommand);
 
     //And here starts the help from 254
-    double leftCommand = (velocityCommand - omegaCommand * robotConfig.effectiveWheelbaseRadius()) /
-        robotConfig.wheelRadius();
+    double leftCommand = (velocityCommand - omegaCommand * robotConfig.effectiveWheelbaseRadius())
+        /*/ robotConfig.wheelRadius()*/;
     double rightCommand =
-        (velocityCommand + omegaCommand * robotConfig.effectiveWheelbaseRadius()) /
-            robotConfig.wheelRadius();
+        (velocityCommand + omegaCommand * robotConfig.effectiveWheelbaseRadius())
+            /*/ robotConfig.wheelRadius()*/;
+    System.out.println(leftCommand + " " + rightCommand);
 
     double leftVoltage;
     double rightVoltage;
@@ -111,4 +117,14 @@ public class RamseteController extends MotionController {
         2) + Math.pow(targetOmega, 2));
   }
 
+  @Override
+  public Pose updateActualPosition(RobotPair wheelPositions, RobotPair previousWheelPositions,
+      Pose estimatedActualPosition) {
+    if(!useDrivetrainSuppliedPose) {
+      return super
+          .updateActualPosition(wheelPositions, previousWheelPositions, estimatedActualPosition);
+    } else {
+      return setSpeeds.getSensorCalculatedPose();
+    }
+  }
 }

@@ -74,6 +74,11 @@ public abstract class AbstractDrivetrain extends Subsystem {
               public RobotPair getWheelPositions() {
                 return drivetrain.getWheelPositions();
               }
+
+              @Override
+              public Pose getSensorCalculatedPose() {
+                return getNavXPose();
+              }
             }, usingCamera);
         break;
       default:
@@ -87,6 +92,11 @@ public abstract class AbstractDrivetrain extends Subsystem {
               @Override
               public RobotPair getWheelPositions() {
                 return drivetrain.getWheelPositions();
+              }
+
+              @Override
+              public Pose getSensorCalculatedPose() {
+                return new Pose();
               }
             }, usingCamera);
         break;
@@ -110,8 +120,8 @@ public abstract class AbstractDrivetrain extends Subsystem {
   public void periodic() {
     //		Gets the current predicted actual position
     RobotPair wheelPosition = getWheelPositions();
-    actualPosition = MotionController
-        .updateActualPosition(wheelPosition, previousLengths, actualPosition);
+//    actualPosition = MotionController
+//        .updateActualPosition(wheelPosition, previousLengths, actualPosition);
     actualPositionTime = wheelPosition.getTime();
 
 //		Found change in time between the different periodic calls
@@ -289,6 +299,15 @@ public abstract class AbstractDrivetrain extends Subsystem {
     return controller.getPathNumber();
   }
 
+  /**
+   * Override this if you're going to be using a RamseteController with navX feedback. It defaults
+   * to returning a Pose(0, 0, 0)
+   *
+   * @return a pose created form the navX data
+   */
+  protected Pose getNavXPose() {
+    return new Pose();
+  }
 
   public enum ControllerType {
     POWERUP,
