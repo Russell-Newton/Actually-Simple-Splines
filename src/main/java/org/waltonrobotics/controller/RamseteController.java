@@ -100,13 +100,13 @@ public class RamseteController extends MotionController {
               omegaCommand * robotConfig.robotAngularDrag() / robotConfig
                   .effectiveWheelbaseRadius());
 
-      leftVoltage = robotConfig.leftMotorParameters().getVoltageFromTorque(leftCommand,
+      leftVoltage = robotConfig.leftMotorConfig().getMotorParameters().getVoltageFromTorque(leftCommand,
           leftTorque);
-      rightVoltage = robotConfig.rightMotorParameters().getVoltageFromTorque(rightCommand,
+      rightVoltage = robotConfig.rightMotorConfig().getMotorParameters().getVoltageFromTorque(rightCommand,
           rightTorque);
     } else {
-      leftVoltage = robotConfig.leftMotorParameters().getVoltageFromSpeed(leftCommand);
-      rightVoltage = robotConfig.rightMotorParameters().getVoltageFromSpeed(rightCommand);
+      leftVoltage = robotConfig.leftMotorConfig().getMotorParameters().getVoltageFromSpeed(leftCommand);
+      rightVoltage = robotConfig.rightMotorConfig().getMotorParameters().getVoltageFromSpeed(rightCommand);
     }
     return new RobotPair(leftVoltage, rightVoltage, time);
   }

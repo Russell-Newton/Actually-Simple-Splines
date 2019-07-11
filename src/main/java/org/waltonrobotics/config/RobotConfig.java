@@ -1,7 +1,5 @@
 package org.waltonrobotics.config;
 
-import org.waltonrobotics.metadata.MotorParameters;
-
 public abstract class RobotConfig {
 
   private final String robotName;
@@ -17,10 +15,6 @@ public abstract class RobotConfig {
   public abstract EncoderConfig getRightEncoderConfig();
 
   public abstract EncoderConfig getLeftEncoderConfig();
-
-  public abstract TalonConfig getLeftTalonConfig();
-
-  public abstract TalonConfig getRightTalonConfig();
 
   public abstract Controls getRightJoystickConfig();
 
@@ -164,13 +158,13 @@ public abstract class RobotConfig {
   public abstract double robotAngularDrag();
 
   /**
-   * @return the MotorParameters of the left side of the robot
+   * @return the MotorConfig of the left side of the robot
    */
-  public abstract MotorParameters leftMotorParameters();
+  public abstract MotorConfig leftMotorConfig();
 
   /**
    * @return the MotorParameters of the right side of the robot
    */
-  public abstract MotorParameters rightMotorParameters();
+  public abstract MotorConfig rightMotorConfig();
 
 }

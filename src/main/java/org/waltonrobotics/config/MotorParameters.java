@@ -1,4 +1,4 @@
-package org.waltonrobotics.metadata;
+package org.waltonrobotics.config;
 
 /**
  * This class is based off of Team 254's DCMotorTransmission class.
